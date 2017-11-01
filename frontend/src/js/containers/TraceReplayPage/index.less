@@ -1,0 +1,703 @@
+.layout {
+  height: 100%;
+}
+
+.sider {
+  background-color: #fff;
+  position: absolute;
+  height: ~'calc(100% - 54px)';
+  height: ~'-mozcalc(100% - 54px)';
+  height: ~'-webkitcalc(100% - 54px)';
+
+  :global .ant-layout-sider-children {
+    height: 100%;
+  }
+  :global .ant-layout {
+    background: #fff;
+    box-shadow: 0 0 10px #888888;
+  }
+
+  :global .ant-layout-content {
+    height: ~'calc(100% - 38px - 38px - 160px)';
+  }
+
+  :global .ant-menu {
+    height: ~'calc(100% - 49px)';
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #fff;
+    color: #5B5B5B;
+    border-right: none;
+
+    .ant-menu-item-selected {
+      color: #5b5b5b;
+      background-color: #FFF8F8;
+    }
+
+    :global .ant-menu-item-disabled {
+      color: #8f8992 !important;
+      border-bottom: 1px solid #EEEEEE !important;
+      background: none !important;
+      :global .ant-avatar > img {
+        -webkit-filter: grayscale(1);
+        filter: grayscale(1);
+      }
+    }
+
+    :global .ant-menu-item:after {
+      border-right: none;
+    }
+
+    :global .ant-menu-item:hover {
+      color: #5b5b5b;
+      background-color: #FFF8F8;
+    }
+  }
+
+  :global .ant-menu::-webkit-scrollbar {
+    width: 4px;
+    background-color: #302036;
+  }
+
+  :global .ant-menu::-webkit-scrollbar-track {
+    //-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #302036;
+  }
+
+  :global .ant-menu::-webkit-scrollbar-thumb {
+    background-color: #FFC600;
+  }
+
+  :global .ant-layout-sider-zero-width-trigger {
+
+    top: 90px;
+    height: 74px;
+    font-size: 14px;
+    padding: 5px;
+    line-height: 16px;
+    border-radius: 0 4px 4px 0;
+    background: #45484a;
+    &:after {
+      content: "车辆信息"
+    }
+    i {
+      display: none;
+    }
+  }
+}
+
+.peopleChk {
+
+  :global .ant-checkbox-inner {
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    border-color: #365EC3;
+  }
+  :global .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #2C56C0;
+    border-color: #fff;
+    &::after {
+      border: 2px solid #fff;
+      border-top: 0;
+      border-left: 0;
+      left: 4px;
+      top: 1px;
+      width: 6px;
+      height: 10px;
+    }
+  }
+}
+
+.left_arrow {
+  float: right;
+  padding-left: 5px;
+  display: inline-block;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.searchInput {
+  background: #F6F5FC;
+  border: none;
+  color: #fff;
+  margin: 10px 13px;
+  width: 230px;
+
+  :global .ant-input-prefix {
+    color: #000;
+  }
+  :global .ant-input {
+    background: transparent;
+    border: none;
+    padding-left: 24px;
+    color: #5b5b5b;
+  }
+
+  :global .ant-input::placeholder {
+    color: #999;
+  }
+  :global .ant-input::-webkit-input-placeholder {
+    color: #999;
+  }
+  :global .ant-input::-moz-placeholder {
+    color: #999;
+  }
+  :global .ant-input:-ms-input-placeholder {
+    color: #999;
+  }
+
+  :global .ant-input:not(:first-child) {
+    padding-left: 30px;
+  }
+
+  :global .ant-input:focus {
+    background: transparent;
+    //border: none;
+    //outline: none;
+    color: #5b5b5b;
+    box-shadow: none;
+  }
+
+  :global .ant-input-suffix {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.selectDrop {
+  margin: 10px 13px;
+  width: 230px;
+}
+
+:global .ant-select-lg .ant-select-selection--single {
+  //border: 0;
+  //border-bottom: 1px solid #EEEEEE;
+}
+
+.menu {
+  :global .ant-menu-item {
+    padding: 13px 16px !important;
+    height: 66px;
+    line-height: 40px;
+    border-bottom: 1px solid #EEEEEE;
+    text-overflow: clip;
+    border-right: 5px solid #52C646;
+  }
+
+  :global .ant-menu-item-selected {
+    color: #5b5b5b;
+    background-color: #FFF8F8;
+    border-right: 5px solid #FF0000;
+  }
+
+  :global .ant-menu-item-disabled {
+    //color: #8f8992 !important;
+    border-right: 5px solid #999999 !important;
+    //border-bottom: 1px solid #EEEEEE !important;
+  }
+
+  .content {
+    height: 40px;
+    line-height: 40px;
+    display: inline-block;
+    width: 120px;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    padding-left: 10px;
+
+    div {
+      line-height: 20px;
+      height: 20px;
+    }
+    .code {
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .btnContent {
+    height: 40px;
+    line-height: 40px;
+    display: inline-block;
+    color: #fff;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    width: 50px;
+    text-align: right;
+
+    :global .ant-btn {
+      color: #f2f2f2;
+      font-size: 18px;
+      margin-right: 7px;
+      background-color: #5b5b5b;
+      border-color: #5b5b5b;
+    }
+
+    :global .ant-btn:focus {
+      //color: #f2f2f2;
+      background-color: #5b5b5b;
+      border-color: #5b5b5b;
+    }
+
+    :global .ant-btn:hover {
+      color: #FFC600;
+      background-color: #5b5b5b;
+      border-color: #5b5b5b;
+    }
+
+    :global .ant-btn:not(.ant-btn-circle):not(.ant-btn-circle-outline).ant-btn-icon-only {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    :global .anticon {
+      margin: 0px;
+    }
+  }
+}
+
+/*轨迹回放时的列表样式*/
+.planMenu {
+  :global .ant-menu-item {
+    padding: 13px 16px !important;
+    height: 66px;
+    border-bottom: 1px solid #EEEEEE;
+    text-overflow: clip;
+  }
+
+  .planContent {
+    height: 40px;
+    line-height: 40px;
+    display: inline-block;
+    width: 120px;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    padding-left: 10px;
+
+    div {
+      line-height: 20px;
+      height: 20px;
+    }
+    .code {
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .planBtnContent {
+    height: 40px;
+    line-height: 40px;
+    display: inline-block;
+    white-space: nowrap;
+    position: relative;
+    width: 50px;
+    text-align: right;
+
+    :global span{
+      position: relative;
+      top: -25px;
+      right: -55px;
+    }
+
+    :global .ant-btn {
+      font-size: 18px;
+      margin-right: 7px;
+      background-color: transparent;
+      border-color: transparent;
+    }
+
+    :global .anticon-eye,
+    :global .anticon-environment {
+      color: #5B5B5B;
+    }
+    :global .ant-btn:not(.ant-btn-circle):not(.ant-btn-circle-outline).ant-btn-icon-only {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    :global .anticon {
+      margin: 0px;
+    }
+  }
+
+}
+
+.floor {
+  display: inline-block;
+  width: 30px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  background-color: #66a700;
+  color: #f0f0f0;
+  margin-right: 10px;
+}
+
+.floorOffline {
+  display: inline-block;
+  width: 30px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #f0f0f0;
+  margin-right: 10px;
+  background-color: #cf352d;
+}
+
+.peopleCard {
+  z-index: 1;
+  position: absolute;
+  right: 80px;
+  bottom: 20px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  border-color: transparent;
+  width: 290px;
+  height: 200px;
+  border-radius: 5px;
+
+  :global .ant-card-head {
+    height: 40px;
+    line-height: 40px;
+    background: #2C56C0;
+    border-bottom: none;
+    padding: 0 12px;
+    border-radius: 5px 5px 0 0;
+  }
+
+  :global .ant-card-head-title {
+    font-size: 14px;
+    color: #fff;
+    i {
+      padding-right: 6px;
+      font-size: 15px;
+    }
+  }
+
+  :global .ant-card-extra {
+    right: 12px;
+    top: 6px;
+    font-size: 18px;
+    color: #fff;
+  }
+
+  :global .ant-card-body {
+    padding: 12px 14px;
+  }
+}
+
+.leftPeopleContent {
+  float: left;
+  width: 100px;
+  text-align: center;
+  padding-top: 10px;
+}
+
+.rightPeopleContent {
+  width: 100%;
+  float: right;
+  padding-left: 14px;
+  line-height: 21px;
+  height: 138px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  span {
+    display: block;
+  }
+
+  .location {
+    max-height: 46px;
+    width: 148px;
+    overflow: hidden;
+  }
+}
+
+.peopleClose {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.nameTag {
+  display: inline-block;
+  width: 70px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  font-size: 14px;
+  background-color: #66a700;
+  color: #f0f0f0;
+  border-radius: 14px;
+}
+
+.peopleAvatar {
+  width: 90px;
+  height: 90px;
+  line-height: 86px;
+  border-radius: 50%;
+  border: 1px solid #f8f8f8;
+}
+
+.mapActions {
+  position: absolute;
+  right: 20px;
+  top: 70px;
+  display: flex;
+  justify-content: baseline;
+  flex-direction: column;
+}
+
+.mapActionBtn {
+  width: 38px;
+  height: 38px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.32);
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  font-size: 22px;
+  line-height: 36px;
+  text-align: center;
+  color: #c12731;
+  display: block;
+  margin: 5px;
+  &:hover {
+    cursor: pointer;
+    color: #d62731;
+    background-color: rgba(239, 239, 239, 0.49);
+  }
+}
+
+.footer {
+
+  padding: 0px;
+
+  .allChkPanel {
+    padding: 8px 10px;
+    background-color: #2C56C0;
+    :global .ant-btn {
+      border: none;
+      width: 50%;
+      color: #fff;
+    }
+
+    :global .ant-btn:hover {
+      color: #FFC600;
+    }
+  }
+}
+
+.datePanel {
+  color: #224CB8;
+  margin: 10px;
+  height: 140px;
+  padding: 6px 10px;
+  text-align: center;
+  background-color: #F4F6FC;
+  border: 1px solid #BDCAEA;
+  border-radius: 2px;
+  box-shadow: inset 0 0px 4px rgba(0, 0, 0, 0.25);
+}
+
+.stopPlayback {
+  color: #224CB8;
+  margin: 10px;
+  height: 80px;
+  line-height: 80px;
+  text-align: center;
+  background-color: #F4F6FC;
+  border: 1px solid #BDCAEA;
+  border-radius: 2px;
+  box-shadow: inset 0 0px 4px rgba(0, 0, 0, 0.25);
+}
+
+.dtPickerItem {
+  padding: 7px 0;
+}
+
+.startReplay {
+  width: 140px;
+  color: #fff;
+  background-color: #2C56C0;
+  border-color: #2C56C0;
+
+  &:hover {
+    background-color: #3967ef;
+    border-color: #3967ef;
+  }
+  &:focus {
+    color: #fff;
+    background-color: #2C56C0;
+    border-color: #2C56C0;
+  }
+}
+
+.dtPicker {
+  width: 174px !important;
+  margin-left: 10px;
+}
+
+.redModal {
+
+  :global .ant-modal-header {
+    background-image: linear-gradient(#e52c38 20%, #bc2631 80%);
+  }
+  :global .ant-modal-title {
+    color: #fff;
+    font-size: 16px;
+
+    i {
+      margin: 0 8px 0 0;
+    }
+  }
+  :global .ant-modal-close-x {
+    color: #ffe6e6;
+  }
+  :global .ant-modal-close-x:hover {
+    color: #fff;
+  }
+
+  :global .ant-modal-body {
+    //padding-top: 30px;
+  }
+}
+
+.table {
+
+  :global .ant-table-body > table {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+
+  :global .ant-table-thead {
+    background: #45484a;
+  }
+
+  :global .ant-table-thead > tr > th {
+    background: transparent;
+    color: #fff;
+    font-size: 15px;
+    border: none;
+    padding: 4px 10px;
+  }
+
+  :global .ant-table-tbody > tr > td {
+    padding: 8px 10px;
+  }
+}
+
+.replayPanel {
+  position: absolute;
+  padding: 10px 20px;
+  left: ~'calc((100% + 156px - 600px) /2 )';
+  bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  border-color: transparent;
+  width: 600px;
+  height: 130px;
+  border-radius: 5px;
+  background: rgba(52, 77, 141, 0.9);
+  color: #ffc600;
+
+  :global .ant-card-head {
+    height: 40px;
+    line-height: 40px;
+    background: #2E4A86;
+    border-bottom: none;
+    padding: 0 12px;
+    border-radius: 5px 5px 0 0;
+  }
+
+  :global .ant-card-head-title {
+    font-size: 14px;
+    color: #fff;
+    i {
+      padding-right: 6px;
+      font-size: 15px;
+    }
+  }
+
+  :global .ant-card-extra {
+    right: 12px;
+    top: 6px;
+    font-size: 18px;
+    color: #fff;
+  }
+
+  :global .ant-card-body {
+    padding: 12px 14px;
+  }
+
+  :global .ant-slider:hover .ant-slider-handle {
+    border-color: rgba(48, 32, 54, 0.7) !important;
+  }
+  :global .ant-slider:hover .ant-slider-rail {
+    background-color: #294278 !important;
+  }
+  :global .ant-slider:hover .ant-slider-track {
+    background-color: #ffc600 !important;
+  }
+}
+
+.replayItemRow {
+  color: #f2f2f2;
+  padding: 0px 4px;
+  display: flex;
+  justify-content: space-between;
+  line-height: 18px;
+}
+
+.ctlButtons {
+  :global .ant-btn-background-ghost {
+    border-color: #ffc600;
+    color: #ffc600;
+    border-radius: 50%;
+    height: 42px;
+    width: 42px;
+    font-size: 18px;
+    margin: 0 10px;
+    padding: 0px;
+  }
+}
+
+.playTimeTag {
+  line-height: 30px;
+}
+
+.speedTag {
+  line-height: 30px;
+  padding: 0px 6px;
+  background: #2E4A86;
+  border-radius: 2px;
+}
+
+.palySlider {
+  :global .ant-slider-rail {
+    background-color: #2E4A86;
+    height: 6px;
+    border-radius: 4px;
+  }
+
+  :global .ant-slider-track {
+    background-color: #ffc600;
+    height: 6px;
+    border-radius: 4px;
+
+  }
+
+  :global .ant-slider-step {
+    height: 6px;
+  }
+
+  :global .ant-slider-handle {
+    border: solid 2px #ffc600;
+    background-color: #ffc600;
+    margin-left: -8px;
+    margin-top: -5px;
+    width: 16px;
+    height: 16px;
+  }
+}

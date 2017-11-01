@@ -1,0 +1,589 @@
+.layout {
+  height: 100%;
+
+  :global .ant-layout-footer {
+    padding: 0;
+  }
+}
+
+
+//box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+.sider {
+  background-color: #443a49;
+  position: absolute;
+  height: ~'calc(100% - 54px)';
+  height: ~'-mozcalc(100% - 54px)';
+  height: ~'-webkitcalc(100% - 54px)';
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+
+  :global .ant-layout-sider-children {
+    height: 100%;
+  }
+  :global .ant-layout {
+    background: #fff;
+  }
+
+  :global .ant-layout-content {
+    //height: ~'calc(100% - 38px - 294px)';
+
+  }
+
+  :global .ant-menu::-webkit-scrollbar {
+    width: 4px;
+    background-color: #302036;
+  }
+
+  :global .ant-menu::-webkit-scrollbar-track {
+    background-color: #302036;
+  }
+
+  :global .ant-menu::-webkit-scrollbar-thumb {
+    background-color: #FFC600;
+  }
+}
+
+.menu {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #443a49;
+  color: #fff;
+  border-right: none;
+
+  :global .ant-menu-submenu-title {
+    color: #fff;
+    padding: 0 16px !important
+  }
+  :global .ant-menu-submenu-title:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  :global .ant-menu-submenu-title:after {
+    content: "";
+  }
+
+  :global .ant-menu-submenu-inline {
+    section {
+      border-bottom: 1px solid #574e5c;
+      height: 42px;
+    }
+  }
+
+  :global .ant-menu-submenu-open {
+    background-color: #2f2833;
+
+    section {
+      border-bottom: none;
+    }
+  }
+
+  :global .ant-menu-submenu-open.ant-menu-submenu-inline > .ant-menu-submenu-title:after {
+    transform: none;
+  }
+
+  :global .ant-menu-submenu-title:after {
+    left: 0;
+    border-left: 3px solid #ffc600;
+    width: 10px;
+    bottom: 0;
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    transform: scaleY(0.0001);
+    opacity: 1;
+    transition: transform 0.15s cubic-bezier(0.215, 0.61, 0.355, 1), opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  /*子菜单*/
+  :global .ant-menu {
+    background-color: #2f2833;
+    color: #fff;
+
+    .ant-menu-item {
+      padding: 0px 16px 0px 42px !important;
+      height: 40px;
+      line-height: 40px;
+      border-bottom: none;
+      text-overflow: clip;
+      font-size: 14px;
+    }
+    .ant-menu-item:after {
+      left: 0;
+      right: 0;
+      border-left: 3px solid #ffc600;
+      border-right: none;
+      opacity: 1;
+      transform: none;
+      width: 3px;
+    }
+    .ant-menu-item:before {
+      left: 22px;
+      top: 0px;
+      position: absolute;
+      border-left: 1px solid #fff;
+      width: 14px;
+      content: "\2500\2500";
+      overflow: hidden;
+    }
+    .ant-menu-item:last-child:before {
+      height: 20px;
+    }
+
+    .ant-menu-item:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .ant-menu-item-active {
+      color: #fff;
+    }
+    .ant-menu-item-selected {
+      color: #fff;
+      background-color: #2f2833;
+    }
+  }
+}
+
+.floorIcon {
+  margin-right: 8px;
+}
+
+.floorName {
+  padding: 0 10px 0px 5px;
+  display: inline-block;
+  width: 50px;
+}
+
+.areaName {
+  padding: 0 10px 0px 0px;
+  display: inline-block;
+  width: 120px;
+  line-height: 40px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.areaBtns {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.addAreaBtn {
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  &:hover {
+    color: #ffc600;
+    border-color: #ffc600;
+  }
+  &:focus {
+    color: #ffc600;
+    border-color: #ffc600;
+  }
+  :global .anticon {
+    margin-right: 0px;
+    transform: scale(0.8);
+  }
+}
+
+.areaEditBtn {
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  border: none;
+  margin: 0px 4px;
+  &:hover {
+    color: #ffc600;
+    //border-color: #ffc600;
+  }
+  &:focus {
+    color: #ffc600;
+    //border-color: #ffc600;
+  }
+  :global .anticon {
+    margin-right: 0px;
+  }
+}
+
+.floor {
+  display: inline-block;
+  width: 30px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  background-color: #66a700;
+  color: #f0f0f0;
+  margin-right: 10px;
+}
+
+.floorOffline {
+  display: inline-block;
+  width: 30px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #f0f0f0;
+  margin-right: 10px;
+  background-color: #cf352d;
+}
+
+.peopleChk {
+
+  :global .ant-checkbox-inner {
+    border-radius: 2px;
+    width: 20px;
+    height: 20px;
+  }
+  :global .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #FFC600;
+    border-color: #FFC600;
+    &::after {
+      border: 2px solid #6a5f5d;
+      border-top: 0;
+      border-left: 0;
+      left: 5px;
+      top: 0px;
+      width: 8px;
+      height: 14px;
+    }
+  }
+}
+
+.mapActions {
+  position: absolute;
+  right: 20px;
+  top: 70px;
+  display: flex;
+  justify-content: baseline;
+  flex-direction: column;
+}
+
+.mapActionBtn {
+  width: 38px;
+  height: 38px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.32);
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  font-size: 22px;
+  line-height: 36px;
+  text-align: center;
+  color: #c12731;
+  display: block;
+  margin: 5px;
+  &:hover {
+    cursor: pointer;
+    color: #d62731;
+    background-color: rgba(239, 239, 239, 0.49);
+  }
+}
+
+.left_arrow {
+  float: right;
+  padding-left: 5px;
+  display: inline-block;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.footer {
+
+  padding: 0px;
+  .allChkPanel {
+    padding: 8px 10px;
+    background-color: #302036;
+    :global .ant-btn {
+      border: none;
+      width: 50%;
+      color: #fff;
+    }
+
+    :global .ant-btn:hover {
+      color: #ffc600;
+    }
+  }
+}
+
+//.datePanel {
+//  color: #ffc600;
+//  margin: 10px;
+//  height: 240px;
+//  padding: 6px 10px;
+//  background-color: #513847;
+//  border: 1px solid #3a2b41;
+//  border-radius: 2px;
+//  box-shadow: inset 0 0px 4px rgba(0, 0, 0, 0.25);
+//}
+
+.dtPickerItem {
+  padding: 8px 0;
+  display: flex;
+  line-height: 28px;
+
+  .label {
+    padding: 0px 12px 0px 2px;
+    display: inline-block;
+  }
+  .areaNameInput {
+    width: 140px;
+  }
+  .opacitySlider {
+    width: 50px;
+    display: inline-block;
+    margin: 0px 15px 0px 0px;
+    //overflow: auto;
+  }
+  :global .ant-input-number {
+    width: 74px;
+  }
+  .areaStyleSelect {
+    width: 140px;
+  }
+  .opacityBtns {
+    display: inline-block;
+    width: 140px;
+    //overflow: auto;
+    height: 28px;
+  }
+}
+
+.areaStyle {
+  display: block;
+  height: 16px;
+  margin-left: 2px;
+  width: 96px;
+  margin-top: 5px;
+}
+
+.areaStyleBlue {
+  .areaStyle;
+  background: #2196F3;
+}
+
+.areaStyleRed {
+  .areaStyle;
+  background: #f44336;
+}
+
+.areaStyleBlack {
+  .areaStyle;
+  background: #000;
+}
+
+.areaStyleYellow {
+  .areaStyle;
+  background: #ffeb3b;
+}
+
+.areaStyleOrange {
+  .areaStyle;
+  background: #ff5722;
+}
+
+.areaStyleViolet {
+  .areaStyle;
+  background: #9c27b0;
+}
+
+.areaStyleGreen {
+  .areaStyle;
+  background: #4caf50;
+}
+
+.areaSetPanelItem {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 52px;
+}
+
+.startReplay {
+  width: 90px;
+  margin: 0 8px;
+  color: #fff;
+  background-color: #cd2d37;
+  border-color: #cd2d37;
+
+  &:hover {
+    background-color: #f04134;
+    border-color: #f04134;
+  }
+  &:focus {
+    color: #fff;
+    background-color: #cd2d37;
+    border-color: #cd2d37;
+  }
+}
+
+.dtPicker {
+  width: 182px !important;
+  margin-left: 10px;
+}
+
+.redModal {
+
+  :global .ant-modal-header {
+    background-image: linear-gradient(#e52c38 20%, #bc2631 80%);
+  }
+  :global .ant-modal-title {
+    color: #fff;
+    font-size: 16px;
+
+    i {
+      margin: 0 8px 0 0;
+    }
+  }
+  :global .ant-modal-close-x {
+    color: #ffe6e6;
+  }
+  :global .ant-modal-close-x:hover {
+    color: #fff;
+  }
+
+  :global .ant-modal-body {
+    //padding-top: 30px;
+  }
+}
+
+.table {
+
+  :global .ant-table-body > table {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+
+  :global .ant-table-thead {
+    background: #45484a;
+  }
+
+  :global .ant-table-thead > tr > th {
+    background: transparent;
+    color: #fff;
+    font-size: 15px;
+    border: none;
+    padding: 4px 10px;
+  }
+
+  :global .ant-table-tbody > tr > td {
+    padding: 8px 10px;
+  }
+}
+
+.replayPanel {
+  position: absolute;
+  padding: 10px 20px;
+  left: ~'calc((100% + 156px - 600px) /2 )';
+  bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  border-color: transparent;
+  width: 600px;
+  height: 130px;
+  border-radius: 5px;
+  background: rgba(48, 32, 54, 0.9);
+  color: #ffc600;
+
+  :global .ant-card-head {
+    height: 40px;
+    line-height: 40px;
+    background: #443a49;
+    border-bottom: none;
+    padding: 0 12px;
+    border-radius: 5px 5px 0 0;
+  }
+
+  :global .ant-card-head-title {
+    font-size: 14px;
+    color: #fff;
+    i {
+      padding-right: 6px;
+      font-size: 15px;
+    }
+  }
+
+  :global .ant-card-extra {
+    right: 12px;
+    top: 6px;
+    font-size: 18px;
+    color: #fff;
+  }
+
+  :global .ant-card-body {
+    padding: 12px 14px;
+  }
+
+  :global .ant-slider:hover .ant-slider-handle {
+    border-color: rgba(48, 32, 54, 0.7) !important;
+  }
+  :global .ant-slider:hover .ant-slider-rail {
+    background-color: #302036 !important;
+  }
+  :global .ant-slider:hover .ant-slider-track {
+    background-color: #ffc600 !important;
+  }
+}
+
+.replayItemRow {
+  color: #f2f2f2;
+  padding: 0px 4px;
+  display: flex;
+  justify-content: space-between;
+  line-height: 18px;
+}
+
+.ctlButtons {
+  //:global .ant-btn-background-ghost {
+  border-color: #ffc600;
+  color: #ffc600;
+  border-radius: 50%;
+  height: 42px;
+  width: 42px;
+  font-size: 18px;
+  margin: 0 10px;
+  padding: 0px;
+  //}
+}
+
+.playTimeTag {
+  line-height: 30px;
+}
+
+.speedTag {
+  line-height: 30px;
+  padding: 0px 6px;
+  background: #302036;
+  border-radius: 2px;
+}
+
+.palySlider {
+  :global .ant-slider-rail {
+    background-color: #302036;
+    height: 6px;
+    border-radius: 4px;
+  }
+
+  :global .ant-slider-track {
+    background-color: #ffc600;
+    height: 6px;
+    border-radius: 4px;
+
+  }
+
+  :global .ant-slider-step {
+    height: 6px;
+  }
+
+  :global .ant-slider-handle {
+    border: solid 2px #ffc600;
+    background-color: #ffc600;
+    margin-left: -8px;
+    margin-top: -5px;
+    width: 16px;
+    height: 16px;
+  }
+}

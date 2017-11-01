@@ -1,0 +1,305 @@
+* {
+  paading: 0;
+  margin: 0;
+}
+
+body {
+  background-color: #f2f2f2;
+  text-align: center;
+  color: #405060;
+}
+
+#midDiv {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -40%);
+  width: 40%;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 1px hsla(0,0%,100%,.2);
+  border-radius: 5px;
+  height: 220px;
+}
+
+#errorText  {
+  background: #fff;
+  text-align: left;
+  font-weight: 400;
+  font-size: 16px;
+  position: relative;
+  display: block;
+  float: left;
+  width: 64%;
+  height: 100%;
+  line-height: 1.5em;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+#errorText * {
+  margin-right: 28px;
+  margin-left: 28px;
+}
+#errorText h4 {
+  font-size: 1.3em;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+#errorText p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+#errorSquare{
+  line-height: 220px;
+  display: block;
+  position: relative;
+  float: left;
+  width: 36%;
+  height: 100%;
+  background: #ef4824;
+  color: #fff;
+  font-size: 550%;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bolder;
+}
+
+#errorButtons{
+  margin-top: 22px;
+  margin-left: 0px;
+  margin-right: 0px;
+  float: right;
+}
+
+@media only screen and (max-width:1680px) {
+
+  #midDiv{
+    width: 50%;
+  }
+  #errorText *{
+    margin-left: 28px;
+    margin-right: 28px;
+  }
+}
+
+@media only screen and (max-width:1520px) {
+
+  #errorSquare{
+    line-height: 280px;
+  }
+  #midDiv{
+    width: 50%;
+    height: 280px;
+  }
+
+  #errorText{
+    font-size: 16px;
+  }
+  #errorText *{
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+/* CSS Error Page Responsive */
+@media only screen and (max-width:640px) {
+
+  #errorSquare{
+    font-size: 300%;
+    line-height: 260px;
+  }
+  #midDiv{
+    width: 70%;
+    height: 260px;
+  }
+
+  #errorText{
+    font-size: 14px;
+  }
+  #errorText *{
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+
+.back:active {
+  background:#5CB85C;
+  color:#fff;
+}
+
+.back:hover {
+  background:#449D44;
+}
+
+.back {
+  text-decoration:none;
+  background:#5CB85C;
+  color:#fff;
+  padding:10px;
+  font-size:16px;
+  line-height:normal;
+  border-radius:3px;
+  width: 120px;
+  display: block;
+  text-align: center;
+}
+
+.layout {
+  height: 100%;
+  background: #f2f4f5;
+}
+
+.content {
+  margin: 25px 30px;
+  border-radius: 4px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  padding: 20px 25px;
+
+  :global .ant-row-flex {
+    height: 50px;
+  }
+
+  :global .ant-table-body > table {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+}
+
+.searchBtn {
+  width: 84px;
+  font-size: 14px;
+}
+.searchBtn:not(:last-child) {
+  margin-right: 15px;
+}
+
+.addBtn {
+  width: 110px;
+  font-size: 14px;
+  padding: 0 10px;
+  @media(min-width: 1280px){
+    width: 90px;
+    padding: 0;
+  }
+  @media (min-width: 1366px) {
+    width: 96px;
+  }
+  @media (min-width: 1400px) {
+    width: 100px;
+  }
+  @media (min-width: 1520px) {
+    width: 110px;
+  }
+}
+.addBtn:not(:last-child) {
+  margin-right: 15px;
+}
+
+.tableBtn {
+  margin: 0 10px;
+}
+
+.tableRow {
+  padding-top: 20px;
+  :global .ant-table-thead {
+    background: #45484a;
+  }
+  :global .ant-table-thead > tr > th {
+    background: transparent;
+    color: #fff;
+    font-size: 15px;
+    border: none;
+    padding: 4px 10px;
+  }
+  :global .ant-table-tbody > tr > td {
+    padding: 8px 10px;
+  }
+}
+
+.redModal {
+
+  :global .ant-modal-header {
+    background-image: linear-gradient(#e52c38 20%, #bc2631 80%);
+  }
+  :global .ant-modal-title {
+    color: #fff;
+    font-size: 16px;
+
+    i {
+      margin: 0 8px 0 0;
+    }
+  }
+  :global .ant-modal-close-x {
+    color: #ffe6e6;
+  }
+  :global .ant-modal-close-x:hover {
+    color: #fff;
+  }
+
+  :global .ant-modal-body {
+    padding-top: 30px;
+  }
+}
+
+.lowPower {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.power {
+  color: #595959;
+}
+
+.circle {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  line-height: 1;
+  margin: -2px 0 0 8px;
+}
+
+.greenCircle {
+  background: radial-gradient(#51b600 40%, rgba(61, 183, 65, 0.37) 50%);
+  .circle
+}
+
+.redCircle {
+  background: radial-gradient(#F44336 40%, rgba(244, 67, 54, 0.38) 50%);
+  .circle
+}
+
+.item {
+  padding-right: 15px;
+
+  span {
+    padding-right: 15px;
+    display: inline-block;
+  }
+
+  input {
+    width: ~'calc(100% - 80px)';
+  }
+
+  :global .ant-select {
+    width: ~'calc(100% - 80px)';
+  }
+
+  :global .ant-select-arrow {
+    padding-right: 0px;
+  }
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}

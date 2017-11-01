@@ -1,0 +1,209 @@
+.layout {
+  height: 100%;
+  background: #f2f4f5;
+}
+
+.tabs {
+  border-radius: 4px;
+  overflow: hidden;
+  height: 100%;
+  :global .ant-table-body > table {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+}
+
+:global .cardContainer {
+  height: 100%;
+  overflow: hidden;
+  margin: 25px 30px;
+  box-shadow: 0px 8px 10px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+:global .cardContainer > .ant-tabs-card > .ant-tabs-content {
+  height: 100%;
+  background: #fff;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  margin-top: -16px;
+  overflow-y: auto;
+}
+
+:global .cardContainer > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
+  height: 100%;
+  background: #fff;
+  padding: 24px;
+}
+
+:global .cardContainer > .ant-tabs-card > .ant-tabs-bar {
+  border-color: #fff;
+}
+
+:global .cardContainer > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+  width: 150px;
+  text-align: center;
+  margin-right: 30px;
+  border: 1px solid #C6CFD3;
+  background: #EDF1F4;
+}
+
+:global .cardContainer > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-color: #fff;
+  background: #fff;
+}
+
+.item {
+  width: 40%;
+  margin: 0 5%;
+  top: 25px;
+  //background: rgba(255, 128, 186, 0.5);
+
+  p {
+    display: inline-block;
+    width: 100%;
+    height: 36px;
+    line-height: 36px;
+    padding-left: 20px;
+    background: #EEF7FC;
+    color: #333;
+    font-size: 16px;
+    font-weight: bolder;
+    border: 1px solid #F3F3F3;
+  }
+
+  //车辆统计信息
+  .carsMsg, .carsMsg2, .carsMsg3{
+    width: 100%;
+    background: #F6FBFD;
+  }
+  .carsMsg {
+    margin-top: 20px;
+    padding: 0 20px;
+    line-height: 60px;
+    border-bottom: 1px solid #DDE1E3;
+    span:not(:first-child) {
+      float: right;
+    }
+  }
+  .carsMsg2 {
+    height: 135px;
+    overflow-y: auto;
+  }
+  .carsMsg3 {
+    height: 80px;
+    margin-bottom: 20px;
+  }
+  .carsMsg2, .carsMsg3 {
+    padding: 10px;
+    border-bottom: 1px solid #DDE1E3;
+    .carsMsg_div {
+      padding-left: 5%;
+      width: 25%;
+      float: left;
+      div {
+        display: inline-block;
+        vertical-align: middle;
+        span {
+          font-size: 24px;
+          font-weight: bolder;
+        }
+      }
+    }
+  }
+}
+
+.searchBtn {
+  margin-right: 20px;
+  width: 120px;
+  height: 34px;
+}
+
+.resetBtn {
+  width: 120px;
+  height: 34px;
+}
+
+.itemTabs {
+  padding-right: 15px;
+
+  span {
+    padding-right: 15px;
+    display: inline-block;
+  }
+  input {
+    width: ~'calc(100% - 80px)';
+  }
+  :global .ant-select {
+    width: ~'calc(100% - 80px)';
+  }
+  :global .ant-select-arrow {
+    padding-right: 0px;
+  }
+}
+
+/*.searchBtn {
+  width: 84px;
+  font-size: 14px;
+}*/
+
+.resetBtn,
+.searchBtn:not(:last-child) {
+  font-size: 14px;
+  margin-right: 15px;
+}
+
+.returnBtn {
+  font-size: 14px;
+  width: 120px;
+  height: 34px;
+  color: #fff;
+  background: #F97500;
+  border: 1px solid #F97500;
+}
+
+.returnBtn:hover {
+  background: #ff7700;
+  border: 1px solid #ff7700;
+}
+
+.returnBtn:active {
+  background: #ff7700;
+  border: 1px solid #ff7700;
+}
+
+.returnBtn:focus {
+  background: #ff7700;
+  border: 1px solid #ff7700;
+}
+
+.tableRow {
+  padding-top: 20px;
+  :global .ant-table-thead {
+    background: #45484a;
+  }
+  :global .ant-table-thead > tr > th {
+    background: transparent;
+    color: #fff;
+    font-size: 15px;
+    border: none;
+    padding: 4px 10px;
+  }
+  :global .ant-table-tbody > tr > td:nth-of-type(2) {
+    padding: 8px 10px;
+  }
+  :global .ant-table-tbody > tr > td:nth-of-type(3) {
+    padding: 8px 10px;
+  }
+  :global .ant-table-tbody > tr > td:nth-of-type(4) {
+    padding: 8px 10px;
+  }
+  :global .ant-table-tbody > tr > td {
+    padding: 8px 0px;
+  }
+}
+
+.gantt {
+  background: #51B600;
+  height: 10px;
+}

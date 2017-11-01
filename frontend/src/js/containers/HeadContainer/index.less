@@ -1,0 +1,148 @@
+:global .ant-layout-header {
+  background-image: linear-gradient(#2C56C0 20%, #094a9c 80%);
+  padding: 0 10px;
+  height: 54px;
+}
+
+.logo {
+  width: 246px;
+  height: 100%;
+  margin: 0;
+  float: left;
+  background: ~'url("/img/main_logo.png")' no-repeat;
+  background-size: inherit;
+  background-position-x: 10%;
+  background-position-y: 50%;
+}
+
+.admin_panel {
+  width: auto;
+  height: 100%;
+  margin: 0;
+  float: right;
+  background: none;
+  background-size: inherit;
+  background-position-x: 50%;
+  background-position-y: 50%;
+  color: #fff;
+  line-height: 54px;
+  padding-right: 10px;
+}
+
+.curDateTime {
+  padding: 0 30px 0 0;
+}
+
+.username {
+  display: inline-block;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.userBtn {
+  border: none;
+  &:hover {
+    color: #fff;
+    border: none;
+  }
+  &:focus {
+    color: #fff;
+    border: none;
+  }
+}
+
+.userPopover {
+  :global .ant-popover-inner-content {
+    padding: 0;
+  }
+}
+
+.admin_menu {
+  width: 120px;
+  i {
+    margin-right: 6px;
+  }
+  span {
+    border-bottom: 1px solid #efefef;
+    display: block;
+    line-height: 32px;
+    padding: 6px 16px;
+    border-radius: 2px 2px 0px 0px;
+    &:hover {
+      background-color: rgba(0, 0, 255, 0.1);
+      cursor: pointer;
+    }
+  }
+  span:last-child {
+    border-radius: 0px 0px 2px 2px;
+    border-bottom: none;
+  }
+}
+
+.menu {
+  background: none;
+  color: #fff;
+  line-height: 50px;
+  font-size: 15px;
+
+  :global .ant-menu-item {
+    color: #fff;
+    background-image: none;
+    border-bottom: none;
+    padding: 0 20px;
+    @media (max-width: 1600px) {
+      font-size: 14px;
+      padding: 0 15px;
+    }
+    @media (max-width: 1366px) {
+      font-size: 12px;
+      padding: 0 5px;
+    }
+    i{
+      vertical-align: text-top;
+      font-size: 22px;
+      min-width: 14px;
+      margin-right: 8px;
+    }
+  }
+
+  :global .ant-menu-item:hover {
+    color: #fff;
+    font-weight: bolder;
+    background-image: linear-gradient(rgba(181, 196, 233, 0.91) 20%, rgba(181, 196, 233, 0.91) 80%);
+    border-bottom: 4px solid #FFC600;
+  }
+
+  :global .ant-menu-item-selected {
+    color: #fff;
+    font-weight: bolder;
+    background-image: linear-gradient(rgba(181, 196, 233, 0.91) 20%, rgba(181, 196, 233, 0.91) 80%);
+    border-bottom: 4px solid #FFC600;
+  }
+}
+//#2C56C0 20%, #B5C4E9 80%    1441B3
+.redModal {
+
+  :global .ant-modal-header {
+    background-image: linear-gradient(rgba(181, 196, 233, 0.91) 20%, rgba(181, 196, 233, 0.91) 80%);
+  }
+  :global .ant-modal-title {
+    color: #fff;
+    font-size: 16px;
+
+    i {
+      margin: 0 8px 0 0;
+    }
+  }
+  :global .ant-modal-close-x {
+    color: #ffe6e6;
+  }
+  :global .ant-modal-close-x:hover {
+    color: #fff;
+  }
+
+  :global .ant-modal-body {
+    padding-top: 30px;
+  }
+}

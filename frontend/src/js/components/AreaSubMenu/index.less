@@ -1,0 +1,182 @@
+/**
+ * Copyright 2014-2017, FengMap, Ltd.
+ * All rights reserved.
+ *
+ * @authors  dl (duanliang@fengmap.com)
+ * @date     2017/9/13
+ * @describe 区域设置树形菜单
+ */
+
+.menu {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #fff;
+  color: #fff;
+  border-right: none;
+
+  :global .ant-menu-submenu-title {
+    color: #fff;
+    padding: 0 16px !important
+  }
+  :global .ant-menu-submenu-title:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  :global .ant-menu-submenu-title:after {
+    content: "";
+  }
+
+  :global .ant-menu-submenu-inline{
+    section{
+      border-bottom: 1px solid #fff;
+      height: 42px;
+    }
+  }
+
+  :global .ant-menu-submenu-open {
+    background-color: #fff;
+    .ant-menu-submenu-title {
+      color: #5B5B5B;
+    }
+    section{
+      border-bottom: none;
+    }
+  }
+
+  :global .ant-menu-submenu-open.ant-menu-submenu-inline > .ant-menu-submenu-title:after {
+    transform: none;
+  }
+
+  :global .ant-menu-submenu-title:after {
+    left: 0;
+    border-left: 3px solid #ffc600;
+    width: 10px;
+    bottom: 0;
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    transform: scaleY(0.0001);
+    opacity: 1;
+    transition: transform 0.15s cubic-bezier(0.215, 0.61, 0.355, 1), opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  /*子菜单*/
+  :global .ant-menu {
+    background-color: #fff;
+    color: #5b5b5b;
+
+    .ant-menu-item {
+      padding: 0px 16px 0px 42px !important;
+      height: 40px;
+      line-height: 40px;
+      border-bottom: none;
+      text-overflow: clip;
+      font-size: 14px;
+    }
+    .ant-menu-item:after {
+      left: 0;
+      right: 0;
+      border-left: 3px solid #ffc600;
+      border-right: none;
+      opacity: 1;
+      transform: none;
+      width: 3px;
+    }
+    .ant-menu-item:before {
+      left: 22px;
+      top: 0px;
+      position: absolute;
+      border-left: 1px solid #5b5b5b;
+      width: 14px;
+      content: "\2500\2500";
+      overflow: hidden;
+    }
+    .ant-menu-item:last-child:before {
+      height: 20px;
+    }
+
+    .ant-menu-item:hover {
+      color: #5b5b5b;
+      background-color: rgba(225, 225, 225, 0.9);
+    }
+    .ant-menu-item-active {
+      color: #5b5b5b;
+      background-color: rgba(225, 225, 225, 0.9);
+    }
+    .ant-menu-item-selected {
+      color: #5b5b5b;
+      background-color: rgba(225, 225, 225, 0.9);
+    }
+  }
+}
+
+.floorIcon {
+  margin-right: 8px;
+}
+
+.floorName {
+  padding: 0 10px 0px 5px;
+  display: inline-block;
+  width: 50px;
+  margin-left: 8px;
+}
+
+.areaName {
+  padding: 0 10px 0px 0px;
+  display: inline-block;
+  width: 120px;
+  line-height: 40px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.areaBtns{
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.areaEditBtn {
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  border: none;
+  margin: 0px 4px;
+  color: #5b5b5b;
+  &:hover {
+    color: #ffc600;
+    //border-color: #ffc600;
+  }
+  &:focus {
+    color: #ffc600;
+    //border-color: #ffc600;
+  }
+  :global .anticon {
+    margin-right: 0px;
+  }
+}
+
+.addAreaBtn {
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #5B5B5B;
+  border-color: #5B5B5B;
+  &:hover {
+    color: #ffc600;
+    border-color: #ffc600;
+  }
+  &:focus {
+    color: #ffc600;
+    border-color: #ffc600;
+  }
+  :global .anticon {
+    margin-right: 0px;
+    transform: scale(0.8);
+  }
+}
+
+

@@ -1,0 +1,33 @@
+{
+  "presets": [
+    "es2015",
+    "stage-1",
+    "react"
+  ],
+//  "presets": [
+//    [
+//      "es2015",
+//      {
+//        "modules": false,
+//        "loose": true
+//      }
+//    ],
+//    [
+//      "stage-1"
+//    ],
+//    [
+//      "react"
+//    ]
+//  ],
+  "plugins": [
+    "transform-runtime",
+    [
+      "import",{
+        "libraryName": "antd",            // antd 按需加载配置
+        "libraryDirectory": "lib",        // default: lib
+        "style": true                     // true or 'css'
+      }
+    ]
+  ]
+  //"comments": false
+}

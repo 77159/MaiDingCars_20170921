@@ -1,0 +1,188 @@
+/**
+ * Copyright 2014-2017, FengMap, Ltd.
+ * All rights reserved.
+ *
+ * @authors  dl (duanliang@fengmap.com)
+ * @date     2017/9/13
+ * @describe 区域设置表单
+ */
+
+.datePanel {
+  color: #5b5b5b;
+  margin: 10px 10px 50px 10px;
+  height: 274px;
+  padding: 6px 10px;
+  background-color: #F4F6FC;
+  border: 1px solid #BDCAEA;
+  border-radius: 2px;
+  box-shadow: inset 0 0px 4px rgba(0, 0, 0, 0.25);
+}
+
+.dtPickerItem {
+  padding: 8px 0;
+  display: flex;
+  line-height: 28px;
+  padding-bottom: 16px;
+
+  :global .ant-row {
+    width: 100%;
+  }
+
+  :global .ant-checkbox {
+    vertical-align: middle;
+  }
+
+  .label {
+    padding: 0px 12px 0px 2px;
+    display: inline-block;
+  }
+  .areaNameInput {
+    width: 140px;
+  }
+  .opacitySlider {
+    width: 50px;
+    display: inline-block;
+    margin: 0px 15px 0px 0px;
+    //overflow: auto;
+  }
+  :global .ant-input-number {
+    width: 74px;
+  }
+  .areaStyleSelect {
+    width: 140px;
+  }
+  .opacityBtns {
+    display: inline-block;
+    width: 140px;
+    //overflow: auto;
+    height: 28px;
+  }
+  :global .ant-form-item {
+    width: 100%;
+    height: 28px;
+    margin-bottom: 0;
+  }
+  :global .ant-form-item-label {
+    text-align: left;
+    height: 28px;
+  }
+  :global .ant-form-item-control {
+    height: 28px;
+    input {
+      height: 28px;
+    }
+    /*.ant-select-selection {
+      height: 28px;
+    }*/
+    .ant-select {
+      width: 100%;
+      height: 28px;
+      .ant-select-selection {
+        height: 28px;
+        .ant-select-selection__rendered{
+          line-height: 28px;
+          height:28px;
+        }
+      }
+    }
+  }
+  :global .ant-form-item-required {
+    color: #5b5b5b;
+  }
+  :global .ant-form-item-label label:after {
+    content: none;
+  }
+  :global .ant-form-item-required:before {
+    content: none;
+  }
+}
+
+.peopleChk {
+
+  :global .ant-checkbox-inner {
+    border-radius: 2px;
+    width: 20px;
+    height: 20px;
+  }
+  :global .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #FFC600;
+    border-color: #FFC600;
+    &::after {
+      border: 2px solid #6a5f5d;
+      border-top: 0;
+      border-left: 0;
+      left: 5px;
+      top: 0px;
+      width: 8px;
+      height: 14px;
+    }
+  }
+}
+
+.areaStyle {
+  display: block;
+  height: 16px;
+  margin-left: 2px;
+  width: 96px;
+  margin-top: 5px;
+}
+
+.areaStyleBlue {
+  .areaStyle;
+  background: #2196F3;
+}
+
+.areaStyleRed {
+  .areaStyle;
+  background: #f44336;
+}
+
+.areaStyleBlack {
+  .areaStyle;
+  background: #000;
+}
+
+.areaStyleYellow {
+  .areaStyle;
+  background: #ffeb3b;
+}
+
+.areaStyleOrange {
+  .areaStyle;
+  background: #ff5722;
+}
+
+.areaStyleViolet {
+  .areaStyle;
+  background: #9c27b0;
+}
+
+.areaStyleGreen {
+  .areaStyle;
+  background: #4caf50;
+}
+
+.areaSetPanelItem {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 52px;
+}
+
+.startReplay {
+  width: 90px;
+  margin: 0 8px;
+  color: #fff;
+  background-color: #2C56C0;
+  border-color: #2C56C0;
+
+  &:hover {
+    background-color: #3d6dff;
+    border-color: #3d6dff;
+  }
+  &:focus {
+    color: #fff;
+    background-color: #22499c;
+    border-color: #22499c;
+  }
+}

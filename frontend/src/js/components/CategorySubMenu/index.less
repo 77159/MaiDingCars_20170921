@@ -1,0 +1,93 @@
+/**
+ * Copyright 2014-2017, FengMap, Ltd.
+ * All rights reserved.
+ *
+ * @authors  dl (duanliang@fengmap.com)
+ * @date     2017/9/12
+ * @describe 人员类型二级树菜单
+ */
+
+.menu {
+  height: 359px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: none;
+
+  :global .ant-menu-submenu-title {
+    padding: 0 16px !important
+  }
+  :global .ant-menu-submenu-title:hover {
+    background-color: rgba(232, 232, 232, 0.68);
+  }
+
+  :global .ant-menu-submenu-inline {
+    section {
+      border-bottom: 1px solid #efefef;
+      height: 42px;
+    }
+  }
+
+  :global .ant-menu-submenu-open {
+    background-color: rgba(232, 232, 232, 0.68);
+    section {
+      border-bottom: none;
+    }
+  }
+
+  :global .ant-menu-submenu-title:after {
+    left: 12px;
+    border-left: none;
+    width: 10px;
+    bottom: 0;
+    position: absolute;
+    content: "\E604";
+    color: transparent;
+    //top: 0;
+    //bottom: 0;
+    //opacity: 1;
+    //transform: scaleY(1);
+    //transition: transform 0.15s cubic-bezier(0.215, 0.61, 0.355, 1), opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+}
+
+.areaName {
+  padding: 0 10px 0px 0px;
+  display: inline-block;
+  width: 99px;
+  line-height: 40px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.areaBtns {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.areaEditBtn {
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  border: none;
+  margin: 0px 4px;
+  color: #333;
+  &:hover {
+    color: #ffc600;
+    //border-color: #ffc600;
+  }
+  &:focus {
+    color: #333;
+    //border-color: #ffc600;
+  }
+  :global .anticon {
+    margin-right: 0;
+  }
+}
+
+.floorName {
+  padding: 0 10px 0px 20px;
+  display: inline-block;
+  width: 90px;
+}
