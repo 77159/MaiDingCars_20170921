@@ -75,6 +75,7 @@ export function queryAllNotDeviceAPI() {
  * @returns {Promise.<TResult>|*}
  */
 export function queryAllCarAPI() {
+    console.log('查询所有人员信息serverAPI');
     return invokeServerAPI(`cars?pageNum=1&pageSize=1000&accessToken=${token}`, 'GET', null);
 }
 
@@ -123,7 +124,6 @@ export function modifyCarAPI(carEntity) {
  * @returns {Promise.<TResult>|*}
  */
 export function getAllCarCategoryAPI() {
-    console.log('进入查询人员类型service');
     return invokeServerAPI(`cartype`, 'GET', null);
 }
 

@@ -77,10 +77,10 @@ export class DeviceMgrPage extends React.Component {
         //筛选数据
         return record != null &&
             (_.isEmpty(filters[0]) || (_.isNull(record.deviceCode) == false && record.deviceCode.includes(filters[0]))) &&
-            (_.isEmpty(filters[1]) || (_.isNull(record.personCode) == false && record.personCode.includes(filters[1]))) &&
+            (_.isEmpty(filters[1]) || (_.isNull(record.carCode) == false && record.carCode.includes(filters[1]))) &&
             (record.workingStatus == filters[2] || filters[2] == 'all') &&
             (record.deviceStatus == filters[3] || filters[3] == 'all') &&
-            (_.isEmpty(filters[4]) || !(_.isNull(record.carCode) == false && record.carCode.includes(filters[4])))
+            (record.carCode == filters[4] || filters[4] == 'all' || record.carCode == null)
     }
 
     //查询设备（筛选）
@@ -88,8 +88,7 @@ export class DeviceMgrPage extends React.Component {
         //保证参数不能为null、undefined
         let deviceCode = _.isEmpty(this.state.filter_deviceCode) ? '' : this.state.filter_deviceCode.trim();
         let personCode = _.isEmpty(this.state.filter_personCode) ? '' : this.state.filter_personCode.trim();
-        let carCode = _.isEmpty(this.state.filter_carCode) ? '' : (this.state.filter_carCode.trim());
-        let filterStr = `${deviceCode}&&${personCode}&&${this.state.filter_workingStatus}&&${this.state.filter_deviceStatus}&&${carCode}`;
+        let filterStr = `${deviceCode}&&${personCode}&&${this.state.filter_workingStatus}&&${this.state.filter_deviceStatus}&&${this.state.filter_carCode}`;
         this.setState({dataFilter: [filterStr]});
     }
 
@@ -163,9 +162,10 @@ export class DeviceMgrPage extends React.Component {
         if (_.isEmpty(value) == false && value.trim().length > 2) {
             //遍历设备数据集合，将安保编号中包含输入字符的完整编号数据写入自动完成提示数据集合中。
             deviceDataSource.forEach(deviceEntity => {
-                if (deviceEntity.personCode) {
-                    if (deviceEntity.personCode.includes(value)) {
-                        data.push(deviceEntity.personCode);
+                console.log(deviceEntity);
+                if (deviceEntity.carCode) {
+                    if (deviceEntity.carCode.includes(value)) {
+                        data.push(deviceEntity.carCode);
                     }
                 }
             });
@@ -239,6 +239,8 @@ export class DeviceMgrPage extends React.Component {
             title: '车辆编号',
             dataIndex: 'carCode',
             key: 'carCode',
+            filteredValue: this.state.dataFilter,      //设置过滤条件
+            onFilter: (value, record) => this.deviceDataFilter(value, record),   //每条数据都通过指定的函数进行过滤
         }, {
             title: '修改日期',
             dataIndex: 'createTime',

@@ -21,14 +21,91 @@
  */
 'use strict';
 import {
-    RECEIVED_PEOPLE_LOCATION
+    RECEIVED_CAR_LOCATION,
+    GET_ONLINE_CAR,
+    GET_ONLINE_DEVICE,
+    PUSH_ALARM_MESSAGE,
+    PUT_MESSAGE_ISREAD,
+    PUT_MESSAGE_LASTDATETIME,
+    PUT_MESSAGE_ISAREA,
+    PUT_MESSAGE_ISSHOW
 } from './constants';
 
 /**
  * 接收到新的人员位置
  * @param locationEntity 位置实体对象
  */
-export const receivedPeopleLocation = (locationEntity) => ({
-    type:RECEIVED_PEOPLE_LOCATION,
+export const receivedCarLocation = (locationEntity) => ({
+    type: RECEIVED_CAR_LOCATION,
     payload: locationEntity
 });
+
+//export const
+
+/**
+ * 接收到新的人员位置
+ * @param locationEntity 位置实体对象
+ */
+export const getOnlineCar = (locationEntity) => ({
+    type: GET_ONLINE_CAR,
+    payload: onlineCar
+});
+
+
+/**
+ * 获取当前最新设备
+ * @param onlineDevice
+ */
+export const getOnlineDevice = (onlineDevice) => ({
+    type: GET_ONLINE_DEVICE,
+    payload: onlineDevice,
+});
+
+/**
+ * 接受最新的人员
+ * @param message
+ */
+export const pushAlarmMessage = (message) => ({
+    type: PUSH_ALARM_MESSAGE,
+    payload: message
+});
+
+/**
+ * 接受最新的人员
+ * @param message
+ */
+export const putMessageIsRead = (id) => ({
+    type: PUT_MESSAGE_ISREAD,
+    payload: id
+});
+
+/**
+ * 将人员移除重点区域报警列
+ * @param obj 修改信息
+ * @constructor
+ */
+export const putMessageLastDateTime = (obj) => ({
+    type: PUT_MESSAGE_LASTDATETIME,
+    payload: obj
+});
+
+/**
+ * 将人员移除重点区域报警列
+ * @param obj 修改信息
+ * @constructor
+ */
+export const putMessageIsArea = (obj) => ({
+    type: PUT_MESSAGE_ISAREA,
+    payload: obj
+});
+
+/**
+ * 更新信息对象是否已经显示
+ * @param obj
+ */
+export const putMessageIsShow = (obj) => ({
+    type: PUT_MESSAGE_ISSHOW,
+    payload: obj
+});
+
+//export const GET_ALARM_MSG = () => ({});

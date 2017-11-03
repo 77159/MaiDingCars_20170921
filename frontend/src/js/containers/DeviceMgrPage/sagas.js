@@ -105,11 +105,7 @@ export function* deleteDeviceSaga(action) {
         console.log(response);
         //判断是否发生错误并处理
         if (!response || response.success == false) {
-            if (response.error_code === 10010) {
-                yield put(showErrorMessage('该设备已经被使用，无法删除，请先取消车辆关联后再进行尝试'));   //提示错误信息
-            } else {
-                yield put(showErrorMessage(requestError.DELETE_DEVICE_ERROR));   //提示错误信息
-            }
+            yield put(showErrorMessage(response.error_message));   //提示错误信息
         } else {
             yield put(showSuccessMessage(requestError.DELETE_DEVICE_SUCCESS));
         }

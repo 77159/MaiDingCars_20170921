@@ -12,12 +12,16 @@ import React from 'react';
 //工具类
 import _ from 'lodash';
 
+import styles from './index.less';
+
+
 export default class MonitoringMap extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            allPeopleLocationMap: new Map(),
+            allCarLocationMap: new Map(),
+            modelView: '3D',
         };
 
         this.fmapID = window.fmapID;
@@ -56,20 +60,20 @@ export default class MonitoringMap extends React.Component {
         const {loadComplete} = this.props;
 
         //放大、缩小控件配置
-        const zoomCtlOpt = new fengmap.controlOptions({
-            position: fengmap.controlPositon.RIGHT_TOP,
-            imgURL: './img/fm_controls/',
-            offset: {
-                x: 15,
-                y: 262
-            },
-            scaleLevelcallback: function (level, result) {
-                console.log(result);
-                /*当前级别：map.mapScaleLevel
-                最小级别：map._minMapScaleLevel
-                最大级别：map._maxMapScaleLevel*/
-            }
-        });
+        // const zoomCtlOpt = new fengmap.controlOptions({
+        //     position: fengmap.controlPositon.RIGHT_TOP,
+        //     imgURL: './img/fm_controls/',
+        //     offset: {
+        //         x: 15,
+        //         y: 262
+        //     },
+        //     scaleLevelcallback: function (level, result) {
+        //         console.log(result);
+        //         /*当前级别：map.mapScaleLevel
+        //         最小级别：map._minMapScaleLevel
+        //         最大级别：map._maxMapScaleLevel*/
+        //     }
+        // });
 
         /*const ctlOpt = new fengmap.controlOptions({
             //设置显示的位置为右上角
@@ -95,7 +99,7 @@ export default class MonitoringMap extends React.Component {
             //设置主题
             defaultThemeName: '3006',        //2001, 2002, 3006, 746199
             // 默认比例尺级别设置为20级
-            defaultMapScaleLevel: 21,
+            defaultMapScaleLevel: 20,
             //开发者申请应用下web服务的key
             key: 'b559bedc3f8f10662fe7ffdee1e360ab',
             //开发者申请应用名称
@@ -107,7 +111,7 @@ export default class MonitoringMap extends React.Component {
             viewModeAnimateMode: true, //开启2维，3维切换的动画显示
             defaultVisibleGroups: [1],
             defaultFocusGroup: 1,
-            defaultMinTiltAngle: 5,
+            // defaultMinTiltAngle: 5,
             useStoreApply: true, //使用storeapply
         });
 
@@ -133,25 +137,25 @@ export default class MonitoringMap extends React.Component {
             //new fengmap.scrollGroupsControl(this, ctlOpt);
 
             //放大、缩小控件
-            new fengmap.zoomControl(this, zoomCtlOpt);
+            //new fengmap.zoomControl(this, zoomCtlOpt);
 
             //2D/3D
-            new fengmap.toolControl(this, {
-                //初始化2D模式
-                init2D: false,
-                position: fengmap.controlPositon.RIGHT_TOP,
-                imgURL: '/img/fm_controls/',
-                //设置为false表示只显示2D,3D切换按钮
-                groupsButtonNeeded: false,
-                offset: {
-                    x: 15,
-                    y: 210
-                },
-                //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-                clickCallBack: function (type, value) {
-                    console.log(type, value);
-                }
-            });
+            // new fengmap.toolControl(this, {
+            //     //初始化2D模式
+            //     init2D: false,
+            //     position: fengmap.controlPositon.RIGHT_TOP,
+            //     imgURL: '/img/fm_controls/',
+            //     //设置为false表示只显示2D,3D切换按钮
+            //     groupsButtonNeeded: false,
+            //     offset: {
+            //         x: 15,
+            //         y: 210
+            //     },
+            //     //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
+            //     clickCallBack: function (type, value) {
+            //         console.log(type, value);
+            //     }
+            // });
 
             //getMap(this);
             //添加测试用的人员Marker
@@ -170,7 +174,7 @@ export default class MonitoringMap extends React.Component {
             switch (event.nodeType) {
                 case fengmap.FMNodeType.FLOOR:
                     //if (event.eventInfo.eventID == eventID) return;
-                    console.log('x:' + event.eventInfo.coord.x + ";     y:" + event.eventInfo.coord.y);
+                    //console.log('x:' + event.eventInfo.coord.x + ";     y:" + event.eventInfo.coord.y);
                     break;
                 case fengmap.FMNodeType.MODEL:
                     //过滤类型为墙的model
@@ -179,14 +183,14 @@ export default class MonitoringMap extends React.Component {
                         return;
                     }
                     //模型高亮
-                    this.fmMap.map.storeSelect(model);
+                    //this.fmMap.storeSelect(model);
                     //弹出信息框
-                    console.log('x:' + event.label ? event.label.mapCoord.x : event.mapCoord.x + ";     y:" + event.label ? event.label.mapCoord.y : event.mapCoord.y);
+                    //console.log('x:' + event.label ? event.label.mapCoord.x : event.mapCoord.x + ";     y:" + event.label ? event.label.mapCoord.y : event.mapCoord.y);
                     break;
                 case fengmap.FMNodeType.FACILITY:
                 case fengmap.FMNodeType.IMAGE_MARKER:
                     //弹出信息框
-                    console.log('公共设施 x:' + event.target.x + ";     y:" + event.target.y);
+                    //console.log('公共设施 x:' + event.target.x + ";     y:" + event.target.y);
                     break;
             }
         });
@@ -202,9 +206,9 @@ export default class MonitoringMap extends React.Component {
         let imageMarker = new fengmap.FMImageMarker({
             x: coord.x,
             y: coord.y,
-            height: coord.z,
+            height: 1,      //人物marker在地图的显示高度
             //设置图片路径
-            url: './img/peopleMarker.png',
+            url: './img/carMarker.png',
             //设置图片显示尺寸
             size: 46,
             callback: () => {
@@ -216,22 +220,23 @@ export default class MonitoringMap extends React.Component {
         this.imageMarker = imageMarker;
     };
 
+
     //更新Marker位置
     updateMark = (locationEntity) => {
         if (!this.fmMap) return;
         //查找此人员当前是否已存在
-        if (this.state.allPeopleLocationMap.has(locationEntity.personCode) == true) {
+        if (this.state.allCarLocationMap.has(locationEntity.personCode) == true) {
             //获取到之前已添加的人员位置实体
-            let peopleLocation = this.state.allPeopleLocationMap.get(locationEntity.personCode);
+            let carLocation = this.state.allCarLocationMap.get(locationEntity.personCode);
             //更新ImageMarker的位置
-            peopleLocation.imageMarker.moveTo({
+            carLocation.imageMarker.moveTo({
                 //设置imageMarker的x坐标
                 x: locationEntity.pointX,
                 //设置imageMarker的y坐标
                 y: locationEntity.pointY,
             });
             //保存最新的位置信息
-            Object.assign(peopleLocation, locationEntity);
+            Object.assign(carLocation, locationEntity);
 
             if (this.props.positionPersonCode) {
                 if (locationEntity.personCode === this.props.positionPersonCode) {
@@ -253,9 +258,10 @@ export default class MonitoringMap extends React.Component {
             let imageMarker = new fengmap.FMImageMarker({
                 x: locationEntity.pointX,
                 y: locationEntity.pointY,
-                height: 2,
+                name: locationEntity.personCode,
+                height: 0,      //人物marker在地图的显示高度
                 //设置图片路径
-                url: './img/peopleMarker.png',
+                url: './img/carMarker.png',
                 //设置图片显示尺寸
                 size: 46,
                 callback: () => {
@@ -267,7 +273,7 @@ export default class MonitoringMap extends React.Component {
             //将ImageMarker保存到locationEntity内
             locationEntity.imageMarker = imageMarker;
             //保存到Map中
-            this.state.allPeopleLocationMap.set(locationEntity.personCode, locationEntity);
+            this.state.allCarLocationMap.set(locationEntity.personCode, locationEntity);
             //获取人员
             this.props.personImageMarker(locationEntity.personCode, imageMarker);
         }
@@ -346,12 +352,12 @@ export default class MonitoringMap extends React.Component {
             //图标标注对象，默认位置为该楼层中心点
             const im = new fengmap.FMImageMarker({
                 //设置图片路径
-                url: 'https://www.fengmap.com/fmAPI/demo/FMDemoOverlay/image/blueImageMarker.png', //TODO 需替换资源
+                url: './img/videoImageMarker.png', //TODO 需替换资源
                 //设置图片显示尺寸
                 x: item.x,
                 y: item.y,
-                height: .5,
-                size: 32,
+                height: 1,
+                size: 24,
                 callback: function () {
                     // 在图片载入完成后，设置 "一直可见"
                     // im.alwaysShow();
@@ -377,10 +383,58 @@ export default class MonitoringMap extends React.Component {
         });
     };
 
-    render() {
+    /**
+     * 切换3D/2D效果；
+     */
+    changeModelView = () => {
+        const map = this.fmMap;
+        if (!map) return;
+        let modelView = this.state.modelView;
+        if (modelView === '3D') {
+            map.viewMode = fengmap.FMViewMode.MODE_2D;
+            modelView = '2D';
+        } else {
+            map.viewMode = fengmap.FMViewMode.MODE_3D;
+            modelView = '3D';
+        }
+        this.setState({
+            modelView: modelView
+        })
+    };
 
+    /**
+     * 地图收缩功能
+     */
+    setZoomIn = () => {
+        const map = this.fmMap;
+        if (!map) return;
+        map.zoomIn();
+    };
+
+    /**
+     * 地图放大功能
+     */
+    setZoomOut = () => {
+        const map = this.fmMap;
+        if (!map) return;
+        map.zoomOut();
+    };
+
+    render() {
         return (
-            <div id="fengMap" style={{width: '100%', height: '100%'}}></div>
+            <div id="fengMap" style={{width: '100%', height: '100%', positio: 'relative'}}>
+                <div style={{position: 'absolute', width: 48, right: '20px', top: '214px', display: 'flex', justifyContent: 'baseline', flexDirection: 'column'}}>
+                    <span className={styles.mapActionBtn} onClick={this.changeModelView}>
+                        <img src={`./img/fm_controls/${this.state.modelView}.png`}></img>
+                    </span>
+                    <span className={styles.mapActionBtn} onClick={this.setZoomIn}>
+                        <img src="./img/fm_controls/zoomin.png"></img>
+                    </span>
+                    <span className={styles.mapActionBtn} onClick={this.setZoomOut}>
+                        <img src="./img/fm_controls/zoomout.png"></img>
+                    </span>
+                </div>
+            </div>
         )
     }
 }

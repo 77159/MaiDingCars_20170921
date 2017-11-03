@@ -38,12 +38,16 @@ export default function createRoutes(store) {
                     import('../containers/MainContainer'),
                     import('../containers/ModifyPasswordModel/sagas'),
                     import('../containers/HeadContainer/sagas'),
+                    import('../containers/AreaSettingPage/reducer'),
+                    import('../containers/AreaSettingPage/sagas'),
                 ]);
                 const renderRoute = loadModule(cb);
-                importModules.then(([reducer, component, sagas, sagas2]) => {
+                importModules.then(([reducer, component, sagas, sagas2, areaReducer, areaSagas]) => {
                     injectReducer('mainContainer', reducer.default);
                     injectSagas(sagas.default);
                     injectSagas(sagas2.default);
+                    injectSagas(areaSagas.default);
+                    injectReducer('area', areaReducer.default);
                     renderRoute(component);
                 });
                 importModules.catch(errorLoading);
@@ -56,14 +60,20 @@ export default function createRoutes(store) {
                         const importModules = Promise.all([
                             import('../containers/MonitoringPage/reducer'),
                             import('../containers/MonitoringPage/sagas'),
+                            import('../containers/CarMgrPage/reducer'),
+                            import('../containers/CarMgrPage/sagas'),
+                            import('../containers/CategoryFormModel/sagas'),
                             import('../containers/MonitoringPage'),
                         ]);
 
                         const renderRoute = loadModule(cb);
 
-                        importModules.then(([reducer, sagas, component]) => {
+                        importModules.then(([reducer, sagas, carReducer, carSagas, categorySagas, component]) => {
                             injectReducer('monitoring', reducer.default);
                             injectSagas(sagas.default);
+                            injectReducer('car', carReducer.default);
+                            injectSagas(carSagas.default);
+                            injectSagas(categorySagas.default);
                             renderRoute(component);
                         });
                         importModules.catch(errorLoading);

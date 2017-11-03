@@ -13,9 +13,22 @@ import {Layout} from 'antd';
 import HeadContainer from '../HeadContainer';
 import styles from './index.less';
 import {openWS, closeWS, createWebWorker} from "../../api/locationWebWorker";
+
 import {createStructuredSelector} from 'reselect';
+
 import {connect} from 'react-redux';
-import {receivedPeopleLocation} from "./actions";
+
+import {
+    receivedCarLocation,
+    getOnlineDevice,
+    pushAlarmMessage,
+    putMessageLastDateTime,
+    putMessageIsArea
+} from "./actions";
+
+import {
+    alertMessageDataSelector,
+} from './selectors'
 
 const {Content} = Layout;
 
@@ -32,9 +45,8 @@ export class MainContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-        };
-    }
+        this.state = {};
+    };
 
     //开启Web Worker
     componentDidMount() {
@@ -42,14 +54,13 @@ export class MainContainer extends React.Component {
         createWebWorker(this.onWebWorkerMessage);
         //开启web socket
         openWS();
-    }
+    };
 
     componentWillMount = () => {
-        console.log("componentWillMount");
-    }
+        // console.log("componentWillMount");
+    };
 
     onWebWorkerMessage = (event) => {
-        //msgIndex++;
         const {
             type,
             payload
@@ -58,19 +69,136 @@ export class MainContainer extends React.Component {
         if (type === OPEN_SOCKET_CONNECTION_SUCCESS || type === OPEN_SOCKET_CONNECTION_BEGIN ||
             type === CLOSE_SOCKET_CONNECTION_SUCCESS || type === CLOSE_SOCKET_CONNECTION_BEGIN ||
             type === UNKNOWN_COMMAND) {
-            console.info('socket message:' + payload);
+            // console.info('socket message:', payload);
             return;
         }
 
         if (type === ERROR_SOCKET_CONNECTION) {
-            console.error('socket error:' + payload);
+            // console.error('socket error:', payload);
             return;
         }
 
         if (type === RECEIVED_MESSAGE) {
-            this.props.receivedLocation(JSON.parse(payload));
+            let data = [];
+            const dataList = JSON.parse(payload);
+            // if (data.type === undefined || data.type == null) {
+            //     return;
+            // }
+
+            dataList.push(data);
+            
+            console.log(data);
+
+            if(data) {
+                return;
+                const list = data.list;
+                console.log(data);
+                //过滤设备没有和人员关联的数据
+                const onLineList = list.map((item) => {
+                    if (!item.carCode || item.carCode !== null) {
+                        return item;
+                    }
+                });
+
+                this.props.getOnlineDevice(onLineList);
+                return;
+            }
+            
+
+
+            //设备实时位置信息
+            // if (data.type === 0) {
+            //     //过滤设备没有和人员关联的数据
+            //     if (!data.carCode) return;
+            //
+            //     // 如果存在报警信息
+            //     //  检查报警信息集合中人员是否存已经存在
+            //     //   如果不存在，则添加到报警信息集合中，并且更新持续时间，和当前在重点区域的标识true
+            //     //   如果存在，则更新持续时间
+            //     // 如果不存在报警信息
+            //     //  检查报警信息集中人员是否已存在并且当前在重点区域的标识为true
+            //     //    如果存在，则将当前在重点区域的标识设置为false
+            //     //  如果不存在则不做任何操作
+            //
+            //
+            //     //是否存在报警信息
+            //     const alertInfo = data.alertInfo;
+            //     //报警集合
+            //     const alertMessageData = this.props.alertMessageData;
+            //     //查找当前是否
+            //     const areaAlterMessage = alertMessageData.filter((item) => {
+            //         return data.carCode === item.carCode && item.isArea === true;
+            //     });
+            //
+            //     /**
+            //      * 判断是否有报警信息；
+            //      * 如果有报警信息判断当前报警信息集合里面是否有该条报警信息；
+            //      *  如没有，则新增；
+            //      *  如有，更新最后报警信息时间；
+            //      * 如果没有报警信息判断当前人员是否在当前报警信息集合中；
+            //      *  如果在，则移除；
+            //      *  如果不在，无操作
+            //      */
+            //     if (alertInfo) {
+            //         //判断
+            //         if (!areaAlterMessage.size > 0) {
+            //             alertInfo['isRead'] = 0;                        //未读信息
+            //             alertInfo['key'] = alertMessageData.size + 1;
+            //             alertInfo['lastDateTime'] = alertInfo.dateTime;
+            //             alertInfo['isArea'] = true;
+            //             alertInfo['isShow'] = true;
+            //             this.props.pushAlarmMessage(alertInfo);
+            //         } else {
+            //             this.props.putMessageLastDateTime({
+            //                 id: areaAlterMessage.get(0).id,
+            //                 lastDateTime: alertInfo.dateTime
+            //             });
+            //         }
+            //     } else {
+            //         if (areaAlterMessage.size > 0) {
+            //             this.props.putMessageIsArea({
+            //                 id: areaAlterMessage.get(0).id,
+            //                 isArea: false,
+            //             })
+            //         }
+            //     }
+            //
+            //     this.props.receivedLocation(data);
+            //     return;
+            // }
+
+            //设备上线
+            // if (data.type === 1) {
+            //     return;
+            // }
+            // //设备下线
+            // if (data.type === 2) {
+            //     return;
+            // }
+            // //获取报警信息
+            // if (data.type === 99) {
+            //     return;
+            // }
+            // //获取当前最新在线设备
+            // if (data.type === 1001) {
+            //     const list = data.list;
+            //
+            //     //过滤设备没有和人员关联的数据
+            //     const onLineList = list.map((item) => {
+            //         if (!item.carCode || item.carCode !== null) {
+            //             return item;
+            //         }
+            //     });
+            //
+            //     this.props.getOnlineDevice(onLineList);
+            //     return;
+            // }
+            // //TODO 处理类型不明确
+            // if (data.type === 3) {
+            //     return;
+            // }
         }
-    }
+    };
 
     render() {
         return (
@@ -87,11 +215,17 @@ export class MainContainer extends React.Component {
 
 export function actionsDispatchToProps(dispatch) {
     return {
-        receivedLocation: (locationEntity) => dispatch(receivedPeopleLocation(locationEntity))
+        receivedLocation: (locationEntity) => dispatch(receivedCarLocation(locationEntity)),
+        getOnlineDevice: (onlineDevice) => dispatch(getOnlineDevice(onlineDevice)),
+        pushAlarmMessage: (alarmMessage) => dispatch(pushAlarmMessage(alarmMessage)),
+        putMessageLastDateTime: (obj) => dispatch(putMessageLastDateTime(obj)),
+        putMessageIsArea: (obj) => dispatch(putMessageIsArea(obj)),
     };
 }
 
-const selectorStateToProps = createStructuredSelector({});
+const selectorStateToProps = createStructuredSelector({
+    alertMessageData: alertMessageDataSelector(),
+});
 
 // Wrap the component to inject dispatch and state into it
 export default connect(selectorStateToProps, actionsDispatchToProps)(MainContainer);

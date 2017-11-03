@@ -47,7 +47,6 @@ import {LOCATION_CHANGE} from 'react-router-redux';
  * 获取车辆类型
  */
 export function* getAllCarCategorySaga() {
-    console.log('ppp');
     try {
         const response = yield call(getAllCarCategoryAPI);
         //判断是否发生错误并处理
@@ -65,7 +64,6 @@ export function* getAllCarCategorySaga() {
  * 获取区域列表
  */
 export function* queryAreaSaga() {
-    console.log('ppp');
     try {
         const response = yield call(queryArea);
         //判断是否发生错误并处理

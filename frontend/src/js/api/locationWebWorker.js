@@ -8,7 +8,7 @@
  */
 
 'use strict';
-import {receivedPeopleLocation} from "../containers/MainContainer/actions";
+import {receivedCarLocation} from "../containers/MainContainer/actions";
 //import locationSocket from './locationSocket';
 
 

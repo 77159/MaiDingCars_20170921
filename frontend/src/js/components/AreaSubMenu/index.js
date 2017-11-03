@@ -20,7 +20,7 @@ import styles from './index.less';
 import {
     showErrorMessage,
 } from "../../containers/App/actions";
-
+import {Popconfirm} from 'antd';
 const SubMenu = Menu.SubMenu;
 
 export class AreaSubMenu extends React.Component {
@@ -109,18 +109,21 @@ export class AreaSubMenu extends React.Component {
                                                                 }}>
                                                                 <Icon type="environment"/>
                                                         </Button>
-                                                        <Button shape="circle"
-                                                                ghost
-                                                                className={styles.areaEditBtn}
-                                                                title="删除"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    this.props.deleteAreaById(areaName);
-                                                                    this.props.lockForm();
-                                                                    this.props.emptyAreaForm();
-                                                                }}>
-                                                                <Icon type="close"/>
-                                                        </Button>
+
+                                                        <Popconfirm title="确认要删除此区域吗？"
+                                                                    onConfirm={(e) => {
+                                                                        e.stopPropagation();
+                                                                        this.props.deleteAreaById(areaName);
+                                                                        this.props.lockForm();
+                                                                        this.props.emptyAreaForm();}}>
+                                                            <Button shape="circle"
+                                                                    ghost
+                                                                    className={styles.areaEditBtn}
+                                                                    title="删除">
+                                                                    <Icon type="close"/>
+                                                            </Button>
+                                                        </Popconfirm>
+
                                                 </span>
                                             </Menu.Item>
                                         )

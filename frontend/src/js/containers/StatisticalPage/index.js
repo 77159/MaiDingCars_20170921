@@ -301,7 +301,6 @@ export class DeviceMgrPage extends React.Component {
         this.refs.carInfo2.style.display = 'block';
     };
 
-
     //点击返回车辆信息页面
     returnBtn = () => {
         this.refs.carInfo.style.display = 'block';
@@ -337,37 +336,14 @@ export class DeviceMgrPage extends React.Component {
             title: '工作时间',
             dataIndex: 'workStatus',
             key: 'workStatus',
-            render: (text) => {
-                if (text === 1) {
-                    return (<span>工作<i className={styles.greenCircle}/></span>);
-                } else {
-                    return (<span>离线<i className={styles.redCircle}/></span>);
-                }
-            }
         }, {
             title: '行走里程',
             dataIndex: 'dumpPower',
             key: 'dumpPower',
-            render: (text) => {
-                if (text == null) {
-                    return (<span>未知</span>);
-                } else if (text && text < 20) {
-                    return (<span className={styles.lowPower}>{text}%</span>);
-                } else {
-                    return (<span className={styles.power}>{text}%</span>);
-                }
-            }
         }, {
             title: '最快速度',
             dataIndex: 'deviceStatus',
             key: 'deviceStatus',
-            render: (text) => {
-                if (text === 1) {
-                    return (<span>启用<i className={styles.greenCircle}/></span>);
-                } else {
-                    return (<span>禁用<i className={styles.redCircle}/></span>);
-                }
-            }
         }, {
             title: '平均速度',
             dataIndex: 'remark',
@@ -394,16 +370,9 @@ export class DeviceMgrPage extends React.Component {
             width: 200,
             render: (text, record, index) => {
                 return (
-                    <div>
+                    <div key={index}>
                         <Button type="primary" className={styles.tableBtn} ghost
                                 onClick={() => this.onViewDeviceInfo(record)}>查看</Button>
-                        {/* <Popconfirm title="确认要执行此操作吗？" onConfirm={() => this.onChangeDeviceStatus(record)}>
-                         <Button type="primary" className={styles.tableBtn}
-                         ghost>{Boolean(record.deviceStatus) ? '禁用' : '启用'}</Button>
-                         </Popconfirm>
-                         <Popconfirm title="确认要删除此设备吗？" onConfirm={() => this.onDeleteDevice([record.deviceCode])}>
-                         <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
-                         </Popconfirm>*/}
                     </div>
                 );
             },
@@ -429,13 +398,6 @@ export class DeviceMgrPage extends React.Component {
             key: 'workStatus',
             width: 70,
             fixed: 'left',
-            render: (text) => {
-                if (text === 1) {
-                    return (<span>工作<i className={styles.greenCircle}/></span>);
-                } else {
-                    return (<span>离线<i className={styles.redCircle}/></span>);
-                }
-            }
         }, {
             title: '09',
             dataIndex: '09',

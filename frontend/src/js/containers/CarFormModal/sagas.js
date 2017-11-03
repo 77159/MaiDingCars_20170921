@@ -46,10 +46,7 @@ export function* createCarSaga(action) {
         const response = yield call(createCarAPI, action.payload);
         //是否发生了错误，或者请求失败
         if (!response || response.success == false) {
-            //TODO 此处以后要对应接口的错误码，目前只能显示一种错误类型
-            if(response.error_code === 200101) {
-                yield put(showErrorMessage(requestError.CREATE_CAR_NUM_ERROR));        //提示错误信息
-            }
+            yield put(showErrorMessage(response.error_message));        //提示错误信息
         } else {
             yield put(showSuccessMessage(requestError.CREATE_CAR_SUCCESS));   //提示成功信息
             //关闭窗口
@@ -88,7 +85,7 @@ export function* modifyCarSaga(action) {
             yield put(queryAllCarBegin());
         }
     } catch (error) {
-        console.log("修改车辆异常", error);
+        console.log(error);
         //异常提示
         yield put(showErrorMessage(requestError.REQUEST_ERROR));
     }

@@ -18,8 +18,20 @@ const tableDataLoadingSelector = () => createSelector(
     (carState) => carState.get('tableDataLoading')
 );
 
+
+const carListSelector = () => createSelector(
+    selectCar,
+    (carState) => {
+        const carDataSource = carState.get('carDataSource') ? carState.get('carDataSource') : [];
+        return carDataSource.filter((item) => {
+            return item.deviceCode !== null && item.deviceCode !== '';
+        });
+    }
+);
+
 export {
     selectCar,
     carDataSourceSelector,
-    tableDataLoadingSelector
+    tableDataLoadingSelector,
+    carListSelector
 };

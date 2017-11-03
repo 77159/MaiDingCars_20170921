@@ -57,9 +57,10 @@ export function* queryAreaListSaga() {
 export function* delteAreaSage(action) {
     try {
         const response = yield call(delteAreaById, action.areaName);
-        //判断是否发生错误并处理
+        console.log(response);
+        //判断是否发生错误并处理       该区域被绑定到车辆类型，无法操作
         if (!response || response.success == false) {
-            yield put(showErrorMessage(requestError.DELETE_AREA_BY_ID_ERROR));   //提示错误信息
+            yield put(showErrorMessage(response.error_message));   //提示错误信息
         } else {
             yield put(showSuccessMessage(requestError.DELETE_AREA_BY_ID_SUCCESS));   //提示成功信息
             yield put(queryAreaListBegin());                               //重新加载区域数据

@@ -16,7 +16,22 @@ const realTimeLocationsSelector = () => createSelector(
     (globalState) => globalState.get('realTimeLocations')
 );
 
+const SelectorOnLineDevice = () => createSelector(
+    selectMainContainer,
+    (globalState) => globalState.get('onlineDevice')
+);
+
+/**
+ * 获取当前所有的报警信息
+ */
+const alertMessageDataSelector = () => createSelector(
+    selectMainContainer,
+    (globalState) => globalState.get('alertMessageData')
+);
+
 export {
     selectMainContainer,
     realTimeLocationsSelector,
+    SelectorOnLineDevice,
+    alertMessageDataSelector,
 };

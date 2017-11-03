@@ -15,11 +15,11 @@
  * @describe 主界面 constants，用于Action
  */
 'use strict';
-export const RECEIVED_PEOPLE_LOCATION = 'MainContainer/RECEIVED_PEOPLE_LOCATION';          //接收到新的人员位置
-// export const DEVICE_OP_FINISH = 'DeviceMgr/DEVICE_OP_FINISH';                           //对设备数据的操作（CURD）结束
-// export const QUERY_ALL_DEVICE_BEGIN = 'DeviceMgr/QUERY_ALL_DEVICE_BEGIN';               //查询所有设备信息-开始
-// export const QUERY_ALL_DEVICE_FINISH = 'DeviceMgr/QUERY_ALL_DEVICE_FINISH';             //查询所有设备信息-结束
-// export const CREATE_DEVICE = 'DeviceMgr/CREATE_DEVICE';                                 //添加设备
-// export const MODIFY_DEVICE = 'DeviceMgr/MODIFY_DEVICE';                                 //修改设备信息
-// export const GET_DEVICE = 'DeviceMgr/GET_DEVICE';                                       //查询一个设备的信息
-// export const DELETE_DEVICE = 'DeviceMgr/DELETE_DEVICE';                                 //删除设备（一个或多个）
+export const RECEIVED_CAR_LOCATION = 'MainContainer/RECEIVED_CAR_LOCATION';           //接收到新的人员位置
+export const GET_ONLINE_CAR = 'MainContainer/GET_ONLINE_CAR';                         //接收到新的人员位置
+export const GET_ONLINE_DEVICE = 'MainContainer/GET_ONLINE_DEVICE';                         //获取当前人员设备
+export const PUSH_ALARM_MESSAGE = 'MainContainer/PUSH_ALARM_MESSAGE';                       //获取报警信息
+export const PUT_MESSAGE_ISREAD = 'MainContainer/PUT_MESSAGE_ISREAD';                       //修改已读信息
+export const PUT_MESSAGE_LASTDATETIME = 'MainContainer/PUT_MESSAGE_LASTDATETIME';           //更新报警最后更新时间
+export const PUT_MESSAGE_ISAREA = 'MainContainer/PUT_MESSAGE_ISAREA';                       //更新人员是否在重点区域
+export const PUT_MESSAGE_ISSHOW = 'MainContainer/PUT_MESSAGE_ISSHOW';                       //更新人员是否在已显示提示信息

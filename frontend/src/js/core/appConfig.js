@@ -10,8 +10,8 @@
 
 export const AppConfig = {
     //后台接口服务地址
-    serviceUrl: 'http://192.168.1.95:9095/',
-    // serviceUrl: 'http://192.168.1.97:8080/fm_csv/',
+    // serviceUrl: 'http://192.168.1.95:9095/',
+    serviceUrl: 'http://192.168.1.72:9090/',
     get token() {
         //let token = cookies.getItem(this.fmTokenCookieName);
         //return (token != null ? token : null);

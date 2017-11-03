@@ -53,13 +53,7 @@ export function* createDeviceSaga(action) {
         const response = yield call(createDeviceAPI,action.payload);
         //是否发生了错误，或者请求失败
         if (!response || response.success == false) {
-            //TODO 此处以后要对应接口的错误码，目前只能显示一种错误类型
-            //yield put(showErrorMessage(requestError.CREATE_DEVICE_ERROR));
-            if(response.error_code === 10008) {
-                yield put(showErrorMessage(requestError.DEVICE_NUM_ERROR));
-            }else {
-                yield put(showErrorMessage(requestError.CREATE_DEVICE_ERROR));
-            }
+            yield put(showErrorMessage(response.error_message));
         } else {
             yield put(showSuccessMessage(requestError.CREATE_DEVICE_SUCCESS));
             //关闭窗口

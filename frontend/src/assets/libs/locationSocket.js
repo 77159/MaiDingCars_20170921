@@ -8,7 +8,7 @@
  */
 'use strict';
 
-console.log("rtls web Worker running.");
+//console.log("rtls web Worker running.");
 
 const OPEN_SOCKET_CONNECTION_BEGIN = 'OPEN_SOCKET_CONNECTION_BEGIN';            //正在打开与服务器的WS连接
 const OPEN_SOCKET_CONNECTION_SUCCESS = 'OPEN_SOCKET_CONNECTION_SUCCESS';        //成功建立与服务器的WS连接
@@ -41,11 +41,12 @@ self.onmessage = function (event) {
     return;
 }
 
-var wsUrl = "ws://123.56.157.161:8082/fm_csv/websocket.ws";
+var wsUrl = "ws://192.168.1.72:9090/websocket.ws";
+
 var ws = null;
 
 var onOpen = function (event) {
-    //ws.send("Hello WebSockets!");
+    ws.send("type=1001");
     wrapPostMessage(OPEN_SOCKET_CONNECTION_SUCCESS, '成功连接到服务器');
 };
 
@@ -55,13 +56,11 @@ var onError = function (event) {
 
 var onReceivedMessage = function (event) {
     wrapPostMessage(RECEIVED_MESSAGE, event.data);
-    //console.log("socket:"+event.data);
 };
 
 var onClose = function (event) {
     wrapPostMessage(CLOSE_SOCKET_CONNECTION_SUCCESS, '关闭服务器连接 .... ok');
 };
-
 
 function newWebSocket(url, onopen, onmessage, onclose, onerror) {
     var new_ws = new WebSocket(url);
@@ -89,6 +88,6 @@ function wrapPostMessage(type, data = null) {
     const action = {
         type: type,
         payload: data
-    }
+    };
     self.postMessage(action);
 }
