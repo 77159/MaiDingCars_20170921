@@ -380,7 +380,13 @@ export class AreaSettingPage extends React.Component {
         if (polygonEditor && polygonMarkers && id) {
             const points = polygonMarkers[id][0]._ps;
             const centerPoints = polygonEditor.getCenter(map, points);
-            map.moveToCenter(centerPoints)
+            map.mapScaleLevel = {
+                level: 24,
+                duration: 1,
+                callback: () => {
+                    map.moveToCenter(centerPoints)
+                }
+            };
         }
     };
 

@@ -76,7 +76,7 @@ class AreaFormPanel extends React.Component {
             if (points) {
                 values['polygon'] = JSON.stringify(points);
             }
-            values['areaType'] = values['areaType'] ? 1 : 0;
+            // values['areaType'] = values['areaType'] ? 1 : 0;
             values['floorId'] = '1';    //TODO 当前只有一层楼
             values['areaStyle'] = `{"backgroundColor":"${values.areaStyle}","opacity":${values.opacity / 100}}`;
             if (!id) {
@@ -84,7 +84,7 @@ class AreaFormPanel extends React.Component {
             } else {
                 this.props.modifyArea(values);
             }
-            
+
             //锁定表单
             this.props.lockForm();
             //更新地图polygon样式
@@ -150,27 +150,26 @@ class AreaFormPanel extends React.Component {
                         }
                     </FormItem>
                 </div>
-                <div className={styles.dtPickerItem}>
-                    <Row>
-                        <Col span={8}>
-                            <label>重点区域</label>
-                        </Col>
-                        <Col span={16}>
-                            {
-                                getFieldDecorator('areaType', {
-                                    valuePropName: 'checked',
-                                    initialValue: area.get('areaType') === 1 ? true : false,
-                                })(
-                                    <Checkbox disabled={lock}>标记重点区域</Checkbox>
-                                )
-                            }
-                        </Col>
-                    </Row>
-                </div>
+                {/*<div className={styles.dtPickerItem}>*/}
+                {/*<Row>*/}
+                {/*<Col span={8}>*/}
+                {/*<label>重点区域</label>*/}
+                {/*</Col>*/}
+                {/*<Col span={16}>*/}
+                {/*{*/}
+                {/*getFieldDecorator('areaType', {*/}
+                {/*valuePropName: 'checked',*/}
+                {/*initialValue: area.get('areaType') === 1 ? true : false,*/}
+                {/*})(*/}
+                {/*<Checkbox disabled={lock}>标记重点区域</Checkbox>*/}
+                {/*)*/}
+                {/*}*/}
+                {/*</Col>*/}
+                {/*</Row>*/}
+                {/*</div>*/}
                 <div className={styles.dtPickerItem}>
                     <FormItem key={'areaStyle'} labelCol={{span: 8}} wrapperCol={{span: 16}} label="区域样式"
                               hasFeedback={true}>
-                        {/*<label className={styles.label}>区域样式</label>*/}
                         {
                             getFieldDecorator('areaStyle', {
                                 rules: [
@@ -239,22 +238,37 @@ class AreaFormPanel extends React.Component {
                     </Row>
                 </div>
 
-                <FormItem key={'maxCarNum'} {...formItemLayout} label="限制车数" hasFeedback={true}>
+                <FormItem key={'areaMaxSpeed'} {...formItemLayout} label="最大速度" hasFeedback={true}>
                     {
-                        getFieldDecorator('maxCarNum', {
+                        getFieldDecorator('areaMaxSpeed', {
                             rules: [{
-                                message: '请输入该区域的最大车辆数'
-                            }, {
                                 regexp: 'regexp',
-                                pattern: appRegExp.MAXCARNUM,
-                                message: appRegExp.MAXCARNUM_ERROR_MSG
+                                pattern: appRegExp.MAXSPEED,
+                                message: appRegExp.MAXSPEED_ERROR_MSG
                             }],
-                            initialValue: area.get('maxCarNum'),
+                            initialValue: area.get('areaMaxSpeed'),
                         })(
-                            <Input placeholder="限制车数"/>
+                            <Input placeholder="最大速度"/>
                         )
                     }
                 </FormItem>
+
+                <div className={styles.lastItem}>
+                    <FormItem key={'maxCarNum'} {...formItemLayout} label="最大车辆" hasFeedback={true}>
+                        {
+                            getFieldDecorator('maxCarNum', {
+                                rules: [{
+                                    regexp: 'regexp',
+                                    pattern: appRegExp.MAXCARNUM,
+                                    message: appRegExp.MAXCARNUM_ERROR_MSG
+                                }],
+                                initialValue: area.get('maxCarNum'),
+                            })(
+                                <Input placeholder="最大车辆"/>
+                            )
+                        }
+                    </FormItem>
+                </div>
 
                 <div className={styles.areaSetPanelItem}>
                     <Button type="danger" disabled={lock} className={styles.startReplay}

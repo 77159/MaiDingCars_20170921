@@ -59,8 +59,10 @@ export const appRegExp = {
     AREATYPE_ERROR_MSG: '区域类型规则为数字0或者1',
     AREAREMARK: /^[\w\u4E00-\u9FA5\:\;\,\-\(\)\u3014-\u3015\uFF08-\uFF09][a-zA-Z0-9\u4E00-\u9FA5_:;,\(\)\s\-\u3014-\u3015\uFF08-\uFF09\：\；\，\.\。]{0,50}$/,	//区域备注
     AREAREMARK_ERROR_MSG: '区域备注规则为0~50位字母、数字、下划线、中划线、汉字、分号、逗号、小括号、空格等字符',
-    MAXCARNUM: /^[0-9]{1,3}$/,                                      //车辆限制
-    MAXCARNUM_ERROR_MSG: '车辆限制规则为1~3位数字',
+    MAXCARNUM: /^[0-9]{1,3}$/,                                      //车辆限制  areaMaxSpeed
+    MAXCARNUM_ERROR_MSG: '车辆数量限制规则为1~3位数字',
+    MAXSPEED: /^([0-9]|1[0-5])(\.[0-9])?$/,                                      //车辆速度限制
+    MAXSPEED_ERROR_MSG: '车辆速度规则为1~2位数字，小数点后保留1位数字',
 
 
     /**********系统用户**********/

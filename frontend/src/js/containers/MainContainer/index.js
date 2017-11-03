@@ -79,15 +79,10 @@ export class MainContainer extends React.Component {
         }
 
         if (type === RECEIVED_MESSAGE) {
-            let data = [];
-            const dataList = JSON.parse(payload);
+            const data = JSON.parse(payload);
             // if (data.type === undefined || data.type == null) {
             //     return;
             // }
-
-            dataList.push(data);
-            
-            console.log(data);
 
             if(data) {
                 return;
@@ -99,7 +94,6 @@ export class MainContainer extends React.Component {
                         return item;
                     }
                 });
-
                 this.props.getOnlineDevice(onLineList);
                 return;
             }

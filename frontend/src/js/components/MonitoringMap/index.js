@@ -423,7 +423,7 @@ export default class MonitoringMap extends React.Component {
     render() {
         return (
             <div id="fengMap" style={{width: '100%', height: '100%', positio: 'relative'}}>
-                <div style={{position: 'absolute', width: 48, right: '20px', top: '214px', display: 'flex', justifyContent: 'baseline', flexDirection: 'column'}}>
+                <div style={{position: 'absolute', width: 48, right: '20px', bottom: '50px', display: 'flex', justifyContent: 'baseline', flexDirection: 'column'}}>
                     <span className={styles.mapActionBtn} onClick={this.changeModelView}>
                         <img src={`./img/fm_controls/${this.state.modelView}.png`}></img>
                     </span>

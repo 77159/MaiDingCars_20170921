@@ -61,6 +61,14 @@ import {putMessageIsRead, putMessageIsShow} from '../MainContainer/actions';
 //selectors main
 import {alertMessageDataSelector} from '../MainContainer/selectors';
 
+//自定义组件
+import PeopleCard from '../../components/peopleCard';
+import MonitoringMap from '../../components/MonitoringMap';
+
+
+
+
+
 const siderTriggerNode = () => {
     return (<span>启用<i className={styles.greenCircle}/></span>);
 }
@@ -522,7 +530,7 @@ export class MonitoringPage extends React.Component {
      * @param key
      * @param selectedKeys
      */
-    onPeopleItemSelected = (e) => {
+    onCarItemSelected = (e) => {
 
     };
 
@@ -861,8 +869,18 @@ export class MonitoringPage extends React.Component {
                     </Layout>
                 </Sider>
                 <Content>
-                    <div id="fengMap" className="fengMap" style={this.state.containerStyle}></div>
-                    <div className={styles.mapActions}>
+
+                    {/*人员定位*/}
+                    <MonitoringMap
+                        realTimeLocations={this.props.realTimeLocations}
+                        loadComplete={this.loadComplete}
+                        personImageMarker={this.personImageMarker}
+                        positionPersonCode={this.state.positionPersonCode}
+                        layerVisible={this.state.layerVisible}
+                        keyArea={this.props.keyArea}/>
+
+                    {/*地图操作按钮*/}
+                        <div className={styles.mapActions}>
                         <span className={styles.mapActionBtn} onClick={this.onShowAlarmModal} title="今日报警">
                             <Badge count={5}>
                               <img src="./img/fm_controls/alarm.png"></img>
@@ -871,6 +889,8 @@ export class MonitoringPage extends React.Component {
                         <span className={styles.mapActionBtn} onClick={() => openNotificationWithIcon('error')}
                               title="摄像头点位"><img src="./img/fm_controls/video.png"></img></span>
                     </div>
+
+
                     <Card noHovering={true} bordered={false} className={this.state.carInfoWinClassName} title={
                         <span><Icon type="solution"/>车辆编号： KH026291</span>
                     }

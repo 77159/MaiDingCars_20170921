@@ -41,7 +41,7 @@ self.onmessage = function (event) {
     return;
 }
 
-var wsUrl = "ws://192.168.1.72:9090/websocket.ws";
+var wsUrl = "ws://192.168.1.168:8090/websocket.ws";
 
 var ws = null;
 
