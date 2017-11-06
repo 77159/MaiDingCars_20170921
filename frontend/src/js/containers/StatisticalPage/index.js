@@ -390,14 +390,16 @@ export class DeviceMgrPage extends React.Component {
             title: '公里数',
             dataIndex: 'deviceName',
             key: 'deviceName',
-            width: 70,
-            fixed: 'left'
+            width: 100,
+            fixed: 'left',
+            sorter: (a, b) => a.kilometers - b.kilometers,      //排序
         }, {
             title: '时间',
             dataIndex: 'workStatus',
             key: 'workStatus',
-            width: 70,
+            width: 100,
             fixed: 'left',
+            sorter: (a, b) => a.timer - b.timer,
         }, {
             title: '09',
             dataIndex: '09',
@@ -496,7 +498,6 @@ export class DeviceMgrPage extends React.Component {
             title: '(9.11)00',
             dataIndex: '00',
             key: '00',
-            //width: '80'
         }, {
             title: '01',
             dataIndex: '01',
@@ -700,7 +701,7 @@ export class DeviceMgrPage extends React.Component {
                                                footer={() => '共计 ' + dataCount + ' 条数据'}
                                                size="middle"
                                                loading={tableDataLoading}
-                                               scroll={{x: 1500}}
+                                               scroll={{x: 1800}}
                                                columns={columnsBusy}
                                                dataSource={deviceDataSource}>
                                         </Table>
