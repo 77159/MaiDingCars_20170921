@@ -88,7 +88,6 @@ export default function createRoutes(store) {
                             .catch(errorLoading);
                     }
                 },
-
                 {
                     path: '/heat',                  //热力图
                     name: 'heat',
@@ -98,14 +97,12 @@ export default function createRoutes(store) {
                             .catch(errorLoading);
                     }
                 },
-
                 {
                     path: '/area',                  //区域设置页面
                     name: 'area',
                     getComponent(nextState, cb) {
                         const importModules = Promise.all([
                             import('../containers/AreaSettingPage/reducer'),
-                            import('../containers/AreaSettingPage/sagas'),
                             import('../containers/AreaFormPanel/sagas'),
                             import('../containers/AreaFormPanel/reducer'),
                             import('../containers/AreaSettingPage'),
@@ -113,9 +110,8 @@ export default function createRoutes(store) {
 
                         const renderRoute = loadModule(cb);
 
-                        importModules.then(([reducer, sagas, sagas2, reducer2, component]) => {
+                        importModules.then(([reducer, sagas2, reducer2, component]) => {
                             injectReducer('area', reducer.default);
-                            injectSagas(sagas.default);
                             injectSagas(sagas2.default);
                             injectReducer('areaForm', reducer2.default);
                             renderRoute(component);
@@ -124,8 +120,6 @@ export default function createRoutes(store) {
                         importModules.catch(errorLoading);
                     }
                 },
-
-
 
 
                 {
@@ -149,7 +143,6 @@ export default function createRoutes(store) {
                         importModules.catch(errorLoading);
                     }
                 },
-
 
 
                 {

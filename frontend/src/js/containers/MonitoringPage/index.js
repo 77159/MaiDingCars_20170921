@@ -13,7 +13,7 @@ import {Layout, Menu, Icon} from 'antd';
 import {Button} from 'antd';
 
 const {SubMenu} = Menu;
-const {Sider, Content, Header, Footer} = Layout;
+const {Sider, Content, Footer} = Layout;
 import {Input} from 'antd';
 import {Avatar} from 'antd';
 import {Radio} from 'antd';
@@ -24,6 +24,7 @@ import {AutoComplete} from 'antd';
 import {Modal} from 'antd';
 import {Popconfirm} from 'antd';
 import {Row, Col, Select} from 'antd';
+
 const RadioButton = Radio.Button;
 const Search = Input.Search;
 import styles from './index.less';
@@ -35,11 +36,14 @@ import {loadRepos} from '../App/actions';
 import {changeUsername} from './actions';
 import {makeSelectUsername} from './selectors';
 import {DatePicker} from 'antd';
+
 const {MonthPicker, RangePicker} = DatePicker;
 import {TimePicker} from 'antd';
 import moment from 'moment';
+
 const format = 'HH';
 import {Tabs, Checkbox} from 'antd';
+
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 
@@ -64,9 +68,6 @@ import {alertMessageDataSelector} from '../MainContainer/selectors';
 //自定义组件
 import PeopleCard from '../../components/peopleCard';
 import MonitoringMap from '../../components/MonitoringMap';
-
-
-
 
 
 const siderTriggerNode = () => {
@@ -252,8 +253,6 @@ const CollectionCreateForm = Form.create()(
                 width={1280}
                 className={styles.redModal}
             >
-
-
                 <div className="card-container">
                     <Tabs type="card">
                         <TabPane tab="区域集中报警" key="1">
@@ -293,7 +292,6 @@ const CollectionCreateForm = Form.create()(
                                    columns={columnsCenter} dataSource={dataSource}>
                             </Table>
                         </TabPane>
-
                         <TabPane tab="车辆状态报警" key="2">
                             <Row type="flex" align="middle" style={{height: '100px', marginTop: '-20px'}}>
                                 <Col span={5} className={styles.item}>
@@ -333,7 +331,6 @@ const CollectionCreateForm = Form.create()(
                                    columns={columnsStatus} dataSource={dataSource}>
                             </Table>
                         </TabPane>
-
                         <TabPane tab="车辆超速报警" key="3">
                             <Row type="flex" align="middle" style={{height: '100px', marginTop: '-20px'}}>
                                 <Col span={5} className={styles.item}>
@@ -373,16 +370,11 @@ const CollectionCreateForm = Form.create()(
                                    columns={columnsSpeed} dataSource={dataSource}>
                             </Table>
                         </TabPane>
-
                     </Tabs>
-
                     <Badge className={styles.badge1} count={9} overflowCount={99}/>
                     <Badge className={styles.badge2} count={19} overflowCount={99}/>
                     <Badge className={styles.badge3} count={100} overflowCount={99}/>
-
                 </div>
-
-
             </Modal>
         );
     }
@@ -391,10 +383,13 @@ const CollectionCreateForm = Form.create()(
 // end form
 
 export class MonitoringPage extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
+
+            carInfoWinClassName: styles.carCard,
+            carCardHidden: false,
+
             containerStyle: {
                 height: '100%',
                 width: '100%',
@@ -405,46 +400,47 @@ export class MonitoringPage extends React.Component {
             },
             siderCollapsed: false,         //人员信息sider当前收起状态, 【false】展开 【true】收起
             siderTrigger: null,
-            carInfoWinClassName: styles.carCard,
-            carCardHidden: false,
             alarmModalVisible: false,
             alarmLoading: false,
             alarmConfirmLoading: false,
             ModalText: 'Content of the modal',
+            allCarLocationMap: new Map(),            //所有人员的位置信息 key:personCode value:LocationEntity={...FMImageMarker}
+            //车辆列表
             carList: props.carList,
-            allCarLocationMap: new Map()            //所有人员的位置信息 key:personCode value:LocationEntity={...FMImageMarker}
-        }
+        };
 
-        //定义全局map变量
-        this.fmMap = null;
-        this.fmapID = 'md-xm-57-9';
         this.imageMarker = null;
         this.personImageMarkers = {};        //地图人员marker对象
-        this.onLineDevice = null;
+        //this.onLineDevice = null;
         //this.groupLayer;
         //this.layer = null;
         //this.addMarker = true;
         //this.polygonEditor = null;
+
+        //定义全局map变量
+        this.fmMap = null;
+
+
     }
 
-
-    /**
-     * 组件第一次加载完成周期，创建地图
-     */
-    componentDidMount() {
-        //查询所有人员
+    componentWillMount = () => {
+        //查询所有车辆
         this.props.queryAllCarBegin();
         //查询人员类型
         this.props.getCarCategory();
-    }
+    };
 
     componentWillReceiveProps(nextProps) {
-        if (_.eq(this.onLineDevice, nextProps.onLineDevice) == false) {
-            this.onLineDevice = nextProps.onLineDevice;
-            this.setState({
-                carList: nextProps.carList
-            });
-        }
+        this.setState({
+            carList: nextProps.carList
+        });
+
+        // if (_.eq(this.onLineDevice, nextProps.onLineDevice) == false) {
+        //     this.onLineDevice = nextProps.onLineDevice;
+        //     this.setState({
+        //         carList: nextProps.carList
+        //     });
+        // }
     };
 
 
@@ -457,7 +453,7 @@ export class MonitoringPage extends React.Component {
     onCarItemSelected = ({item, key, selectedKeys}) => {
         console.log(item);
         this.onCloseCarInfoWindow();
-    }
+    };
 
     /**
      * 当人员面板展开-收起时的回调函数，有点击 trigger 以及响应式反馈两种方式可以触发
@@ -503,26 +499,6 @@ export class MonitoringPage extends React.Component {
         return visibleImageMarker;
     };
 
-    /**
-     * 人员显示/隐藏
-     * @param e
-     */
-    visibleCarBtn = (e, carCode) => {
-        e.stopPropagation();
-        const obj = this.personImageMarkers[carCode];
-        if (obj) {
-            if (!obj.imageMarker) return;
-            let imageMarker = obj.imageMarker;
-            imageMarker.visible = !imageMarker.visible;
-        }
-    };
-
-    /**
-     * 人员定位
-     * @param e
-     */
-    carLocationBtn = (e, carCode) => {}
-
 
     /**
      * 点击列表人员显示人员详细信息
@@ -541,41 +517,42 @@ export class MonitoringPage extends React.Component {
     getMenu = () => {
         const carList = this.state.carList;
         this.onLineCount = 0;   //在线人数
-        console.log(carList);
         //检查在线人数
-        carList.map((car) => {
-            if (!this.onLineDevice) return;
-            this.onLineDevice.map((device) => {
-                console.log(device);
-                if (device.deviceCode === car.deviceCode) {
-                    car.onLine = true;
-                    this.onLineCount++;
-                }
-            });
-        });
+        // carList.map((car) => {
+        //     if (!this.onLineDevice) return;
+        //     this.onLineDevice.map((device) => {
+        //         console.log(device);
+        //         if (device.deviceCode === car.deviceCode) {
+        //             car.onLine = true;
+        //             this.onLineCount++;
+        //         }
+        //     });
+        // });
 
         //根据在线排序
-        carList.sort((a, b) => {
-            const x = a.onLine ? 1 : 0;
-            const y = b.onLine ? 1 : 0;
+        // carList.sort((a, b) => {
+        //     const x = a.onLine ? 1 : 0;
+        //     const y = b.onLine ? 1 : 0;
+        //
+        //     if (x < y) {
+        //         return 1;
+        //     }
+        //     if (x > y) {
+        //         return -1;
+        //     }
+        //     if (x === y) {
+        //         return 0;
+        //     }
+        // });
 
-            if (x < y) {
-                return 1;
-            }
-            if (x > y) {
-                return -1;
-            }
-            if (x === y) {
-                return 0;
-            }
-        });
         return carList.map((car) => {
             const carCode = car.carCode;
+            car.onLine = true;
             const color = this.state.positionPersonCode === carCode ? '#FFC600' : '#f2f2f2';
             const visible = this.getVisiblePersonMarker(carCode);
             return (
                 <Menu.Item key={carCode} disabled={!car.onLine}>
-                    <Avatar size="large" src="img/avatar/002.jpg"/>
+                    <Avatar size="large" src="img/avatar/avatar.png"/>
                     <div className={styles.content}>
                         <div className={styles.code}>{car.carCode}</div>
                         <div>{car.safetySpeed} km/h</div>
@@ -607,8 +584,6 @@ export class MonitoringPage extends React.Component {
     };
 
 
-
-
     /**
      * 显示/隐藏 人员信息窗口
      */
@@ -628,182 +603,27 @@ export class MonitoringPage extends React.Component {
                 carCardHidden: true
             });
         }
-    }
-
-    initPolygonEditor = () => {
-        //创建 可编辑多形绘制与编辑类的实例
-        this.polygonEditor = new fengmap.FMPolygonEditor({
-
-            // fengmap 地图实例
-            map: this.fmMap,
-
-            // 绘制的 PolygonMarker 的颜色
-            color: 0x22A5ee,
-
-            // 绘制完成后的回调方法. 在这里得到绘制完成的 polygonMarker实例
-            callback: function (polygonMarker) {
-                //
-                // 在创建完成后, 返回创建的 PolygonMarker
-                // 	getPoints: 得到些PM中的所有地图坐标点
-                //
-                console.log(polygonMarker.getPoints());
-            }
-        });
-
-        // html buttons
-        //var aBtn = document.querySelectorAll('.btn');
-
-        //添加多边形标注
-        // aBtn[0].onclick = function () {
-        //     // 绘制模式
-        //     polygonEditor.start('create');
-        //
-        // };
-        // //删除多边形标注
-        // aBtn[1].onclick = function () {
-        //     // 编辑模式
-        //     polygonEditor.start('edit');
-        // };
-    }
-
-    //添加Marker
-    addMarker = (coord) => {
-        coord = {x: 13155860.0623301, y: 2813445.34302628, z: 2};
-        let group = this.fmMap.getFMGroup(this.fmMap.groupIDs[0]);
-        //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
-        let layer2 = group.getOrCreateLayer('imageMarker');
-        let imageMarker = new fengmap.FMImageMarker({
-            x: coord.x,
-            y: coord.y,
-            height: coord.z,
-            //设置图片路径
-            url: './img/carMarker.png',
-            //设置图片显示尺寸
-            size: 46,
-            callback: () => {
-                imageMarker.alwaysShow();
-            }
-        });
-
-        layer2.addMarker(imageMarker);
-        this.imageMarker = imageMarker;
     };
-
-    //更新Marker位置
-    updateMark = (locationEntity) => {
-
-        //     dataTime:"2017-09-12 21-57-51"
-        // deviceCode:"110101"
-        // direction:1
-        // dumpPower:98
-        // personCode:"ABCD_110101"
-        // pointX:13155861.3471
-        // pointY:2813452.60713
-        // sid:"abcd"
-        // speed:19
-        // type:0
-
-        //查找此人员当前是否已存在
-        if (this.state.allCarLocationMap.has(locationEntity.personCode) == true) {
-            //获取到之前已添加的人员位置实体
-            let carLocation = this.state.allCarLocationMap.get(locationEntity.personCode);
-            //更新ImageMarker的位置
-            carLocation.imageMarker.moveTo({
-                //设置imageMarker的x坐标
-                x: locationEntity.pointX,
-                //设置imageMarker的y坐标
-                y: locationEntity.pointY,
-            });
-            //保存最新的位置信息
-            Object.assign(carLocation, locationEntity);
-        } else {
-            //创建新的ImageMarker
-            let group = this.fmMap.getFMGroup(this.fmMap.groupIDs[0]);
-            //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
-            let imageMarkerLayer = group.getOrCreateLayer('imageMarker');
-            let imageMarker = new fengmap.FMImageMarker({
-                x: locationEntity.pointX,
-                y: locationEntity.pointY,
-                height: 2,
-                //设置图片路径
-                url: './img/carMarker.png',
-                //设置图片显示尺寸
-                size: 46,
-                callback: () => {
-                    imageMarker.alwaysShow();
-                }
-            });
-            //添加至图层
-            imageMarkerLayer.addMarker(imageMarker);
-            //将ImageMarker保存到locationEntity内
-            locationEntity.imageMarker = imageMarker;
-            //保存到Map中
-            this.state.allCarLocationMap.set(locationEntity.personCode, locationEntity);
-        }
-
-        // this.imageMarker.moveTo({
-        //     //设置imageMarker的x坐标
-        //     x: locationEntity.pointX,
-        //     //设置imageMarker的y坐标
-        //     y: locationEntity.pointY,
-        //     moveTo时间设置为6秒,默认为1秒。
-        //     time: 3,
-        //     判断目标点是否进入围栏区域
-        //     update: function (p) {
-        //         // p: 返回Marker当前位置
-        //         // 判断PolygonMarker是否包含Marker当前的位置
-        //         var isContained = polygonMarker.contain(p);
-        //
-        //         //未进入围栏
-        //         if (!isContained) {
-        //             oPolygonInfo.classList.add('hidden');
-        //
-        //         } else {
-        //             if (pointIndex < 1) {
-        //                 oPolygonInfo.classList.remove('hidden');
-        //                 oPolygonInfo.classList.add('alert-info');
-        //                 oStrang.innerHTML = '提示：目标点已进入电子围栏区域';
-        //             }
-        //         }
-        //     },
-        //     callback: function () {
-        //         if (pointIndex < 1) {
-        //
-        //             oPolygonInfo.classList.remove('alert-info');
-        //             oPolygonInfo.classList.add('alert-success');
-        //             oStrang.innerHTML = '提示：目标点已进入围栏';
-        //         }
-        //         moveMarker = true;
-        //         pointIndex++;
-        //     },
-        // });
-
-    }
-
 
 
     /**
-     * 显示报警列表
+     * 获取fengmap对象
+     * @fmMap fengmap对象
      */
-    onShowAlarmModal = () => {
-        this.setState({
-            alarmModalVisible: true
-        });
-    }
+    getMap = (fmMap) => {
+        this.fmMap = fmMap;
+    };
 
-    handleCreate = () => {
-        this.setState({
-            ModalText: 'The modal will be closed after two seconds',
-            alarmConfirmLoading: true,
-        });
-    }
-
-    handleCancel = () => {
-        console.log('Clicked cancel button');
-        this.setState({
-            alarmModalVisible: false,
-        });
-    }
+    /**
+     * 显示/隐藏所有carImageMarker
+     * @visible 显示/隐藏
+     */
+    visibleAllCarImageMarker = (visible) => {
+        if (!this.fmMap) return;
+        const {carMarkerLayer} = this.fmMap;
+        if (!carMarkerLayer) return;
+        carMarkerLayer.visible = visible;
+    };
 
     render() {
         const {userName} = this.state;
@@ -826,13 +646,12 @@ export class MonitoringPage extends React.Component {
                             lineHeight: '38px',
                             color: '#fff',
                             padding: '0 10px'
-                        }}>
-                            车辆信息&nbsp;&nbsp;&nbsp;6 / 8
+                        }}>车辆信息&nbsp;&nbsp;&nbsp;6 / 8
                             <span className={styles.left_arrow} title="收起窗口" onClick={this.onCollapse.bind(this)}><Icon
                                 type="left"/></span>
                         </div>
                         <Content>
-                            <div style={{width: '100%', background: '#F6F5FC'}}>
+                            <div className={styles.headContainer}>
                                 <Input
                                     placeholder="请输入编号筛选"
                                     prefix={<Icon type="search"/>}
@@ -842,62 +661,48 @@ export class MonitoringPage extends React.Component {
                                     className={styles.searchInput}
                                     ref={node => this.userNameInput = node}
                                 />
+                                <Select className={styles.selectDrop} defaultValue="all" size="large">
+                                    <Option value="all">显示全部</Option>
+                                    <Option value="0">在线状态</Option>
+                                    <Option value="1">离线状态</Option>
+                                    <Option value="2">报警状态</Option>
+                                </Select>
                             </div>
-
-
-                            <Select className={styles.selectDrop} defaultValue="all" size="large">
-                                <Option value="all">显示全部</Option>
-                                <Option value="0">在线状态</Option>
-                                <Option value="1">离线状态</Option>
-                                <Option value="2">报警状态</Option>
-                            </Select>
-
-
                             <Menu
                                 mode="inline"
                                 defaultSelectedKeys={['3']}
                                 className={styles.menu}
-                                onClick={this.onCarItemSelected}
-                            >
+                                onClick={this.onCarItemSelected}>
                                 {menu}
                             </Menu>
                         </Content>
                         <Footer className={styles.footer}>
-                            <Button ghost size="small" icon="eye">全部可见</Button>
-                            <Button ghost size="small" icon="eye-o">全部隐藏</Button>
+                            <Button ghost size="small" icon="eye" onClick={() => {
+                                this.visibleAllCarImageMarker(true);
+                            }}>全部可见</Button>
+                            <Button ghost size="small" icon="eye-o" onClick={() => {
+                                this.visibleAllCarImageMarker(false)
+                            }}>全部隐藏</Button>
                         </Footer>
                     </Layout>
                 </Sider>
-                <Content>
-
-                    {/*人员定位*/}
+                <Content className={styles.content}>
+                    {/*显示地图*/}
                     <MonitoringMap
                         realTimeLocations={this.props.realTimeLocations}
-                        loadComplete={this.loadComplete}
-                        personImageMarker={this.personImageMarker}
-                        positionPersonCode={this.state.positionPersonCode}
-                        layerVisible={this.state.layerVisible}
-                        keyArea={this.props.keyArea}/>
-
-                    {/*地图操作按钮*/}
-                        <div className={styles.mapActions}>
+                        getMap={this.getMap}/>
+                    {/*报警信息*/}
+                    <div className={styles.mapActions}>
                         <span className={styles.mapActionBtn} onClick={this.onShowAlarmModal} title="今日报警">
-                            <Badge count={5}>
-                              <img src="./img/fm_controls/alarm.png"></img>
-                            </Badge>
+                        <Badge count={5}><img src="./img/fm_controls/alarm.png"></img></Badge>
                         </span>
-                        <span className={styles.mapActionBtn} onClick={() => openNotificationWithIcon('error')}
-                              title="摄像头点位"><img src="./img/fm_controls/video.png"></img></span>
                     </div>
-
-
+                    {/*车辆信息*/}
                     <Card noHovering={true} bordered={false} className={this.state.carInfoWinClassName} title={
-                        <span><Icon type="solution"/>车辆编号： KH026291</span>
-                    }
+                        <span><Icon type="solution"/>车辆编号： KH026291</span>}
                           extra={<span className={styles.carClose} title="关闭"
                                        onClick={this.onCloseCarInfoWindow.bind(this)}><Icon
-                              type="close"/></span>}
-                    >
+                              type="close"/></span>}>
                         <div className={styles.rightCarContent}>
                             <span>车辆类型：叉车</span>
                             <span>设备编号：KNfs00021</span>
@@ -907,24 +712,14 @@ export class MonitoringPage extends React.Component {
                             <span>当前位置：B区域</span>
                         </div>
                     </Card>
-                    {/*<div className="operating">
-                     <button className="btn btn-default" id="btn1"
-                     style={{marginTop: '-50px', marginLeft: '300px', position: 'absolute'}}>绘制 可编辑多边形
-                     </button>
-                     <button className="btn btn-default" id="btn2"
-                     style={{marginTop: '-50px', marginLeft: '450px', position: 'absolute'}}>编辑 可编辑多边形
-                     </button>
-                     </div>*/}
-                    {/*报警信息窗口*/}
-                    <CollectionCreateForm
-                        ref={this.saveFormRef}
-                        visible={this.state.alarmModalVisible}
-                        onCancel={this.handleCancel}
-                        onCreate={this.handleCreate}
-                        loading={this.state.alarmLoading}
-                        confirmLoading={this.state.alarmConfirmLoading}
-                    />
-
+                    {/*<CollectionCreateForm*/}
+                    {/*ref={this.saveFormRef}*/}
+                    {/*visible={this.state.alarmModalVisible}*/}
+                    {/*onCancel={this.handleCancel}*/}
+                    {/*onCreate={this.handleCreate}*/}
+                    {/*loading={this.state.alarmLoading}*/}
+                    {/*confirmLoading={this.state.alarmConfirmLoading}*/}
+                    {/*/>*/}
                 </Content>
             </Layout>
         );
@@ -943,12 +738,12 @@ export function actionsDispatchToProps(dispatch) {
 
 const selectorStateToProps = createStructuredSelector({
     realTimeLocations: realTimeLocationsSelector(),
-    carDataSource: carDataSourceSelector(),
     carCategory: carCategorySourceSelector(),
+    carList: carListSelector(),
+    /*********************************************/
     keyArea: SelectkeyArea(),
     onLineDevice: SelectorOnLineDevice(),
     alertMessageData: alertMessageDataSelector(),
-    carList: carListSelector(),
 });
 
 export default connect(selectorStateToProps, actionsDispatchToProps)(MonitoringPage);

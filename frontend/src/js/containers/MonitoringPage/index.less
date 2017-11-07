@@ -8,6 +8,7 @@
   height: ~'calc(100% - 54px)';
   height: ~'-mozcalc(100% - 54px)';
   height: ~'-webkitcalc(100% - 54px)';
+  z-index: 9;
 
   :global .ant-layout-sider-children {
     height: 100%;
@@ -23,7 +24,7 @@
   }
 
   :global .ant-menu {
-    height: ~'calc(100% - 49px)';
+    height: ~'calc(100% - 100px)';
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #fff;
@@ -108,8 +109,9 @@
   background: #F6F5FC;
   border: none;
   color: #fff;
-  margin: 10px 13px;
-  width: 230px;
+  //margin: 10px 13px;
+  margin: 0 0 13px 0;
+  width: 100%;
 
   :global .ant-input-prefix {
     color: #000;
@@ -152,12 +154,10 @@
 }
 
 .selectDrop {
-  margin: 10px 13px;
-  width: 230px;
+  width: 100%;
 }
 
 .carChk {
-
   :global .ant-checkbox-inner {
     border-radius: 50%;
     width: 16px;
@@ -185,7 +185,6 @@
 }
 
 .menu {
-
   .content {
     height: 40px;
     line-height: 40px;
@@ -224,8 +223,7 @@
     }
 
     :global .anticon-eye,
-    :global .anticon-environment
-    {
+    :global .anticon-environment {
       color: #5B5B5B;
     }
 
@@ -380,21 +378,22 @@
 }
 
 .mapActionBtn {
-  width: 42px;
-  height: 42px;
-  box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 3px;
-  border-radius: 2px;
+  width: 38px;
+  height: 38px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.32);
+  border-radius: 4px;
   background-color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.32);
   font-size: 22px;
   line-height: 36px;
   text-align: center;
-  color: #2C56C0;
+  color: #c12731;
   display: block;
   margin: 5px;
   &:hover {
     cursor: pointer;
-    color: #2C56C0;
+    color: #d62731;
+    background-color: rgba(239, 239, 239, 0.49);
   }
 }
 
@@ -438,8 +437,6 @@
     //padding-top: 30px;
   }
 
-
-
   :global .card-container > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
     background: #fff;
     padding: 16px;
@@ -466,7 +463,6 @@
     background: #45484A;
     padding: 10px 10px 1px 10px;
   }
-
 
   //徽标
   .badge1 {
@@ -533,4 +529,17 @@
 .addBtn {
   margin-right: 5px;
   width: 110px;
+}
+
+/*内容区域*/
+.content {
+  //padding: 0 0 0 256px;
+  width: 100%;
+  height: 100%;
+}
+
+.headContainer {
+  width: 100%;
+  padding: 10px 13px;
+  background: #F6F5FC;
 }

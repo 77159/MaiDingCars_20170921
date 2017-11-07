@@ -80,25 +80,12 @@ export class MainContainer extends React.Component {
 
         if (type === RECEIVED_MESSAGE) {
             const data = JSON.parse(payload);
-            // if (data.type === undefined || data.type == null) {
-            //     return;
-            // }
 
-            if(data) {
-                return;
-                const list = data.list;
-                console.log(data);
-                //过滤设备没有和人员关联的数据
-                const onLineList = list.map((item) => {
-                    if (!item.carCode || item.carCode !== null) {
-                        return item;
-                    }
-                });
-                this.props.getOnlineDevice(onLineList);
+            //车辆实时定位信息
+            if (data.type === 0) {
+                this.props.receivedLocation(data);
                 return;
             }
-            
-
 
             //设备实时位置信息
             // if (data.type === 0) {

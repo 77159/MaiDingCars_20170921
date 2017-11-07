@@ -21,6 +21,7 @@ import {
     showErrorMessage,
 } from "../../containers/App/actions";
 import {Popconfirm} from 'antd';
+
 const SubMenu = Menu.SubMenu;
 
 export class AreaSubMenu extends React.Component {
@@ -64,7 +65,7 @@ export class AreaSubMenu extends React.Component {
                 {
                     listGroups.map((item) => {
                         const gid = item.gid;
-                        const floorName = item.gname.toUpperCase();
+                        const floorName = 'F1';
                         return (
                             <SubMenu key={floorName} title={
                                 <section>
@@ -115,7 +116,8 @@ export class AreaSubMenu extends React.Component {
                                                                         e.stopPropagation();
                                                                         this.props.deleteAreaById(areaName);
                                                                         this.props.lockForm();
-                                                                        this.props.emptyAreaForm();}}>
+                                                                        this.props.emptyAreaForm();
+                                                                    }}>
                                                             <Button shape="circle"
                                                                     ghost
                                                                     className={styles.areaEditBtn}
