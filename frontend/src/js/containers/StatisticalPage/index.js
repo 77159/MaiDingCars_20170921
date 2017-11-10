@@ -66,18 +66,30 @@ export class StatisticalPage extends React.Component {
             curSelectedRowKeys: [],
             autoComplete_deviceCode: [],        //设备编号自动完成提示数组
             autoComplete_carCode: [],           //车辆编号自动完成提示数组
+
+            carMsg: this.props.carMsg,
+
         };
     }
+
+    // componentWillReceiveProps(nextProps) {
+    //     this.setState({
+    //         carMsg: nextProps.carMsg
+    //     });
+    // };
 
     componentDidMount() {
         //加载设备数据
         this.props.queryAllDevice();
         this.props.queryAllCarMsg();
 
-        // 基于准备好的dom，初始化echarts实例
+        console.log(this.state.carMsg);
+
+        // 初始化echarts实例
         let myChart = echarts.init(document.getElementById('main'));
         let myChart2 = echarts.init(document.getElementById('main2'));
         let myChart3 = echarts.init(document.getElementById('main3'));
+
         // 绘制图表
         myChart.setOption({
             tooltip: {
@@ -187,6 +199,7 @@ export class StatisticalPage extends React.Component {
         window.onresize = myChart3.resize;
 
     }
+
 
     //数据过滤器 value:筛选条件 record 设备数据 index 数据索引
     deviceDataFilter = (value, record) => {
@@ -315,7 +328,6 @@ export class StatisticalPage extends React.Component {
         };
         const {deviceDataSource, tableDataLoading, carMsg} = this.props;
         const dataCount = deviceDataSource != null ? deviceDataSource.length : 0;
-
         //车辆信息显示
         let carMsgShow;
         let carMsgs;
@@ -327,6 +339,7 @@ export class StatisticalPage extends React.Component {
                 )
             })
         }
+
 
 
         const columns = [{
@@ -561,6 +574,7 @@ export class StatisticalPage extends React.Component {
                                         <Button type="primary" icon="sync" className={styles.resetBtn} onClick={this.onResetSearch}>重置</Button>
                                     </Col>
                                 </Row>
+                                
                                 <Row type="flex" align="middle">
                                     <Col span={12} className={styles.item}>
                                         <p style={{cursor: 'pointer'}} onClick={this.switchInfo}>车辆信息统计<span style={{fontSize: '12px'}}>（点击查看详情）</span></p>

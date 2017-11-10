@@ -24,6 +24,15 @@ const tableDataLoadingSelector=()=>createSelector(
 const carMsgSelector = () => createSelector(
     selectorDevice,
     (deviceState) => deviceState.get('carMsg')
+
+
+    // (carState) => {
+    // const carDataSource = carState.get('carDataSource') ? carState.get('carDataSource') : [];
+    // return carDataSource.filter((item) => {
+    //     return item.deviceCode !== null && item.deviceCode !== '';
+    //      });
+    // }
+
 );
 
 const deviceEntitySelector = () => createSelector(
