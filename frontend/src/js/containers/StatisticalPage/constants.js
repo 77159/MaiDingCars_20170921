@@ -23,5 +23,8 @@ export const CREATE_DEVICE = 'DeviceMgr/CREATE_DEVICE';                         
 export const MODIFY_DEVICE = 'DeviceMgr/MODIFY_DEVICE';                                 //修改设备信息
 export const GET_DEVICE = 'DeviceMgr/GET_DEVICE';                                       //查询一个设备的信息
 export const DELETE_DEVICE = 'DeviceMgr/DELETE_DEVICE';                                 //删除设备（一个或多个）
-export const QUERY_ALL_NOT_DEVICE_BEGIN = 'DeviceMgr/QUERY_ALL_NOT_DEVICE_BEGIN';       //查询所有未被使用的设备信息-开始
-export const QUERY_ALL_NOT_DEVICE_FINISH = 'DeviceMgr/QUERY_ALL_NOT_DEVICE_FINISH';     //查询所有未被使用的设备信息-结束
+
+export const CAR_MSG_BEGIN = 'StatisticalMgr/CAR_MSG_BEGIN';                             //对车辆信息的操作（CURD）开始
+export const CAR_MSG_FINISH = 'StatisticalMgr/CAR_MSG_FINISH';                           //对车辆信息的操作（CURD）结束
+
+

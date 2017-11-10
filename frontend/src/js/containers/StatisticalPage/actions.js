@@ -29,8 +29,8 @@ import {
     MODIFY_DEVICE,
     GET_DEVICE,
     DELETE_DEVICE,
-    QUERY_ALL_NOT_DEVICE_BEGIN,
-    QUERY_ALL_NOT_DEVICE_FINISH
+    CAR_MSG_BEGIN,
+    CAR_MSG_FINISH
 } from './constants';
 
 /**
@@ -104,18 +104,19 @@ export const deleteDevice = (deviceCodes) => ({
     deviceCodes
 });
 
+
 /**
- * 查询所有未被使用的设备信息-开始
+ * 查询所车辆信息-开始
  */
-export const queryAllNotDeviceBegin = () => ({
-    type: QUERY_ALL_NOT_DEVICE_BEGIN
+export const queryAllCarMsgBegin = () => ({
+    type: CAR_MSG_BEGIN
 });
 
 /**
- * 查询所有未被使用的设备信息-结束
- * @param notDeviceData 设备集合
+ * 查询车辆信息-结束
+ * @param carMsg 设备集合
  */
-export const queryAllNotDeviceFinish = (notDeviceData) => ({
-    type: QUERY_ALL_NOT_DEVICE_FINISH,
-    payload: notDeviceData
+export const queryAllCarMsgFinish = (carMsg) => ({
+    type: CAR_MSG_FINISH,
+    payload: carMsg
 });

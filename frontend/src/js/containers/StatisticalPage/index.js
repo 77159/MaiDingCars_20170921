@@ -32,7 +32,7 @@ import {
     modifyDevice,
     getDevice,
     deleteDevice,
-    queryAllNotDeviceBegin
+    queryAllCarMsgBegin
 } from './actions';
 import {DatePicker, Icon} from 'antd';
 const {MonthPicker, RangePicker} = DatePicker;
@@ -46,33 +46,33 @@ import {Progress} from 'antd';
 import {
     deviceDataSourceSelector,
     tableDataLoadingSelector,
-    notDeviceDataSourceSelector,
-    deviceEntitySelector
+    deviceEntitySelector,
+    carMsgSelector
 } from './selectors';
 import DeviceFormModal from '../StatisticalFormModal';
 import {deviceFormModalShow} from "../StatisticalFormModal/actions";
 import {CommonUtil} from "../../utils/util";
 
-export class DeviceMgrPage extends React.Component {
+export class StatisticalPage extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            filter_deviceCode: '',             //设备编号-筛选条件，需要初始化，不要设置为null
-            filter_carCode: '',             //安保编号-筛选条件，需要初始化，不要设置为null
-            filter_workStatus: 'all',          //工作状态-筛选条件 [all] 全部（默认）[0] 离线 [1] 工作
-            filter_deviceStatus: 'all',        //设备状态-筛选条件 [all] 全部（默认）[0] 禁用 [1] 启用
-            dataFilter: null,                  //数据过滤器数组，只有一条记录，将筛选条件用&&连接。格式：['设备编号'&&'安保编号'&&'工作状态'&&'设备状态']
+            filter_deviceCode: '',              //设备编号-筛选条件，需要初始化，不要设置为null
+            filter_carCode: '',                 //安保编号-筛选条件，需要初始化，不要设置为null
+            filter_workStatus: 'all',           //工作状态-筛选条件 [all] 全部（默认）[0] 离线 [1] 工作
+            filter_deviceStatus: 'all',         //设备状态-筛选条件 [all] 全部（默认）[0] 禁用 [1] 启用
+            dataFilter: null,                   //数据过滤器数组，只有一条记录，将筛选条件用&&连接。格式：['设备编号'&&'安保编号'&&'工作状态'&&'设备状态']
             curSelectedRowKeys: [],
-            autoComplete_deviceCode: [],       //设备编号自动完成提示数组
-            autoComplete_carCode: [],       //车辆编号自动完成提示数组
+            autoComplete_deviceCode: [],        //设备编号自动完成提示数组
+            autoComplete_carCode: [],           //车辆编号自动完成提示数组
         };
     }
 
     componentDidMount() {
         //加载设备数据
         this.props.queryAllDevice();
-        this.props.queryAllNotDevice();
+        this.props.queryAllCarMsg();
 
         // 基于准备好的dom，初始化echarts实例
         let myChart = echarts.init(document.getElementById('main'));
@@ -313,11 +313,22 @@ export class DeviceMgrPage extends React.Component {
             selectedRowKeys: curSelectedRowKeys,
             onChange: this.onSelectChange,
         };
-
-        const {deviceDataSource, tableDataLoading} = this.props;
-        //数据总数
+        const {deviceDataSource, tableDataLoading, carMsg} = this.props;
         const dataCount = deviceDataSource != null ? deviceDataSource.length : 0;
-        
+
+        //车辆信息显示
+        let carMsgShow;
+        let carMsgs;
+        if(carMsg) {
+            carMsgs = carMsg.typeCarnum;
+            carMsgShow = carMsgs.map((item, index) => {
+                return(
+                    <div key={index} className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>{item.type_name}<br/><span>{item.count}</span></div></div>
+                )
+            })
+        }
+
+
         const columns = [{
             title: '车辆编号',
             dataIndex: 'carCode',
@@ -528,6 +539,7 @@ export class DeviceMgrPage extends React.Component {
             key: '07',
         }];
 
+
         return (
             <Layout className={styles.layout}>
                 <div className="cardContainer">
@@ -553,24 +565,18 @@ export class DeviceMgrPage extends React.Component {
                                     <Col span={12} className={styles.item}>
                                         <p style={{cursor: 'pointer'}} onClick={this.switchInfo}>车辆信息统计<span style={{fontSize: '12px'}}>（点击查看详情）</span></p>
                                         <div className={styles.carsMsg}>
-                                            <span>车辆总数：88</span>
+                                            <span>车辆总数：{carMsg ? carMsg.carsTotal : ''}</span>
                                             <span>单位：辆</span>
                                         </div>
                                         <div className={styles.carsMsg2}>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>叉车<br/><span>20</span></div></div>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>汽车<br/><span>12</span></div></div>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>客车<br/><span>12</span></div></div>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>挖掘机<br/><span>2</span></div></div>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>拖车<br/><span>15</span></div></div>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>其它<br/><span>3</span></div></div>
+                                            {carMsgShow}
                                         </div>
                                         <div className={styles.carsMsg3}>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/online.png" alt=""/><div>在线数量<br/><span>80</span></div></div>
-                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/offline.png" alt=""/><div>离线数量<br/><span>8</span></div></div>
-                                            <div className={styles.carsMsg_div} style={{width: '50%'}}><img src="../../img/Statistical/none.png" alt=""/><div>未绑定设备<br/><span>7</span></div></div>
+                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/online.png" alt=""/><div>在线数量<br/><span>{carMsg ? carMsg.onLineCarNum : ''}</span></div></div>
+                                            <div className={styles.carsMsg_div}><img src="../../img/Statistical/offline.png" alt=""/><div>离线数量<br/><span>{carMsg ? carMsg.offLineCarNum : ''}</span></div></div>
+                                            <div className={styles.carsMsg_div} style={{width: '50%'}}><img src="../../img/Statistical/none.png" alt=""/><div>未绑定设备<br/><span>{carMsg ? carMsg.noDeviceCarNum : ''}</span></div></div>
                                         </div>
                                     </Col>
-
                                     <Col span={12} className={styles.item}>
                                         <p>区域密度统计</p>
                                         <div id="main" style={{height: 320}}></div>
@@ -716,24 +722,26 @@ export class DeviceMgrPage extends React.Component {
         );
     }
 }
-;
 
 export function actionsDispatchToProps(dispatch) {
     return {
         queryAllDevice: () => dispatch(queryAllDeviceBegin()),
-        queryAllNotDevice: () => dispatch(queryAllNotDeviceBegin()),
         showErrorMessage: (message) => dispatch(showErrorMessage(message)),
         showDeviceFormModal: (operation, deviceCode) => dispatch(deviceFormModalShow(operation, deviceCode)),
         deleteDevice: (deviceCodes) => dispatch(deleteDevice(deviceCodes)),
         modifyDevice: (deviceEntity) => dispatch(modifyDevice(deviceEntity)),
+
+        queryAllCarMsg: () => dispatch(queryAllCarMsgBegin()),
+
+
     };
 }
 
 const selectorStateToProps = createStructuredSelector({
     deviceDataSource: deviceDataSourceSelector(),
     tableDataLoading: tableDataLoadingSelector(),
-    notDeviceDataSource: notDeviceDataSourceSelector(),
     deviceEntity: deviceEntitySelector(),
+    carMsg: carMsgSelector(),
 });
 
-export default connect(selectorStateToProps, actionsDispatchToProps)(DeviceMgrPage);
+export default connect(selectorStateToProps, actionsDispatchToProps)(StatisticalPage);

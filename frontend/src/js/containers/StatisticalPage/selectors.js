@@ -9,7 +9,7 @@
 'use strict';
 import {createSelector} from 'reselect';
 
-const selectorDevice = (state) => state.get('device');
+const selectorDevice = (state) => state.get('statistical');
 
 const deviceDataSourceSelector = () => createSelector(
     selectorDevice,
@@ -21,9 +21,9 @@ const tableDataLoadingSelector=()=>createSelector(
     (deviceState) => deviceState.get('tableDataLoading')
 );
 
-const notDeviceDataSourceSelector = () => createSelector(
+const carMsgSelector = () => createSelector(
     selectorDevice,
-    (deviceState) => deviceState.get('notDeviceDataSource')
+    (deviceState) => deviceState.get('carMsg')
 );
 
 const deviceEntitySelector = () => createSelector(
@@ -36,5 +36,5 @@ export {
     selectorDevice,
     deviceDataSourceSelector,
     tableDataLoadingSelector,
-    notDeviceDataSourceSelector
+    carMsgSelector
 };

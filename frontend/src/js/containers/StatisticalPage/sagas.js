@@ -26,14 +26,16 @@ import {
     QUERY_ALL_DEVICE,
     QUERY_ALL_DEVICE_BEGIN,
     QUERY_ALL_NOT_DEVICE_BEGIN,
-    DELETE_DEVICE
+    DELETE_DEVICE,
+    CAR_MSG_BEGIN
 } from './constants';
 
 import {
     deviceOpBegin, deviceOpFinish,
     queryAllDevice, queryAllDeviceFinish,
     queryAllDeviceBegin,
-    queryAllNotDeviceFinish
+    queryAllNotDeviceFinish,
+    queryAllCarMsgFinish
 } from './actions';
 
 import {
@@ -41,7 +43,7 @@ import {
     showSuccessMessage
 } from "../App/actions";
 
-import {queryAllDeviceAPI, queryAllNotDeviceAPI, deleteDevicesAPI} from '../../api/serverApi';
+import {queryAllDeviceAPI, queryAllNotDeviceAPI, deleteDevicesAPI, queryAllCarMsgAPI} from '../../api/serverApi';
 import {LOCATION_CHANGE} from 'react-router-redux';
 import requestError from "../../utils/requestError";
 import {createDeviceSaga, modifyDeviceSaga} from "../DeviceFormModal/sagas";
@@ -73,30 +75,6 @@ export function* queryAllDeviceSaga() {
 }
 
 /**
- * 获取所有未被使用的设备数据
- */
-export function* queryAllNotDeviceSaga() {
-    try {
-        //操作开始，更新loading的state
-        yield put(deviceOpBegin());
-        //发起异步网络请求，并获取返回结果
-        const response = yield call(queryAllNotDeviceAPI);
-        //是否发生了错误，或者请求失败
-        if (!response || response.success == false) {
-            //TODO 此处以后要对应接口的错误码，目前只能显示一种错误类型
-            yield put(showErrorMessage(requestError.QUERY_ALL_DEVICE_ERROR));   //提示错误信息
-        } else {
-            //调用成功时，返回结果数据，让redux来更新state
-            yield put(queryAllNotDeviceFinish(response));
-        }
-    } catch (error) {
-        //异常提示
-        console.log(error);
-        yield put(showErrorMessage(requestError.QUERY_ALL_DEVICE_ERROR));
-    }
-}
-
-/**
  * 删除一个或多个设备
  */
 export function* deleteDeviceSaga(action) {
@@ -120,24 +98,51 @@ export function* deleteDeviceSaga(action) {
 }
 
 
+
+/**
+ * 获取车辆信息数据
+ */
+export function* queryAllCarMsgSaga() {
+    try {
+        //操作开始，更新loading的state
+        yield put(deviceOpBegin());
+        //发起异步网络请求，并获取返回结果
+        const response = yield call(queryAllCarMsgAPI);
+        //是否发生了错误，或者请求失败
+        if (!response || response.success == false) {
+            //TODO 此处以后要对应接口的错误码，目前只能显示一种错误类型
+            yield put(showErrorMessage(requestError.QUERY_ALL_DEVICE_ERROR));   //提示错误信息
+        } else {
+            //调用成功时，返回结果数据，让redux来更新state
+            yield put(queryAllCarMsgFinish(response));
+        }
+    } catch (error) {
+        //异常提示
+        console.log(error);
+        yield put(showErrorMessage(requestError.QUERY_ALL_DEVICE_ERROR));
+    }
+}
+
+
+
 export function* watchFetchData() {
     //设置监听
     const watcher = yield takeLatest(QUERY_ALL_DEVICE_BEGIN, queryAllDeviceSaga);
-    const queryAllNotDeviceWatcher = yield takeLatest(QUERY_ALL_NOT_DEVICE_BEGIN, queryAllNotDeviceSaga);
     //监听删除设备
     const deleteDeviceWatcher = yield takeLatest(DELETE_DEVICE, deleteDeviceSaga);
-
     //设置监听
     const watcher2 = yield takeLatest(CREATE_DEVICE, createDeviceSaga);
     //监听修改设备
     const modifyDeviceWatcher = yield takeLatest(MODIFY_DEVICE, modifyDeviceSaga);
+    //监听查询车辆信息
+    const queryAllCarMsgWatcher = yield takeLatest(CAR_MSG_BEGIN, queryAllCarMsgSaga);
     //当发生页面切换动作时，中断未完成的saga动作
     yield take([LOCATION_CHANGE]);
     yield cancel(watcher);
     yield cancel(watcher2);
-    yield cancel(queryAllNotDeviceWatcher);
     yield cancel(deleteDeviceWatcher);
     yield cancel(modifyDeviceWatcher);
+    yield cancel(queryAllCarMsgWatcher);
 
 }
 

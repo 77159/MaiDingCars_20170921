@@ -68,19 +68,19 @@ export function queryAllNotDeviceAPI() {
     return invokeServerAPI(`devices/unbounded`, 'GET', null);
 }
 
-/*************************人员操作*************************/
+/*************************车辆操作*************************/
 
 /**
- * 查询所有人员信息
+ * 查询所有车辆信息
  * @returns {Promise.<TResult>|*}
  */
 export function queryAllCarAPI() {
-    console.log('查询所有人员信息serverAPI');
+    console.log('查询所有车辆信息serverAPI');
     return invokeServerAPI(`cars?pageNum=1&pageSize=1000&accessToken=${token}`, 'GET', null);
 }
 
 /**
- * 查询单个人员信息
+ * 查询单个车辆信息
  * @param carCode  需要根据carCode来查询
  * @returns {Promise.<TResult>|*}
  */
@@ -89,18 +89,18 @@ export function queryCarAPI(carCode) {
 }
 
 /**
- * 添加人员
- * @param carEntity  人员实体对象
+ * 添加车辆
+ * @param carEntity  车辆实体对象
  * @returns {Promise.<TResult>|*}
  */
 export function createCarAPI(carEntity) {
-    console.log('进入添加人员serverAPI');
+    console.log('进入添加车辆serverAPI');
     return invokeServerAPI(`cars`, 'POST', carEntity);
 }
 
 /**
- * 删除人员
- * @param carCode  人员编号
+ * 删除车辆
+ * @param carCode  车辆编号
  * @returns {Promise.<TResult>|*}
  */
 export function deleteCarsAPI(carCode) {
@@ -108,19 +108,19 @@ export function deleteCarsAPI(carCode) {
 }
 
 /**
- * 修改人员信息
- * @param carEntity  人员实体对象
+ * 修改车辆信息
+ * @param carEntity  车辆实体对象
  * @returns {Promise.<TResult>|*}
  */
 export function modifyCarAPI(carEntity) {
-    console.log('进入修改人员信息service', carEntity);
+    console.log('进入修改车辆信息service', carEntity);
     return invokeServerAPI(`cars`, 'PUT', carEntity);
 }
 
-/*************************人员类型操作*************************/
+/*************************车辆类型操作*************************/
 
 /**
- * 查询所有人员类型信息
+ * 查询所有车辆类型信息
  * @returns {Promise.<TResult>|*}
  */
 export function getAllCarCategoryAPI() {
@@ -128,17 +128,17 @@ export function getAllCarCategoryAPI() {
 }
 
 /**
- * 添加所有人员类型
- * @param carCategory 人员类型的实体
+ * 添加所有车辆类型
+ * @param carCategory 车辆类型的实体
  * @returns {Promise.<TResult>|*}
  */
 export function postCarCategory(carCategory) {
-    console.log('进入创建人员类型service', carCategory);
+    console.log('进入创建车辆类型service', carCategory);
     return invokeServerAPI(`cartype`, 'POST', carCategory);
 }
 
 /**
- * 删除人员类型根据     人员类型id
+ * 删除车辆类型根据     车辆类型id
  * @param id
  * @returns {Promise.<TResult>|*}
  */
@@ -147,7 +147,7 @@ export function deleteCarCategory(id) {
 }
 
 /**
- * 根据人员类型id查询人员类型
+ * 根据车辆类型id查询车辆类型
  * @param id
  * @returns {Promise.<TResult>|*}
  */
@@ -156,8 +156,8 @@ export function getCarCategoryById(id) {
 }
 
 /**
- * 修改人员类型
- * @param carCategory  人员类型的实体
+ * 修改车辆类型
+ * @param carCategory  车辆类型的实体
  * @returns {Promise.<TResult>|*}
  */
 export function putCarCategory(carCategory) {
@@ -212,13 +212,13 @@ export function modifyArea(area) {
 }
 
 
-/************************* 人员登陆操作 *************************/
+/************************* 车辆登陆操作 *************************/
 /**
- * @param loginMsg 人员登陆信息对象
+ * @param loginMsg 车辆登陆信息对象
  * @returns {Promise.<TResult>|*}
  */
 export function changeUsernameAPI(loginMsg) {
-    console.log('进入登陆人员serverAPI');
+    console.log('进入登陆车辆serverAPI');
     return invokeServerAPI(`user/login`, 'POST', loginMsg);
 }
 
@@ -240,3 +240,12 @@ export function loginOutAPI() {
     return invokeServerAPI(`user/logout`, 'POST');
 }
 
+/************************* 统计分析 *************************/
+/**
+ * 查询车辆信息
+ * @returns {Promise.<TResult>|*}
+ */
+export function queryAllCarMsgAPI() {
+    console.log('进入查询车辆信息serverAPI');
+    return invokeServerAPI(`statisticalAnalysis`, 'GET', null);
+}
