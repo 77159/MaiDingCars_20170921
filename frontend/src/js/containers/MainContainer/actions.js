@@ -22,13 +22,17 @@
 'use strict';
 import {
     RECEIVED_CAR_LOCATION,
-    GET_ONLINE_CAR,
     GET_ONLINE_DEVICE,
     PUSH_ALARM_MESSAGE,
-    PUT_MESSAGE_ISREAD,
     PUT_MESSAGE_LASTDATETIME,
     PUT_MESSAGE_ISAREA,
-    PUT_MESSAGE_ISSHOW
+    PUT_ALARM_DATAS,
+    DEL_ALARM_DATAS,
+    DEL_ALARM_ALL_DATAS,
+    UPDATE_MESSAGE_SHOW,
+    UPDATE_UNREAD_MESSAGE,
+    DELETE_ALARM_MESSAGE_BY_KEYS,
+    UPDATE_ALARM_LASTDATETIME
 } from './constants';
 
 /**
@@ -38,17 +42,6 @@ import {
 export const receivedCarLocation = (locationEntity) => ({
     type: RECEIVED_CAR_LOCATION,
     payload: locationEntity
-});
-
-//export const
-
-/**
- * 接收到新的人员位置
- * @param locationEntity 位置实体对象
- */
-export const getOnlineCar = (locationEntity) => ({
-    type: GET_ONLINE_CAR,
-    payload: onlineCar
 });
 
 
@@ -62,21 +55,12 @@ export const getOnlineDevice = (onlineDevice) => ({
 });
 
 /**
- * 接受最新的人员
+ * 添加新的报警信息
  * @param message
  */
 export const pushAlarmMessage = (message) => ({
     type: PUSH_ALARM_MESSAGE,
     payload: message
-});
-
-/**
- * 接受最新的人员
- * @param message
- */
-export const putMessageIsRead = (id) => ({
-    type: PUT_MESSAGE_ISREAD,
-    payload: id
 });
 
 /**
@@ -99,13 +83,67 @@ export const putMessageIsArea = (obj) => ({
     payload: obj
 });
 
+
 /**
- * 更新信息对象是否已经显示
- * @param obj
+ * 更新当前报警信息列表
+ * @param data
  */
-export const putMessageIsShow = (obj) => ({
-    type: PUT_MESSAGE_ISSHOW,
-    payload: obj
+export const putAlarmDatas = (data) => ({
+    type: PUT_ALARM_DATAS,
+    payload: data
 });
 
-//export const GET_ALARM_MSG = () => ({});
+/**
+ * 删除当前报警信息列表
+ * @param data
+ */
+export const delAlarmDatas = (data) => ({
+    type: DEL_ALARM_DATAS,
+    payload: data
+});
+
+/**
+ * 清除所有的当前报警信息列表
+ */
+export const delAlarmAllDatas = () => ({
+    type: DEL_ALARM_ALL_DATAS,
+});
+
+/**
+ * 更新已经显示的报警信息状态
+ */
+export const updateMessageShow = (key) => ({
+    type: UPDATE_MESSAGE_SHOW,
+    payload: key
+});
+
+/**
+ * 更新未读信息状态
+ * @param ids 报警信息主键集合
+ */
+export const updateUnReadMessage = (ids) => ({
+    type: UPDATE_UNREAD_MESSAGE,
+    payload: {
+        ids
+    }
+});
+
+/**
+ * 根据主键集合(keys)删除报警信息
+ * @param keys 主键集合
+ */
+export const deleteAlarmMessageByKeys = (keys) => ({
+    type: DELETE_ALARM_MESSAGE_BY_KEYS,
+    payload: {
+        keys
+    }
+});
+
+/**
+ * 更新报警最后时间
+ * @param data {key:key,dateTime:dateTime}
+ */
+export const updateLastDateTime = (data) => ({
+    type: UPDATE_ALARM_LASTDATETIME,
+    payload: data
+});

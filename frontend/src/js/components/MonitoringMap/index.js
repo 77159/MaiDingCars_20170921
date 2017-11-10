@@ -46,6 +46,26 @@ export default class MonitoringMap extends React.Component {
         if (_.eq(this.props.realTimeLocations, nextProps.realTimeLocations) == false) {
             this.updateMark(nextProps.realTimeLocations);
         }
+
+        //判断当前是否有定位的车辆
+        if (this.props.positionCarCode !== nextProps.positionCarCode && nextProps.positionCarCode) {
+            const fmMap = this.fmMap;
+            const carCode = nextProps.positionCarCode;
+            //放大地图效果
+            fmMap.mapScaleLevel = {
+                level: 24,
+                duration: 1,
+                callback: () => {
+                    const {carImageMarkers} = fmMap;
+                    if (!carImageMarkers) return;
+                    const carImageMarker = carImageMarkers[carCode];
+                    if (!carImageMarker) return;
+                    const {x, y, groupID} = carImageMarker;
+                    const coords = {x, y, groupID};
+                    fmMap.moveToCenter(coords);
+                }
+            };
+        }
     };
 
     /**
@@ -160,6 +180,21 @@ export default class MonitoringMap extends React.Component {
                 x: pointX,
                 y: pointY,
             });
+        }
+        //定位车辆，将当前车辆作为中心点坐标，始终在视野的中心点移动
+        this.carImageMarkerMoveToCenter(carCode, {x: pointX, y: pointY, groupID: 1});
+    };
+
+    /**
+     * 根据当前的车辆编号，将当前车辆作为中心点，始终在视野中心点移动
+     * @param carCode 车辆编号
+     * @param coords 当前车辆的坐标信息
+     */
+    carImageMarkerMoveToCenter = (carCode, coords) => {
+        if (!this.fmMap) return;
+        //判断当前移动的车辆是否是当前定位的车辆
+        if (carCode === this.props.positionCarCode) {
+            this.fmMap.moveToCenter(coords);
         }
     };
 

@@ -20,7 +20,7 @@ export const AppConfig = {
     },
 
     get fmapID() {
-        return 'md-xm-57-9';
+        return 'md-xm-one-57-59';
     },
 
     get userName() {

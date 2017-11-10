@@ -27,17 +27,26 @@ import {
     PUT_MESSAGE_LASTDATETIME,
     PUT_MESSAGE_ISAREA,
     PUT_MESSAGE_ISSHOW,
+    PUT_ALARM_DATAS,
+    DEL_ALARM_DATAS,
+    DEL_ALARM_ALL_DATAS,
+    UPDATE_MESSAGE_SHOW,
+    UPDATE_UNREAD_MESSAGE,
+    DELETE_ALARM_MESSAGE_BY_KEYS,
+    UPDATE_ALARM_LASTDATETIME
 } from './constants';
 
 // The initial state of the App
 const initialState = fromJS({
     loading: false,
     error: false,
-    realTimeLocations: null,    //实时位置信息
     onlineCar: null,
     onlineDevice: null,         //获取当前最新设备
-    alertMessageData: [],       //报警数据
     isReadCount: 0,             //已读条数
+    /*************************/
+    realTimeLocations: null,    //实时位置信息
+    alertMessageData: [],       //报警数据列表
+    alarmDatas: []               //当前正在报警的数据
 });
 
 
@@ -106,6 +115,95 @@ export default (state = initialState, action = {}) => {
                 item.isShow = payload.isShow;
             }
         });
+    }
+
+    //更新当前报警信息
+    if (type === PUT_ALARM_DATAS) {
+        let alarmDatas = state.get('alarmDatas');
+        return state.set('alarmDatas', alarmDatas.push(payload));
+    }
+
+    //移除当前的报警信息
+    if (type === DEL_ALARM_DATAS) {
+        let alarmDatas = state.get('alarmDatas');
+        return state.set('alarmDatas', alarmDatas.delete(payload));
+    }
+
+    //移除所有的报警信息
+    if (type === DEL_ALARM_ALL_DATAS) {
+        let alarmDatas = state.get('alarmDatas');
+        return state.set('alarmDatas', alarmDatas.clear());
+    }
+
+    //更新已经显示的报警信息状态
+    if (type === UPDATE_MESSAGE_SHOW) {
+        let alarmDatas = state.get('alarmDatas');
+        const key = payload;
+
+        alarmDatas.forEach((item) => {
+            if (item.key === key && item.isShow) {
+                item.isShow = false;
+            }
+        });
+    }
+
+    //更新报警信息未读信息状态
+    if (type === UPDATE_UNREAD_MESSAGE) {
+        let alertMessageData = state.get('alertMessageData');
+        const ids = payload.ids;
+        ids.forEach((id) => {
+            alertMessageData.forEach((item) => {
+                if (item.key === id && item.isRead) {
+                    item.isRead = false;
+                }
+            });
+        });
+    }
+
+    //根据key删除预警信息
+    if (type === DELETE_ALARM_MESSAGE_BY_KEYS) {
+        let alertMessageData = state.get('alertMessageData');
+        const keys = payload.keys;
+
+        const datas = alertMessageData.filter((item) => {
+            let flag = false;
+            for (let i = 0; i < keys.length; i++) {
+                if (item.key === keys[i]) {
+                    flag = true;
+                    break
+                }
+            }
+            return flag === false;
+        });
+
+        return state.set('alertMessageData', datas);
+    }
+
+
+    //根据主键key更新最后报警时间
+    if (type === UPDATE_ALARM_LASTDATETIME) {
+        let alertMessageData = state.get('alertMessageData');
+        let alarmDatas = state.get('alarmDatas');
+
+
+        const {key, dateTime} = payload;
+        //更新警告列表中最后更新时间
+        for (let i = 0; i < alertMessageData.size; i++) {
+            let item = alertMessageData.get(i);
+            if (item.key === key) {
+                item.lastDateTime = dateTime;
+                break;
+            }
+        }
+
+        //更新当前警报信息的最后更新时间
+        for (let i = 0; i < alarmDatas.size; i++) {
+            let item = alarmDatas.get(i);
+            if (item.key === key) {
+                item.lastDateTime = dateTime;
+                break;
+            }
+        }
     }
 
     return state;

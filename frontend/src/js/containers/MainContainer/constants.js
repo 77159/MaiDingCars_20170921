@@ -23,3 +23,11 @@ export const PUT_MESSAGE_ISREAD = 'MainContainer/PUT_MESSAGE_ISREAD';           
 export const PUT_MESSAGE_LASTDATETIME = 'MainContainer/PUT_MESSAGE_LASTDATETIME';           //更新报警最后更新时间
 export const PUT_MESSAGE_ISAREA = 'MainContainer/PUT_MESSAGE_ISAREA';                       //更新人员是否在重点区域
 export const PUT_MESSAGE_ISSHOW = 'MainContainer/PUT_MESSAGE_ISSHOW';                       //更新人员是否在已显示提示信息
+
+export const PUT_ALARM_DATAS = 'MainContainer/PUT_ALARM_DATAS';                             //添加当前报警信息
+export const DEL_ALARM_DATAS = 'MainContainer/DEL_ALARM_DATAS';                             //移除当前报警信息
+export const DEL_ALARM_ALL_DATAS = 'MainContainer/DEL_ALARM_ALL_DATAS';                     //移除当前报警信息
+export const UPDATE_MESSAGE_SHOW = 'MainContainer/UPDATE_MESSAGE_SHOW';                     //更新当前报警信息是否已经显示
+export const UPDATE_UNREAD_MESSAGE = 'MainContainer/UPDATE_UNREAD_MESSAGE';                 //更新当前未读信息状态
+export const DELETE_ALARM_MESSAGE_BY_KEYS = 'MainContainer/DELETE_ALARM_MESSAGE_BY_KEYS';   //删除当前报警信息
+export const UPDATE_ALARM_LASTDATETIME = 'MainContainer/UPDATE_ALARM_LASTDATETIME';         //更新报警最后时间

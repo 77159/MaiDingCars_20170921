@@ -29,9 +29,19 @@ const alertMessageDataSelector = () => createSelector(
     (globalState) => globalState.get('alertMessageData')
 );
 
+
+/**
+ * 获取当前所有的已在报警信息列表中的数据
+ */
+const alarmDatasSelector = () => createSelector(
+    selectMainContainer,
+    (globalState) => globalState.get('alarmDatas')
+);
+
 export {
     selectMainContainer,
     realTimeLocationsSelector,
     SelectorOnLineDevice,
     alertMessageDataSelector,
+    alarmDatasSelector
 };
