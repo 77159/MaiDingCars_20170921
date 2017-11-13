@@ -26,9 +26,10 @@ const carMsgSelector = () => createSelector(
     (deviceState) => deviceState.get('carMsg')
 
 
-    // (carState) => {
-    // const carDataSource = carState.get('carDataSource') ? carState.get('carDataSource') : [];
-    // return carDataSource.filter((item) => {
+    // (deviceState) => {
+    // const carMsg = deviceState.get('carMsg') ? deviceState.get('carMsg') : [];
+    // return carMsg.filter((item) => {
+    //     console.log(item);
     //     return item.deviceCode !== null && item.deviceCode !== '';
     //      });
     // }

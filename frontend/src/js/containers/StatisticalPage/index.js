@@ -67,7 +67,7 @@ export class StatisticalPage extends React.Component {
             autoComplete_deviceCode: [],        //设备编号自动完成提示数组
             autoComplete_carCode: [],           //车辆编号自动完成提示数组
 
-            carMsg: this.props.carMsg,
+            carMsg: props.carMsg,
 
         };
     }
@@ -310,6 +310,7 @@ export class StatisticalPage extends React.Component {
 
     //点击切换车辆信息
     switchInfo = () => {
+        console.log(this.props.carMsg);
         this.refs.carInfo.style.display = 'none';
         this.refs.carInfo2.style.display = 'block';
     };
