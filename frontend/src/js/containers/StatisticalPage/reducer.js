@@ -28,7 +28,8 @@ import {
     QUERY_ALL_DEVICE_FINISH,
     QUERY_ALL_NOT_DEVICE_FINISH,
     CAR_MSG_BEGIN,
-    CAR_MSG_FINISH
+    CAR_MSG_FINISH,
+    CAR_MSG_LIST_FINISH
 } from './constants';
 import _ from 'lodash';
 
@@ -69,6 +70,12 @@ export default (state = initialState, action = {}) => {
     if (type === CAR_MSG_FINISH) {
         return state
             .set('carMsg', payload);
+    }
+
+    //查询所有车辆信息列表-结束
+    if (type === CAR_MSG_LIST_FINISH) {
+        return state
+            .set('carMsgList', payload);
     }
 
     return state;

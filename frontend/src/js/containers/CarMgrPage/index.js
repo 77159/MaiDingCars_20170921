@@ -16,6 +16,7 @@ import {Popconfirm} from 'antd';
 const {Content} = Layout;
 import {Input} from 'antd';
 import {Select} from 'antd';
+
 const Option = Select.Option;
 import {Row, Col} from 'antd';
 import {Table} from 'antd';
@@ -28,6 +29,7 @@ import {Popover} from 'antd';
 import _ from 'lodash';
 
 import {AppConfig} from '../../core/appConfig';
+
 const serviceUrl = AppConfig.serviceUrl;
 
 
@@ -261,13 +263,6 @@ export class CarMgrPage extends React.Component {
         this.props.deleteCar(carCode);
     };
 
-    //数据总数
-    footer = () => {
-        let carDataSource = this.props.carDataSource;
-        const dataCount = carDataSource != null ? carDataSource.length : 0;
-        return `共计 ${dataCount} 条数据`;
-    };
-
     render() {
         const {carDataSource, tableDataLoading, carCategory} = this.props;
         const {curSelectedRowKeys} = this.state;
@@ -277,7 +272,7 @@ export class CarMgrPage extends React.Component {
         };
         let carTypeList;
 
-        if(carCategory) {
+        if (carCategory) {
             carTypeList = carCategory.map((item, index) => {
                 return (
                     <Option key={index} value={item.id + ''}>{item.typeName}</Option>
@@ -362,7 +357,7 @@ export class CarMgrPage extends React.Component {
             title: '安全速度',
             dataIndex: 'safetySpeed',
             key: 'safetySpeed',
-        },{
+        }, {
             title: '行驶里程',
             dataIndex: 'mileage',
             key: 'mileage',
@@ -385,7 +380,7 @@ export class CarMgrPage extends React.Component {
             //         return text;
             //     }
             // },
-        },{
+        }, {
             title: '操作',
             dataIndex: 'operation',
             key: 'operation',
@@ -468,7 +463,7 @@ export class CarMgrPage extends React.Component {
                             <Table rowSelection={rowSelection}
                                    rowKey={record => record.carCode}
                                    className={styles.table} bordered={true}
-                                   footer={this.footer}
+                                   footer={(record) => '共计 ' + `${record.length}` + ' 条数据'}
                                    size="middle"
                                    loading={tableDataLoading}
                                    columns={columns} dataSource={carDataSource}>

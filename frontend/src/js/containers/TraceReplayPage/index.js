@@ -22,6 +22,7 @@ import {Card} from 'antd';
 import {Badge} from 'antd';
 import {notification} from 'antd';
 import {Modal, Select} from 'antd';
+
 const Option = Select.Option;
 
 const RadioButton = Radio.Button;
@@ -174,7 +175,7 @@ export class TraceReplayPage extends React.Component {
 
         //定义全局map变量
         this.fmMap = null;
-        this.fmapID = 'md-xm-57-9';
+        this.fmapID = window.fmapID;
         this.groupLayer;
         this.layer = null;
         //this.addMarker = true;

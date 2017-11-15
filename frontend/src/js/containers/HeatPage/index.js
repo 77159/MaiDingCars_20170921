@@ -174,7 +174,7 @@ export class TraceReplayPage extends React.Component {
 
         //定义全局map变量
         this.fmMap = null;
-        this.fmapID = 'md-xm-57-9';
+        this.fmapID = window.fmapID;
         this.groupLayer;
         this.layer = null;
         //this.addMarker = true;

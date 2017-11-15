@@ -129,14 +129,18 @@ export default function createRoutes(store) {
                         const importModules = Promise.all([
                             import('../containers/StatisticalPage/reducer'),
                             import('../containers/StatisticalPage/sagas'),
+                            import('../containers/CategoryFormModel/reducer'),
+                            import('../containers/CategoryFormModel/sagas'),
                             import('../containers/StatisticalPage'),
                         ]);
 
                         const renderRoute = loadModule(cb);
 
-                        importModules.then(([reducer, sagas, component]) => {
+                        importModules.then(([reducer, sagas, reducer2, sagas2, component]) => {
                             injectReducer('statistical', reducer.default);
+                            injectReducer('categoryForm', reducer2.default);
                             injectSagas(sagas.default);
+                            injectSagas(sagas2.default);
                             renderRoute(component);
                         });
 

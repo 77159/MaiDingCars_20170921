@@ -469,7 +469,8 @@ const CollectionCreateForm = Form.create()(
                                         allowClear={true}
                                         placeholder="请输入车辆编号" size="large"
                                         onChange={handleChangeSpeedCarCode}
-                                        defaultValue={speedCarCode}>
+                                        defaultValue={speedCarCode}
+                                    >
                                         <Input maxLength="15"/>
                                     </AutoComplete>
                                 </Col>
@@ -539,19 +540,19 @@ export class MonitoringPage extends React.Component {
             carInfoWinClassName: styles.carCard,
             carCardHidden: true,
             alarmModalVisible: false,
-            // speedSelectedRowKeys: [],   //速度列表keys集合
-            // densitySelectedRowKeys: [], //闲置列表keys集合
-            // areaSelectedRowKeys: [],    //区域密度列表keys集合
-            // area: null,            //区域选择
-            // areaDateTime: null,    //区域报警时间
-            // speedDateTime: null,
-            // speedCarCode: null,
-            // densityCarCode: null,
-            // densityDateTime: null,
-            // filterType: null,
-            // areaFilter: null,
-            // densityFilter: null,
-            // speedFilter: null,
+            speedSelectedRowKeys: [],   //速度列表keys集合
+            densitySelectedRowKeys: [], //闲置列表keys集合
+            areaSelectedRowKeys: [],    //区域密度列表keys集合
+            area: null,            //区域选择
+            areaDateTime: null,    //区域报警时间
+            speedDateTime: null,
+            speedCarCode: null,
+            densityCarCode: null,
+            densityDateTime: null,
+            filterType: null,
+            areaFilter: null,
+            densityFilter: null,
+            speedFilter: null,
         };
 
         //定义全局map变量
@@ -903,19 +904,19 @@ export class MonitoringPage extends React.Component {
     onShowAlarmModal = () => {
         this.setState({
             alarmModalVisible: !this.state.alarmModalVisible,
-            // speedSelectedRowKeys: [],       //超速
-            // densitySelectedRowKeys: [],     //闲置
-            // areaSelectedRowKeys: [],        //密度
-            // area: null,            //区域选择
-            // areaDateTime: null,    //区域报警时间
-            // speedDateTime: null,
-            // speedCarCode: null,
-            // densityCarCode: null,
-            // densityDateTime: null,
-            // filterType: null,
-            // areaFilter: null,
-            // densityFilter: null,
-            // speedFilter: null,
+            speedSelectedRowKeys: [],       //超速
+            densitySelectedRowKeys: [],     //闲置
+            areaSelectedRowKeys: [],        //密度
+            area: null,            //区域选择
+            areaDateTime: null,    //区域报警时间
+            speedDateTime: null,
+            speedCarCode: null,
+            densityCarCode: null,
+            densityDateTime: null,
+            filterType: null,
+            areaFilter: null,
+            densityFilter: null,
+            speedFilter: null,
         });
     };
 
@@ -933,27 +934,20 @@ export class MonitoringPage extends React.Component {
     /**
      * 更新报警信息已读
      */
-    /*updateUnReadMessage = (type) => {
+    updateUnReadMessage = (type) => {
         const selectedRowKeys = this.state[type];
         if (selectedRowKeys.length <= 0) return;
-        this.props.updateUnReadMessage(selectedRowKeys);
-    };*/
-
-    updateUnReadMessage = (selectedRowKeys) => {
         this.props.updateUnReadMessage(selectedRowKeys);
     };
 
     /**
      * 批量删除报警信息
      */
-    /*deleteAlarmMessageByKeys = (type) => {
+    deleteAlarmMessageByKeys = (type) => {
         let speedSelectedRowKeys = this.state[type];
         if (speedSelectedRowKeys.length <= 0) return;
         this.props.deleteAlarmMessageByKeys(speedSelectedRowKeys);
         this.updateSelectedKeys(type, speedSelectedRowKeys);
-    };*/
-    deleteAlarmMessageByKeys = (speedSelectedRowKeys) => {
-        this.props.deleteAlarmMessageByKeys(speedSelectedRowKeys);
     };
 
     /**
@@ -1217,12 +1211,7 @@ export class MonitoringPage extends React.Component {
                     </Card>
                     {/*报警信息列表*/}
                     <AlarmTable
-                        visible={this.state.alarmModalVisible}
-                        onShowAlarmModal={this.onShowAlarmModal}
-                        alertMessageData={alertMessageData}
-                        areaList={this.props.areaList}
-                        updateUnReadMessage={this.updateUnReadMessage}
-                        deleteAlarmMessageByKeys={this.deleteAlarmMessageByKeys}
+                        aaa={this.state.alarmModalVisible}
                     />
                     {/*<CollectionCreateForm
                         ref={this.saveFormRef}

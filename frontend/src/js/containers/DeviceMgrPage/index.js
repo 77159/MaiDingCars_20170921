@@ -81,7 +81,7 @@ export class DeviceMgrPage extends React.Component {
             (record.workingStatus == filters[2] || filters[2] == 'all') &&
             (record.deviceStatus == filters[3] || filters[3] == 'all') &&
             (record.carCode == filters[4] || filters[4] == 'all' || record.carCode == null)
-    }
+    };
 
     //查询设备（筛选）
     onFilterDevice = () => {
@@ -90,7 +90,7 @@ export class DeviceMgrPage extends React.Component {
         let personCode = _.isEmpty(this.state.filter_personCode) ? '' : this.state.filter_personCode.trim();
         let filterStr = `${deviceCode}&&${personCode}&&${this.state.filter_workingStatus}&&${this.state.filter_deviceStatus}&&${this.state.filter_carCode}`;
         this.setState({dataFilter: [filterStr]});
-    }
+    };
 
     //重置
     onResetSearch = () => {
@@ -183,8 +183,6 @@ export class DeviceMgrPage extends React.Component {
         };
 
         const {tableDataLoading, deviceDataSource, notDeviceDataSource} = this.props;
-        //数据总数
-        const dataCount = deviceDataSource != null ? deviceDataSource.length : 0;
 
         const columns = [{
             title: '设备编号',
@@ -347,7 +345,7 @@ export class DeviceMgrPage extends React.Component {
                     <Row className={styles.tableRow}>
                         <Col span={24}>
                             <Table rowSelection={selection} rowKey={record => record.deviceCode}
-                                   className={styles.table} bordered={true} footer={() => '共计 ' + dataCount + ' 条数据'}
+                                   className={styles.table} bordered={true} footer={(record) => '共计 ' + `${record.length}` + ' 条数据'}
                                    size="middle"
                                    loading={tableDataLoading}
                                    columns={columns} dataSource={deviceDataSource}>

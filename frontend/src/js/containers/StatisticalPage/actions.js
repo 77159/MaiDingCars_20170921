@@ -27,10 +27,10 @@ import {
     QUERY_ALL_DEVICE_FINISH,
     CREATE_DEVICE,
     MODIFY_DEVICE,
-    GET_DEVICE,
-    DELETE_DEVICE,
     CAR_MSG_BEGIN,
-    CAR_MSG_FINISH
+    CAR_MSG_FINISH,
+    CAR_MSG_LIST_BEGIN,
+    CAR_MSG_LIST_FINISH
 } from './constants';
 
 /**
@@ -84,28 +84,6 @@ export const modifyDevice = (deviceEntity) => ({
 });
 
 /**
- * 根据设备编号，查询一个设备的信息
- * @param deviceCode 设备编号
- */
-export const getDevice = (deviceCode) => ({
-    type: GET_DEVICE,
-    payload: {
-        deviceCode
-    }
-});
-
-/**
- * 删除设备（一个或多个）
- * @param deviceCodeArray 要删除的 device_code 数组
- * @param callback
- */
-export const deleteDevice = (deviceCodes) => ({
-    type: DELETE_DEVICE,
-    deviceCodes
-});
-
-
-/**
  * 查询所车辆信息-开始
  */
 export const queryAllCarMsgBegin = () => ({
@@ -114,9 +92,25 @@ export const queryAllCarMsgBegin = () => ({
 
 /**
  * 查询车辆信息-结束
- * @param carMsg 设备集合
+ * @param carMsg 信息集合
  */
 export const queryAllCarMsgFinish = (carMsg) => ({
     type: CAR_MSG_FINISH,
     payload: carMsg
+});
+
+/**
+ * 查询所车辆信息列表-开始
+ */
+export const queryAllCarMsgListBegin = () => ({
+    type: CAR_MSG_LIST_BEGIN
+});
+
+/**
+ * 查询车辆信息列表-结束
+ * @param carMsgList 信息列表集合
+ */
+export const queryAllCarMsgListFinish = (carMsgList) => ({
+    type: CAR_MSG_LIST_FINISH,
+    payload: carMsgList
 });

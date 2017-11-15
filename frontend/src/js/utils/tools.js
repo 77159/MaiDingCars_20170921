@@ -9,6 +9,7 @@
 'use strict';
 
 import * as jsts from '../../assets/libs/jsts.min';
+import _ from 'lodash';
 
 /**
  * [diffPolygons A 异同 B，保留A和B不同的部分]
@@ -38,7 +39,8 @@ export function diffPolygons(startPoly, desPolys) {
     let geometryNum = geoResult.getNumGeometries();
     for (var j = 0, jlen = geometryNum; j < jlen; j++) {
         let g = geoResult.getGeometryN(j).getCoordinates();
-        g.pop();
+        if (!_.isEqual(g[0], g[g.length - 1]))
+            g.pop();
         res.push(g);
     }
 
@@ -86,8 +88,8 @@ export const getArray = (points) => {
     var arr = [],
         poly = [];
     if (points.length <= 0) return;
-
-    points.push(points[0]);
+    if (!_.isEqual(points[0], points[points.length - 1]))
+        points.push(points[0]);
 
     points.map((item) => {
         arr.push([item.x, item.y]);
@@ -106,6 +108,9 @@ export const getFMArray = (points) => {
         poly = [];
     if (points.length <= 0) return;
 
+    if (!_.isEqual(points[0], points[points.length - 1]))
+        points.push(points[0]);
+
     for (let i = 0, ilen = points.length; i < ilen - 1; i = i + 2) {
         arr.push([Math.abs(points[i]), Math.abs(points[i + 1])]);
     }
@@ -114,4 +119,43 @@ export const getFMArray = (points) => {
 
     poly.push(arr);
     return poly;
-}
+};
+
+/**
+ * 转换fengmap polygon 坐标数组
+ * @param points
+ * @returns {Array}
+ */
+export const getFMArray2 = (points) => {
+    var arr = [],
+        poly = [];
+    if (points.length <= 0) return;
+
+    if (!_.isEqual(points[0], points[points.length - 1]))
+        points.push(points[0]);
+
+    for (let i = 0, ilen = points.length; i < ilen - 1; i = i + 2) {
+        arr.push([Math.abs(points[i].x), Math.abs(points[i].y)]);
+    }
+
+    arr.push(arr[0]);
+
+    poly.push(arr);
+    return poly;
+};
+
+/**
+ * 获取区域的
+ * @param poly
+ * @returns {*}
+ */
+export const getFMCenter = (vertices) => {
+    let extentJson = new geoJson();
+    const v = vertices[0][0];
+    if (!v) return;
+    extentJson.coordinates.push(getArray(v));
+    var jsonParser = new jsts.io.GeoJSONReader();
+    var geoResult = jsonParser.read(extentJson); //先记录第一个
+    let centerPnt = geoResult.getCentroid();
+    return centerPnt.getCoordinates();
+};

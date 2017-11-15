@@ -34,7 +34,7 @@ import {
 import {Form} from 'antd';
 import {Switch} from 'antd';
 import {deviceFormModalCreateDevice, deviceFormModalHide, deviceFormModalModifyDevice} from "./actions";
-import {createDevice, modifyDevice} from "../DeviceMgrPage/actions";
+import {createDevice, modifyDevice, viewCarMsgDetail} from "../DeviceMgrPage/actions";
 
 const FormItem = Form.Item;
 
@@ -56,12 +56,17 @@ class DeviceFormModal extends React.Component {
         } else if (((!this.props.deviceEntity) && nextProps.deviceEntity) || this.props.deviceEntity !== nextProps.deviceEntity) {
             this.props.form.resetFields();
         }
+    };
 
 
-
+    getDensity = () => {
+        return (<div id="main4" style={{height: 320}}></div>)
     };
 
     componentDidUpdate() {
+
+        console.log(this.props.deviceEntity);
+
         let myChart = echarts.init(document.getElementById('main4'));
         // 绘制图表
         myChart.setOption({
@@ -128,27 +133,21 @@ class DeviceFormModal extends React.Component {
     render() {
         const {getFieldDecorator} = this.props.form;
         const {modalVisible, operation, deviceEntity, operationRunning} = this.props;
-        //const opText = operation === 'create' ? '添加设备' : '编辑设备信息';
-        //const determine = (operation === 'create') ? '添加' : '保存';
-        //const isShow = (operation === 'create') ? false : true;
-
+        const getDensity = this.getDensity();
+        
         return (
-
             <Modal
-                title={<span><i className="iconfont icon-shebeiguanli"/>{deviceEntity.deviceCode} - 集中区域分析</span>}
+                title={<span><i className="iconfont icon-shebeiguanli"/>{deviceEntity.carCode} - 集中区域分析</span>}
                 visible={modalVisible}
                 onCancel={this.onCancel}
                 footer={null}
                 width={700}
                 className={styles.redModal}
             >
-
                 <div className={styles.carsDensity}>
                     <spsn style={{position: 'relative', left: '50px'}}>工作总时长：104h</spsn>
-                    <div id="main4" style={{width: '100%', height: 320}}></div>
+                    {getDensity}
                 </div>
-
-
             </Modal>
         );
     }

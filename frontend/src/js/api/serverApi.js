@@ -246,6 +246,14 @@ export function loginOutAPI() {
  * @returns {Promise.<TResult>|*}
  */
 export function queryAllCarMsgAPI() {
-    console.log('进入查询车辆信息serverAPI');
     return invokeServerAPI(`statisticalAnalysis`, 'GET', null);
+}
+
+/**
+ * 查询车辆信息列表
+ * @returns {Promise.<TResult>|*}
+ */
+export function queryAllCarMsgListAPI() {
+    console.log('进入查询车辆信息列表serverAPI');
+    return invokeServerAPI(`cars/carinfoproportion`, 'GET', null);
 }

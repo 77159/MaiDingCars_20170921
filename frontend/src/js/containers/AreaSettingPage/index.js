@@ -181,35 +181,33 @@ export class AreaSettingPage extends React.Component {
         //最新的区域坐标
         let lastPoly = new geoJson();
         lastPoly.coordinates.push(getArray(points));
-
         //地图polygon坐标
         const vertices = this.getExtentVertices();
         let extentJson = new geoJson();
-        extentJson.coordinates.push(getFMArray(vertices));
-
-        let res = intersectPolygons(lastPoly, [extentJson]);
-
-        if (res.length === 0) {
-            return null;
+        let result = null;
+        for (let i = 0; i < vertices.length; i++) {
+            extentJson.coordinates.push(getFMArray(vertices[i]));
+            let res = intersectPolygons(lastPoly, [extentJson]);
+            if (res.length === 0) {
+                continue;
+            }
+            //在地图上已经存在的区域坐标
+            let desPolys = [];
+            for (const key in this.polygonMarkers) {
+                const pms = this.polygonMarkers[key];
+                pms.map((pm) => {
+                    let poly = new geoJson();
+                    let coords = getArray(pm._ps);
+                    poly.coordinates.push(coords);
+                    desPolys.push(poly);
+                })
+            }
+            const resJSON = new geoJson();
+            res.pop();
+            resJSON.coordinates.push(getArray(res));
+            result = diffPolygons(resJSON, desPolys);
+            if (!result) break;
         }
-
-        //在地图上已经存在的区域坐标
-        let desPolys = [];
-
-        for (const key in this.polygonMarkers) {
-            const pms = this.polygonMarkers[key];
-            pms.map((pm) => {
-                let poly = new geoJson();
-                let coords = getArray(pm._ps);
-                poly.coordinates.push(coords);
-                desPolys.push(poly);
-            })
-        }
-
-        const resJSON = new geoJson();
-        res.pop();
-        resJSON.coordinates.push(getArray(res));
-        const result = diffPolygons(resJSON, desPolys);
         return result;
     };
 
@@ -219,7 +217,11 @@ export class AreaSettingPage extends React.Component {
      */
     getExtentVertices = (groupID = 1) => {
         const group = this.map.listGroups[groupID - 1];
-        return group.a_.geo_extentlayers[0].extents[0].vertices;
+        //console.log('group.a_.geo_extentlayers[0].extents', group.a_.geo_extentlayers[0].extents);
+        const extents = group.a_.geo_extentlayers[0].extents;
+        return extents.map((item) => {
+            return item.vertices;
+        });
     };
 
     /**
@@ -332,7 +334,9 @@ export class AreaSettingPage extends React.Component {
      */
     addPolygon = (points, focusFloorid, color, opacity) => {
         const map = this.map;
+        if (!map) return;
         const group = map.getFMGroup(focusFloorid);
+        if (!group) return;
         const layer = group.getOrCreateLayer('polygonMarker');
         const polygonMarker = new fengmap.FMPolygonMarker({
             map: map,

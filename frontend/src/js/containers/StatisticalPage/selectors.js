@@ -24,17 +24,13 @@ const tableDataLoadingSelector=()=>createSelector(
 const carMsgSelector = () => createSelector(
     selectorDevice,
     (deviceState) => deviceState.get('carMsg')
-
-
-    // (deviceState) => {
-    // const carMsg = deviceState.get('carMsg') ? deviceState.get('carMsg') : [];
-    // return carMsg.filter((item) => {
-    //     console.log(item);
-    //     return item.deviceCode !== null && item.deviceCode !== '';
-    //      });
-    // }
-
 );
+
+const carMsgListSelector = () => createSelector(
+    selectorDevice,
+    (deviceState) => deviceState.get('carMsgList')
+);
+
 
 const deviceEntitySelector = () => createSelector(
     selectorDevice,
@@ -46,5 +42,6 @@ export {
     selectorDevice,
     deviceDataSourceSelector,
     tableDataLoadingSelector,
-    carMsgSelector
+    carMsgSelector,
+    carMsgListSelector
 };

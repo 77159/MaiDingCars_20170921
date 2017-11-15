@@ -11,8 +11,8 @@
 export const AppConfig = {
     //后台接口服务地址
     // serviceUrl: 'http://192.168.1.95:9095/',
-    // serviceUrl: 'http://192.168.1.72:9090/',
-    serviceUrl: 'http://192.168.1.168:8090/',
+    // serviceUrl: 'http://192.168.1.72:8080/',
+    serviceUrl: 'http://192.168.1.168:8080/',
     get token() {
         //let token = cookies.getItem(this.fmTokenCookieName);
         //return (token != null ? token : null);
@@ -20,7 +20,8 @@ export const AppConfig = {
     },
 
     get fmapID() {
-        return 'md-xm-one-57-59';
+        // return 'md-xm-one-57-59';
+        return 'md-gz-1-2';
     },
 
     get userName() {
