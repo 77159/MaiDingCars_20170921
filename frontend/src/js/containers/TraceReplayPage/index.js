@@ -8,446 +8,325 @@
  */
 'use strict';
 import React from 'react';
+
+//antd
 import {Layout, Menu, Icon} from 'antd';
-import {Button} from 'antd';
-import {Checkbox} from 'antd';
-import {DatePicker} from 'antd';
-import {Slider} from 'antd';
-
-const {Sider, Content, Footer} = Layout;
 import {Input} from 'antd';
+import {Select} from 'antd';
 import {Avatar} from 'antd';
-import {Radio} from 'antd';
-import {Card} from 'antd';
-import {Badge} from 'antd';
-import {notification} from 'antd';
-import {Modal, Select} from 'antd';
+import {Checkbox} from 'antd';
+import {Button} from 'antd';
+import {DatePicker} from 'antd';
 
-const Option = Select.Option;
-
-const RadioButton = Radio.Button;
-const Search = Input.Search;
-import styles from './index.less';
-
+//react-redux
 import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
-import {makeSelectRepos, makeSelectLoading, makeSelectError} from '../App/selectors';
-import {loadRepos} from '../App/actions';
-import {changeUsername} from './actions';
-import {makeSelectUsername} from './selectors';
 
+//action
+import {changeTraceReplay, emptyTraceData} from './actions';
+//selectors
+import {SelectorTraceDataSource} from './selectors';
 
-const siderTriggerNode = () => {
-    return (<span>启用<i className={styles.greenCircle}/></span>);
-}
+//car action
+import {queryAllCarBegin} from '../CarMgrPage/actions';
+//car reselect
+import {carDataSourceSelector} from '../CarMgrPage/selectors';
+//carCategory cation
+import {carFormModalOpBegin} from '../CategoryFormModel/actions';
+//caCategory reselect
+import {carCategory} from '../CategoryFormModel/selectors'
 
-/**
- * 显示报警信息
- * @param type
- */
-const openNotificationWithIcon = (type) => {
-    notification[type]({
-        message: '警告：警员张保国进入重点区域',
-        // description: 'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
-    });
-};
-import {Pagination} from 'antd';
-import {Form} from 'antd';
-import {Table} from 'antd';
+//工具类
+import _ from 'lodash';
+import moment from 'moment';
 
-/*const CollectionCreateForm = Form.create()(
- (props) => {
- const {visible, onCancel, onCreate, confirmLoading, loading, form} = props;
- //报警信息
- const columns = [{
- title: '序号',
- dataIndex: 'alarmId',
- key: 'alarmId',
- }, {
- title: '报警时间',
- dataIndex: 'alarmTime',
- key: 'alarmTime',
- }, {
- title: '涉警人员',
- dataIndex: 'peopleName',
- key: 'peopleName',
- }, {
- title: '人员编号',
- dataIndex: 'peopleId',
- key: 'peopleId',
- }, {
- title: '类别',
- dataIndex: 'level',
- key: 'level',
- }, {
- title: '设备编号',
- dataIndex: 'deviceId',
- key: 'deviceId',
- }, {
- title: '报警内容',
- dataIndex: 'alarmInfo',
- key: 'alarmInfo',
- }, {
- title: '操作',
- key: 'operation',
- width: 110,
- render: (text, record) => {
- return (
- <Button type="primary" className={styles.tableBtn} ghost>定位区域</Button>
- );
- },
- }];
- const footer = () => '共计 46 条数据';
+//sytles
+import styles from './index.less';
 
- const dataSource = [];
- for (let i = 1; i < 32; i++) {
- dataSource.push({
- key: i,
- alarmId: i,
- alarmTime: '2017-8-21 03:27:33',
- peopleName: '刘国锋',
- peopleId: 'NO0023',
- level: '武警',
- deviceId: 'DW0001',
- alarmInfo: '刘国锋进入西侧档案室重点区域'
- });
- }
- const pagination = {
- defaultCurrent: 1,
- total: 32,
- showTotal: () => {
- (total, range) => `${range[0]}-${range[1]} of ${total} items`
- },
- pageSize: 5
- };
+//自定义组件
+import TraceReplayMap from '../../components/TraceReplayMap';
+import {
+    showErrorMessage,
+    showSuccessMessage
+} from "../App/actions";
 
- return (
- <Modal
- title={<span><Icon type="hdd"/>今日报警</span>}
- visible={visible}
- onOk={onCreate}
- onCancel={onCancel}
- confirmLoading={confirmLoading}
- footer={null}
- width={840}
- className={styles.redModal}
- >
- <Table className={styles.table} bordered={true} footer={footer}
- size="middle"
- pagination={pagination}
- columns={columns} dataSource={dataSource}>
- </Table>
- </Modal>
- );
- }
- );*/
-
-// end form
+const {Sider, Content, Footer} = Layout;
+const Option = Select.Option;
 
 export class TraceReplayPage extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            userName: '',
-            containerStyle: {
-                height: '100%',
-                width: '100%',
-                minHeight: '100%',
-                top: '0px',
-                left: '0px',
-                backgroundColor: '#f2f4f5'
-            },
-            siderCollapsed: false,         //人员信息sider当前收起状态, 【false】展开 【true】收起
+            siderCollapsed: false,
             siderTrigger: null,
-            peopleInfoWinClassName: styles.peopleCard,
-            peopleCardHidden: false,
-            alarmModalVisible: false,
-            alarmLoading: false,
-            alarmConfirmLoading: false,
-            ModalText: 'Content of the modal',
+            selectedkeys: [],
+            checkedKeys: [],
             startValue: null,
+            //startValue: moment('2017-11-16 11:29:15'),
             endValue: null,
+            //endValue: moment('2017-11-16 12:00:00'),
             endOpen: false,
-            palySliderValue: 3,
-            isPalying: false
-        }
-
-        //定义全局map变量
-        this.fmMap = null;
-        this.fmapID = window.fmapID;
-        this.groupLayer;
-        this.layer = null;
-        //this.addMarker = true;
-        this.polygonEditor = null;
-        //this.imageMarker = null;
-    }
-
-    //添加目标点标注
-    addTestMarker = () => {
-        let coord = {x: 13155860.0623301, y: 2813445.34302628, z: 2};
-        this.addMarker(coord);
-    }
-
-    //添加Marker
-    addMarker = (coord) => {
-        let group = this.fmMap.getFMGroup(this.fmMap.groupIDs[0]);
-        //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
-        let layer2 = group.getOrCreateLayer('imageMarker');
-        let loadedCallBack = () => {
-            this.imageMarker.alwaysShow();
+            isPlay: false,
+            markerVisible: true,
+            positionMarker: '',
+            carDtasSource: props.carDtasSource,
+            carImageVisible: [],
         };
-        let imageMarker = new fengmap.FMImageMarker({
-            x: coord.x,
-            y: coord.y,
-            height: coord.z,
-            //设置图片路径
-            url: './img/peopleMarker.png',
-            //设置图片显示尺寸
-            size: 46,
-            callback: () => {
-                imageMarker.alwaysShow();
-            }
-        });
-
-        layer2.addMarker(imageMarker);
     };
 
-    emitEmpty = () => {
-        this.userNameInput.focus();
-        this.setState({userName: ''});
-    }
-    onChangeUserName = (e) => {
-        this.setState({userName: e.target.value});
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            carDtasSource: nextProps.carDtasSource
+        })
     }
 
-    /**
-     * 人员列表中，某一人员被选中时调用
-     * @param item
-     * @param key
-     * @param selectedKeys
-     */
-    onPeopleItemSelected = ({item, key, selectedKeys}) => {
-        console.log(item);
-        this.onClosePeopleInfoWindow();
+    componentWillMount() {
+        //车辆列表
+        this.props.queryAllCarBegin();
     }
-    /**
-     * 当人员面板展开-收起时的回调函数，有点击 trigger 以及响应式反馈两种方式可以触发
-     * @param collapsed 当前状态（【true】收起 【false】展开）
-     * @param type 触发类型
-     */
-    onCollapse = (collapsed, type) => {
+
+    onCollapse = () => {
+        const {fmMap} = this.map;
         this.setState({siderCollapsed: !this.state.siderCollapsed});
-        console.log(this.state.siderCollapsed);
         if (this.state.siderCollapsed) {  //收起状态
-            //展开状态
             this.setState({
                 siderTrigger: null
-            })
+            });
+            //修改指南针位置
+            fmMap.options.compassOffset = [276, 20];
+            fmMap.updateSize();
         } else {
             this.setState({
                 siderTrigger: undefined
+            });
+            //修改指南针位置
+            fmMap.options.compassOffset = [20, 20];
+            fmMap.updateSize();
+        }
+    };
+
+    getMap = (map) => {
+        this.map = map;
+    };
+
+    /**
+     * 创建菜单
+     */
+    createMenu = () => {
+        const {carDtasSource} = this.state;
+        if (!carDtasSource) return null;
+
+        if (this.state.isPlay) {
+            return this.getCarListMenu();
+        }
+
+        return carDtasSource.map((item) => {
+            return (
+                <Menu.Item key={item.id}>
+                    <Avatar size="large" src={window.serviceUrl + item.imgurl}/>
+                    <div className={styles.content}>
+                        <div className={styles.code} style={{margin: '10px 0 0 0'}}>{item.carCode}</div>
+                        {/*<div>0 km/h</div>*/}
+                    </div>
+                    <div className={styles.btnContent}>
+                        <Checkbox className={styles.peopleChk}
+                                  onChange={(e) => {
+                                      this.onChangeChecked(e, item.carCode);
+                                  }}></Checkbox>
+                    </div>
+                </Menu.Item>
+            )
+        })
+    };
+
+    /**
+     * 根据车辆编号获取当前车辆在地图上是显示(true)/隐藏(false)状态
+     * @carCode 车辆编号
+     */
+    getVisibleCarImageMarkerStatus = (carCode) => {
+        if (!this.map.fmMap) return;
+        const {carMarkerLayer} = this.map.fmMap;
+        if (!carMarkerLayer) return;
+        //如果当前carMarkerLayer是隐藏状态，则所有车辆隐藏，反之则根据当前imageMarker的visible返回当前显示/隐藏状态
+        if (carMarkerLayer.visible) {
+            return this.getVisibleCarStatus(carCode);
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * 获取车辆菜单
+     * @returns {null}
+     */
+    getCarListMenu = () => {
+        const {checkedKeys, carDtasSource} = this.state;
+
+        if (!carDtasSource) return null;
+
+        return checkedKeys.map((key) => {
+            let item = null;
+            let flag = false;
+            for (let i = 0; i < carDtasSource.length; i++) {
+                item = carDtasSource[i];
+                if (item.carCode === key) {
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (!item) return;
+
+            const carCode = item.carCode;
+            const carImageVisible = this.state.carImageVisible;
+            const carImagePosition = this.state.positionMarker === carCode ? true : false;
+
+            return (
+                <Menu.Item key={item.carCode}>
+                    <Avatar size="large" src={window.serviceUrl + item.imgurl}/>
+                    <div className={styles.content}>
+                        <div className={styles.code}>{item.carCode}</div>
+                        <div>0 km/h</div>
+                    </div>
+                    <div className={styles.btnContent}>
+                        <Button onClick={(e) => {
+                            e.stopPropagation();
+                            this.visibleCarImageMarkerByCarCode(carCode);
+                        }}
+                                type="primary"
+                                icon={carImageVisible.length > 0 && carImageVisible.indexOf(carCode) >= 0 ? 'eye-o' : 'eye'}
+                            //icon={'eye-o'}
+                                title="隐藏/可见"/>
+                        <Button style={{color: '#5B5B5B'}} onClick={(e) => {
+                            e.stopPropagation();
+                            //this.getCarInfoByCarCode(carCode);
+                            this.positionCarMarker(carCode);
+                        }}
+                                type="primary"
+                                icon={carImagePosition ? 'environment-o' : 'environment'}
+                            // icon={'environment-o'}
+                                title="定位"/>
+                    </div>
+                </Menu.Item>
+            );
+        })
+    };
+
+    /**
+     * 定位marker
+     * @param carCode
+     */
+    positionCarMarker = (carCode) => {
+        const {positionMarker} = this.state;
+        let positionCode = '';
+        if (positionMarker === carCode) {
+            positionCode = '';
+        } else {
+            positionCode = carCode;
+        }
+        this.map.positionCarCode = positionCode;
+        this.setState({
+            positionMarker: positionCode
+        })
+    };
+
+    /**
+     * 根据车辆编号显示/隐藏地图marker
+     * @param carCode
+     */
+    visibleCarImageMarkerByCarCode = (carCode) => {
+        const {visibleNaviLineMarkers, carMarkers} = this.map;
+        if (!carMarkers) return;
+        const marker = carMarkers[carCode];
+        if (!marker) return;
+        visibleNaviLineMarkers(carCode, !marker.visible);
+        marker.visible = !marker.visible;
+        this.updateCarImageVisible(marker.visible, carCode);
+    };
+
+    /**
+     * 更新车辆在线/上线状态
+     * @param visible
+     * @param carCode
+     */
+    updateCarImageVisible = (visible, carCode) => {
+        if (visible) {
+            this.state.carImageVisible.push(carCode);
+            this.setState({
+                carImageVisible: this.state.carImageVisible
+            })
+        } else {
+            const index = this.state.carImageVisible.indexOf(carCode);
+            if (index < 0) return;
+            let carVisibleArr = _.cloneDeep(this.state.carImageVisible);
+            carVisibleArr.splice(index, 1);
+            this.setState({
+                carImageVisible: carVisibleArr
             })
         }
-    }
+    };
 
     /**
-     * 显示/隐藏 人员信息窗口
+     * 添加显示车辆carCode
+     * @param carCode
      */
-    onClosePeopleInfoWindow = () => {
-        console.log(styles.peopleCard);
-        console.log("animated fadeInUp " + styles.peopleCard);
-        if (this.state.peopleCardHidden) {
-            //显示人员信息窗口
+    addCarImageVisible = (carCode) => {
+        const carImageVisible = this.state.carImageVisible;
+        if (carImageVisible.indexOf(carCode) < 0) {
+            this.state.carImageVisible.push(carCode);
             this.setState({
-                peopleInfoWinClassName: "animated fadeInUp " + styles.peopleCard,
-                peopleCardHidden: false
-            });
+                carImageVisible: this.state.carImageVisible,
+            })
+        }
+    };
+
+    /**
+     * 当前勾选事件
+     * @param e 事件
+     * @param key 当前选择的key
+     */
+    onChangeChecked = (e, key) => {
+        e.stopPropagation();
+        let keys = this.state.checkedKeys;
+        if (e.target.checked) {
+            if (keys.length >= 10) {
+                this.props.showErrorMessage('最多只能选择10辆车辆');
+                return;
+            }
+            keys.push(key);
         } else {
-            //隐藏窗口
-            this.setState({
-                peopleInfoWinClassName: "animated fadeOutDown " + styles.peopleCard,
-                peopleCardHidden: true
+            keys = keys.filter((code) => {
+                return code != key;
             });
         }
-    }
-
-    initPolygonEditor = () => {
-        //创建 可编辑多形绘制与编辑类的实例
-        this.polygonEditor = new fengmap.FMPolygonEditor({
-
-            // fengmap 地图实例
-            map: this.fmMap,
-
-            // 绘制的 PolygonMarker 的颜色
-            color: 0x22A5ee,
-
-            // 绘制完成后的回调方法. 在这里得到绘制完成的 polygonMarker实例
-            callback: function (polygonMarker) {
-                //
-                // 在创建完成后, 返回创建的 PolygonMarker
-                // 	getPoints: 得到些PM中的所有地图坐标点
-                //
-                console.log(polygonMarker.getPoints());
-            }
+        this.setState({
+            checkedKeys: keys
         });
-
-        // html buttons
-        //var aBtn = document.querySelectorAll('.btn');
-
-        //添加多边形标注
-        // aBtn[0].onclick = function () {
-        //     // 绘制模式
-        //     polygonEditor.start('create');
-        //
-        // };
-        // //删除多边形标注
-        // aBtn[1].onclick = function () {
-        //     // 编辑模式
-        //     polygonEditor.start('edit');
-        // };
-    }
+    };
 
     /**
-     * 初始化地图
+     * 选择当前Item事件
+     * @param obj 当前点击返回的对象
      */
-    initMap = () => {
-
-        //放大、缩小控件配置
-        var ctlOpt1 = new fengmap.controlOptions({
-            //设置显示的位置为左上角
-            position: fengmap.controlPositon.LEFT_TOP,
-            //位置x,y的偏移量
-            offset: {
-                x: 220,
-                y: 300
-            },
-            scaleLevelcallback: function (level, result) {
-                carInfo(result);
-                /*当前级别：map.mapScaleLevel
-                 最小级别：map._minMapScaleLevel
-                 最大级别：map._maxMapScaleLevel*/
-            }
-        });
-
-        //创建地图对象
-        this.fmMap = new fengmap.FMMap({
-            //渲染dom
-            container: document.getElementById('fengMap'),
-            //地图数据位置
-            mapServerURL: 'assets/map/',
-            //主题数据位置
-            mapThemeURL: 'assets/theme',
-            //设置主题
-            defaultThemeName: '3006',
-            // 默认比例尺级别设置为20级
-            defaultMapScaleLevel: 21,
-            //开发者申请应用下web服务的key
-            key: 'b559bedc3f8f10662fe7ffdee1e360ab',
-            //开发者申请应用名称
-            appName: '麦钉艾特',
-            //初始指北针的偏移量
-            compassOffset: [276, 20],
-            //指北针大小默认配置
-            compassSize: 48,
-        });
-
-        //打开Fengmap服务器的地图数据和主题
-        this.fmMap.openMapById(this.fmapID);
-        //显示指北针
-        this.fmMap.showCompass = true;
-
-        var _addTestMarker = this.addTestMarker;
-
-        //初始化绘制插件
-        this.fmMap.on('loadComplete', function () {
-            //放大、缩小控件
-            var zoomControl = new fengmap.zoomControl(this.fmMap, ctlOpt1);
-
-            //2D/3D切换控件
-            var toolControl = new fengmap.toolControl(this.fmMap, {
-                //初始化2D模式
-                init2D: false,
-                //设置为false表示只显示2D,3D切换按钮
-                groupsButtonNeeded: false,
-                //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-                clickCallBack: function (type, value) {
-                    // console.log(type,value);
-                }
-            });
-
-            //单层多层楼层控件配置
-            var mulitFloor = new fengmap.toolControl(this.fmMap, {
-                //设置初始单楼层状态。
-                allLayer: false,
-                //设置为false,表示只显示楼层切换按钮.两个都为false,则不显示.
-                viewModeButtonNeeded: false,
-                //点击按钮的回调方法,返回type表示按钮类型,value表示对应的功能值
-                clickCallBack: function (type, value) {
-                    // console.log(type,value);
-                }
-            });
-
-            //添加测试用的人员Marker
-            _addTestMarker();
-        });
-        //点击事件
-        this.fmMap.on('mapClickNode', function (event) {
-            console.log("click event.");
-            var model = event;
-            switch (event.nodeType) {
-                case fengmap.FMNodeType.FLOOR:
-                    //if (event.eventInfo.eventID == eventID) return;
-                    console.log('x:' + event.eventInfo.coord.x + ";     y:" + event.eventInfo.coord.y);
-                    break;
-                case fengmap.FMNodeType.MODEL:
-                    //过滤类型为墙的model
-                    if (event.typeID == '30000') {
-                        //其他操作
-                        return;
-                    }
-                    //模型高亮
-                    this.fmMap.map.storeSelect(model);
-                    //弹出信息框
-                    console.log('x:' + event.label ? event.label.mapCoord.x : event.mapCoord.x + ";     y:" + event.label ? event.label.mapCoord.y : event.mapCoord.y);
-                    break;
-                case fengmap.FMNodeType.FACILITY:
-                case fengmap.FMNodeType.IMAGE_MARKER:
-                    //弹出信息框
-                    console.log('公共设施 x:' + event.target.x + ";     y:" + event.target.y);
-                    break;
-            }
-        });
-    }
-
-    /**
-     * 显示报警列表
-     */
-    onShowAlarmModal = () => {
+    onClickItem = (obj) => {
+        const {key} = obj;
         this.setState({
-            alarmModalVisible: true
+            selectedkeys: [key]
         });
-    }
+    };
 
-    handleCreate = () => {
+    onStartChange = (status) => {
         this.setState({
-            ModalText: 'The modal will be closed after two seconds',
-            alarmConfirmLoading: true,
-        });
-    }
+            startValue: status,
+        })
+    };
 
-    handleCancel = () => {
-        console.log('Clicked cancel button');
+    onEndChange = (status) => {
         this.setState({
-            alarmModalVisible: false,
-        });
-    }
-
-    onChange = (e) => {
-        console.log(`checked = ${e.target.checked}`);
-    }
-
-    //region 日期选择
+            endValue: status,
+        })
+    };
 
     disabledStartDate = (startValue) => {
         const endValue = this.state.endValue;
@@ -455,7 +334,7 @@ export class TraceReplayPage extends React.Component {
             return false;
         }
         return startValue.valueOf() > endValue.valueOf();
-    }
+    };
 
     disabledEndDate = (endValue) => {
         const startValue = this.state.startValue;
@@ -463,55 +342,161 @@ export class TraceReplayPage extends React.Component {
             return false;
         }
         return endValue.valueOf() <= startValue.valueOf();
-    }
-
-    onDateChange = (field, value) => {
-        this.setState({
-            [field]: value,
-        });
-    }
-
-    onStartChange = (value) => {
-        this.onDateChange('startValue', value);
-    }
-
-    onEndChange = (value) => {
-        this.onDateChange('endValue', value);
-    }
+    };
 
     handleStartOpenChange = (open) => {
-        // if (!open) {
-        //     this.setState({endOpen: true});
-        // }
-    }
+        if (!open) {
+            this.setState({endOpen: true});
+        }
+    };
 
     handleEndOpenChange = (open) => {
         this.setState({endOpen: open});
-    }
-
-    //endregion
-
-    //region 播放器
-    onPalySliderChange = (value) => {
-        this.setState({
-            palySliderValue: value,
-        });
-    }
-
-    //endregion
+    };
 
     /**
-     * 组件第一次加载完成周期，创建地图
+     * 开始轨迹回放
      */
-    componentDidMount() {
-        //初始化地图
-        this.initMap();
-    }
+    startReplay = () => {
+        const {checkedKeys} = this.state;
+        const {startValue, endValue,} = this.state;
+        const {showErrorMessage} = this.props;
+
+        //时间不能为空
+        if (!startValue || !endValue) {
+            showErrorMessage('请选择开始/结束时间');
+            return;
+        }
+
+        //最多不能超过1天的数据
+        const ss = _.cloneDeep(startValue);
+        let maxEndDate = ss.add(1, 'd');
+        if (endValue > maxEndDate) {
+            this.onEndChange(maxEndDate);
+            showErrorMessage('最多只能选择一天的轨迹回放数据');
+            return;
+        }
+
+        //是否选择车辆
+        if (checkedKeys.length <= 0) {
+            showErrorMessage('请选择车辆');
+            return;
+        }
+
+        //请求路劲回放数据
+        this.props.changeTraceReplay([checkedKeys.join(','), startValue.format('YYYY-MM-DD HH:mm:ss'), endValue.format('YYYY-MM-DD HH:mm:ss')]);
+
+        //开启播放状态
+        this.setState({
+            isPlay: true
+        })
+    };
+
+    /**
+     * 停止轨迹回放
+     */
+    stopReplay = () => {
+        this.setState({
+            isPlay: false,
+            checkedKeys: [],
+            startValue: null,
+            endValue: null
+        });
+
+        this.map.totalTime = null;
+        this.map.secondsSum = 0;
+        this.props.emptyTraceData();
+        this.map.emptyPlay();
+    };
+
+    /**
+     * 显示/隐藏地图上所有的marker
+     * @param visible 显示/隐藏 true/false
+     */
+    visibleMarker = (visible) => {
+        const {carMarkers, visibleNaviLineMarkers} = this.map;
+        let carCodes = [];
+        for (let key in carMarkers) {
+            carCodes.push(key);
+            carMarkers[key].visible = visible;
+            visibleNaviLineMarkers(key, visible);
+        }
+
+
+        if (visible) {
+            this.setState({
+                carImageVisible: carCodes
+            })
+        } else {
+            this.setState({
+                carImageVisible: []
+            })
+        }
+    };
+
+    /**
+     * 信息搜索（模糊搜索，根据车辆编号）
+     * @parm e 事件对象
+     */
+    onSearchKeyword = (e) => {
+        e.persist();
+        const value = e.target.value;
+        this.timeStamp = e.timeStamp;
+
+        this.setState({
+            userName: value
+        });
+
+        setTimeout(() => {
+            if (this.timeStamp === e.timeStamp) {
+                const carDtasSource = this.getCarListBykeyword(value);
+                this.setState({
+                    carDtasSource: carDtasSource,
+                })
+            }
+        }, 500);
+    };
+
+    /**
+     * 模糊查询车辆列表
+     * @param keyword
+     * @returns {Array}
+     */
+    getCarListBykeyword = (keyword) => {
+        const carDtasSource = this.props.carDtasSource;
+        const {isPlay, checkedKeys} = this.state;
+        let list = [];
+        if (keyword) {
+            list = carDtasSource.filter((item) => {
+                if (isPlay) {
+                    return item.carCode.indexOf(keyword) >= 0 && checkedKeys.indexOf(item.carCode) >= 0;
+                } else {
+                    return item.carCode.indexOf(keyword) >= 0;
+                }
+            });
+        } else {
+            list = carDtasSource;
+        }
+        return list;
+    };
+
+    /**
+     * 清空搜索框
+     */
+    emitEmpty = () => {
+        this.userNameInput.focus();
+        this.userNameInput.refs.input.value = '';
+        this.setState({
+            carDtasSource: this.props.carDtasSource,
+        })
+    };
 
     render() {
         const {userName} = this.state;
-        const suffix = userName ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
+        const suffix = userName ?
+            <Icon type="close-circle" style={{color: '#5B5B5B'}} onClick={this.emitEmpty}/> : null;
         const {startValue, endValue, endOpen} = this.state;
+
         return (
             <Layout className={styles.layout}>
                 <Sider width={256} className={styles.sider} collapsible={true}
@@ -522,287 +507,107 @@ export class TraceReplayPage extends React.Component {
                     <Layout style={{height: '100%'}}>
                         <div style={{
                             height: '38px',
-                            background: '#302036',
+                            background: '#45484a',
                             lineHeight: '38px',
                             color: '#fff',
                             padding: '0 10px'
                         }}>
-                            车辆信息&nbsp;&nbsp;&nbsp;6 / 8
+                            车辆列表
                             <span className={styles.left_arrow} title="收起窗口" onClick={this.onCollapse.bind(this)}><Icon
                                 type="left"/></span>
                         </div>
                         <Content>
-                            <div style={{width: '100%', background: '#F6F5FC'}}>
-                                <Input
-                                    placeholder="请输入编号筛选"
-                                    prefix={<Icon type="search"/>}
-                                    suffix={suffix}
-                                    value={userName}
-                                    onChange={this.onChangeUserName}
-                                    className={styles.searchInput}
-                                    ref={node => this.userNameInput = node}
-                                />
-                            </div>
-
-
-                            <Select className={styles.selectDrop} defaultValue="all" size="large">
-                                <Option value="all">显示全部</Option>
-                                <Option value="0">在线状态</Option>
-                                <Option value="1">离线状态</Option>
-                                <Option value="2">报警状态</Option>
-                            </Select>
-
-                            {/*默认列表展示*/}
-                            <Menu
-                                mode="inline"
-                                defaultSelectedKeys={['3']}
-                                className={styles.menu}
-                                onSelect={this.onPeopleItemSelected}
-                            >
-                                <Menu.Item key="1">
-                                    <Avatar size="large" src="img/avatar/001.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>7.0 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox className={styles.peopleChk} onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                                <Menu.Item key="2">
-                                    <Avatar size="large" src="img/avatar/002.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>8.0 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox className={styles.peopleChk} onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                                <Menu.Item key="3">
-                                    <Avatar size="large" src="img/avatar/002.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>9.0 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox className={styles.peopleChk} onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                                <Menu.Item key="4">
-                                    <Avatar size="large" src="img/avatar/002.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>6.9 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox className={styles.peopleChk} onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                                <Menu.Item key="5">
-                                    <Avatar size="large" src="img/avatar/002.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>7.1 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox className={styles.peopleChk} onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                                <Menu.Item key="6">
-                                    <Avatar size="large" src="img/avatar/001.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>6.5 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox shape="circle" className={styles.peopleChk}
-                                                  onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                                <Menu.Item key="7" disabled={true}>
-                                    <Avatar size="large" src="img/avatar/002.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>8.1 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox className={styles.peopleChk} onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                                <Menu.Item key="8" disabled={true}>
-                                    <Avatar size="large" src="img/avatar/002.jpg"/>
-                                    <div className={styles.content}>
-                                        <div className={styles.code}>CL0000001</div>
-                                        <div>7.9 km/h</div>
-                                    </div>
-                                    <div className={styles.btnContent}>
-                                        <Checkbox className={styles.peopleChk} onChange={this.onChange}></Checkbox>
-                                    </div>
-                                </Menu.Item>
-                            </Menu>
-
-                            {/*轨迹回放时列表展示*/}
-                            {/*<Menu
-                             mode="inline"
-                             defaultSelectedKeys={['3']}
-                             className={styles.planMenu}
-                             onSelect={this.onPeopleItemSelected}
-                             >
-                             <Menu.Item key="1">
-                             <div className={styles.planContent}>
-                             <div className={styles.code}>CL0000001</div>
-                             <div>里程数：8km/h</div>
-                             </div>
-                             <div className={styles.planBtnContent}>
-                             <span style={{color: '#2C56C0'}}>5.3km/h</span>
-                             <Button type="primary" icon="eye" title="隐藏/可见"/>
-                             <Button type="primary" icon="environment" title="定位"/>
-                             </div>
-                             </Menu.Item>
-                             <Menu.Item key="2">
-                             <div className={styles.planContent}>
-                             <div className={styles.code}>CL0000001</div>
-                             <div>里程数：8km/h</div>
-                             </div>
-                             <div className={styles.planBtnContent}>
-                             <span style={{color: '#2C56C0'}}>5.3km/h</span>
-                             <Button type="primary" icon="eye" title="隐藏/可见"/>
-                             <Button type="primary" icon="environment" title="定位"/>
-                             </div>
-                             </Menu.Item>
-                             <Menu.Item key="3">
-                             <div className={styles.planContent}>
-                             <div className={styles.code}>CL0000001</div>
-                             <div>里程数：8km/h</div>
-                             </div>
-                             <div className={styles.planBtnContent}>
-                             <span style={{color: '#2C56C0'}}>5.3km/h</span>
-                             <Button type="primary" icon="eye" title="隐藏/可见"/>
-                             <Button type="primary" icon="environment" title="定位"/>
-                             </div>
-                             </Menu.Item>
-                             </Menu>*/}
-
-                        </Content>
-                        <Footer className={styles.footer}>
-
-
-                            {/*轨迹回放*/}
-                            <div className={styles.datePanel}>
-                                <div className={styles.dtPickerItem}>开始
-                                    <DatePicker
-                                        disabledDate={this.disabledStartDate}
-                                        showTime
-                                        format="YYYY-MM-DD HH:mm:ss"
-                                        value={startValue}
-                                        placeholder="开始日期"
-                                        className={styles.dtPicker}
-                                        onChange={this.onStartChange}
-                                        onOpenChange={this.handleStartOpenChange}
+                            <div style={{padding: '10px 13px'}}>
+                                <div style={{width: '100%', background: '#F6F5FC'}}>
+                                    <Input
+                                        placeholder="请输入编号筛选"
+                                        prefix={<Icon type="search"/>}
+                                        suffix={suffix}
+                                        //value={userName}
+                                        onInput={this.onSearchKeyword}
+                                        className={styles.searchInput}
+                                        ref={(ref) => {
+                                            this.userNameInput = ref;
+                                        }}
                                     />
                                 </div>
-                                <div className={styles.dtPickerItem}>结束
-                                    <DatePicker
-                                        disabledDate={this.disabledEndDate}
-                                        showTime
-                                        format="YYYY-MM-DD HH:mm:ss"
-                                        value={endValue}
-                                        placeholder="结束日期"
-                                        className={styles.dtPicker}
-                                        onChange={this.onEndChange}
-                                        open={endOpen}
-                                        onOpenChange={this.handleEndOpenChange}
-                                    /></div>
-                                <div className={styles.dtPickerItem}>
-                                    <Button type="danger" className={styles.startReplay}><Icon type="caret-right"/>开始轨迹回放</Button>
+                            </div>
+                            <Menu
+                                mode="inline"
+                                defaultSelectedKeys={this.state.selectedkeys}
+                                className={styles.menu}
+                                positionCarMarker={this.state.positionCarMarker}
+                                onClcik={this.onClickItem}>
+                                {this.createMenu()}
+                            </Menu>
+                        </Content>
+                        <Footer className={styles.footer}>
+                            {/*开始轨迹回放*/}
+                            {this.state.isPlay ?
+                                <div>
+                                    <div className={styles.stopPlayback}>
+                                        <Button
+                                            type="danger"
+                                            className={styles.startReplay}
+                                            onClick={this.stopReplay}>停止回放</Button>
+                                    </div>
+                                    <div className={styles.allChkPanel}>
+                                        <Button ghost size="small" onClick={() => {
+                                            this.visibleMarker(true);
+                                        }}>全部显示</Button>
+                                        <Button ghost size="small" onClick={() => {
+                                            this.visibleMarker(false);
+                                        }}>全部隐藏</Button>
+                                    </div>
                                 </div>
-                            </div>
-
-                            {/*停止回放按钮*/}
-                            {/*<div className={styles.stopPlayback}>
-                             <Button type="danger" className={styles.startReplay}>停止回放</Button>
-                             </div>*/}
-
-                            <div className={styles.allChkPanel}>
-                                <Button ghost size="small">全部选择</Button>
-                                <Button ghost size="small">全部取消</Button>
-                            </div>
+                                :
+                                <div className={styles.datePanel}>
+                                    <div className={styles.dtPickerItem}>开始
+                                        <DatePicker
+                                            disabledDate={this.disabledStartDate}
+                                            showTime
+                                            format="YYYY-MM-DD HH:mm:ss"
+                                            placeholder="开始日期"
+                                            className={styles.dtPicker}
+                                            value={startValue}
+                                            onChange={this.onStartChange}
+                                            onOpenChange={this.handleStartOpenChange}
+                                            onKeyDown={()=>{}}
+                                        />
+                                    </div>
+                                    <div className={styles.dtPickerItem}>结束
+                                        <DatePicker
+                                            disabledDate={this.disabledEndDate}
+                                            showTime
+                                            format="YYYY-MM-DD HH:mm:ss"
+                                            placeholder="结束日期"
+                                            className={styles.dtPicker}
+                                            value={endValue}
+                                            open={endOpen}
+                                            onChange={this.onEndChange}
+                                            onOpenChange={this.handleEndOpenChange}
+                                        />
+                                    </div>
+                                    <div className={styles.dtPickerItem}>
+                                        <Button type="danger" className={styles.startReplay} onClick={this.startReplay}>
+                                            <Icon type="caret-right"/>开始轨迹回放
+                                        </Button>
+                                    </div>
+                                </div>
+                            }
                         </Footer>
                     </Layout>
                 </Sider>
-                <Content>
-                    <div id="fengMap" className="fengMap" style={this.state.containerStyle}></div>
-                    <div className={styles.mapActions}>
-                        {/* <span className={styles.mapActionBtn} onClick={this.onShowAlarmModal}>
-                         <Badge count={5}>
-                         <Icon type="message"/>
-                         </Badge>
-                         </span>*/}
-                        <span className={styles.mapActionBtn} onClick={() => openNotificationWithIcon('error')}><Icon
-                            type="edit"/></span>
-                        <span className={styles.mapActionBtn}><Icon type="credit-card"/></span>
-                        <span className={styles.mapActionBtn}><Icon type="plus"/></span>
-                        <span className={styles.mapActionBtn}><Icon type="minus"/></span>
-                    </div>
-                    <Card noHovering={true} bordered={false} className={this.state.peopleInfoWinClassName} title={
-                        <span><Icon type="solution"/>车辆编号： CL0000001</span>
-                    }
-                          extra={<span className={styles.peopleClose} title="关闭"
-                                       onClick={this.onClosePeopleInfoWindow.bind(this)}><Icon
-                              type="close"/></span>}
-                    >
-                        <div className={styles.rightPeopleContent}>
-                            <span>车辆类型：叉车</span>
-                            <span>设备编号：KNfs00021</span>
-                            <span>行驶里程：85km</span>
-                            <span>行驶速度：8.5km/h</span>
-                            <span>设备电量：60%</span>
-                            <span>车辆状态：车辆已超速行驶</span>
-                            <span>当前位置：B区域</span>
-                        </div>
-                    </Card>
-                    <div className={styles.replayPanel}>
-                        <div className={styles.replayItemRow}>
-                            <div className={styles.playTimeTag}>
-                                <span>00:12</span>
-                                <span> / 1:20:22</span>
-                            </div>
-                            <span className={styles.speedTag}>快进×16</span>
-                        </div>
-                        <Slider min={0} max={10} className={styles.palySlider} onChange={this.onPalySliderChange}
-                                value={this.state.palySliderValue} step={0.01}/>
-                        <div className={styles.replayItemRow}>
-                            <div>
-                                <span>2017-6-13<br/>0:39:28</span>
-                            </div>
-                            <div className={styles.ctlButtons}>
-                                <Button ghost size="large"><Icon type="pause-circle"/></Button>
-                                <Button ghost size="large"><Icon type="forward"/></Button>
-                                <Button ghost size="large"><Icon type="minus-square"/></Button>
-                            </div>
-                            <div>
-                                <span>2017-8-22<br/>0:39:28</span>
-                            </div>
-                        </div>
-                    </div>
-                    {/*<div className="operating">
-                     <button className="btn btn-default" id="btn1"
-                     style={{marginTop: '-50px', marginLeft: '300px', position: 'absolute'}}>绘制 可编辑多边形
-                     </button>
-                     <button className="btn btn-default" id="btn2"
-                     style={{marginTop: '-50px', marginLeft: '450px', position: 'absolute'}}>编辑 可编辑多边形
-                     </button>
-                     </div>*/}
-                    {/*报警信息窗口*/}
-                    {/*<CollectionCreateForm
-                     ref={this.saveFormRef}
-                     visible={this.state.alarmModalVisible}
-                     onCancel={this.handleCancel}
-                     onCreate={this.handleCreate}
-                     loading={this.state.alarmLoading}
-                     confirmLoading={this.state.alarmConfirmLoading}
-                     />*/}
+                <Content className={styles.content}>
+                    <TraceReplayMap
+                        isPlay={this.state.isPlay}
+                        startValue={this.state.startValue}
+                        endValue={this.state.endValue}
+                        addCarImageVisible={this.addCarImageVisible}
+                        traceDataSource={this.props.traceDataSource}
+                        positionMarker={this.state.positionMarker}
+                        getMap={this.getMap}/>
+                    {/* <div id="fengMap" className="fengMap" style={this.state.containerStyle}></div>*/}
 
                 </Content>
             </Layout>
@@ -812,19 +617,17 @@ export class TraceReplayPage extends React.Component {
 
 export function mapDispatchToProps(dispatch) {
     return {
-        onChangeUsername: (evt) => dispatch(changeUsername(evt.target.value)),
-        onSubmitForm: (evt) => {
-            if (evt !== undefined && evt.preventDefault) evt.preventDefault();
-            dispatch(loadRepos());
-        },
+        queryAllCarBegin: () => dispatch(queryAllCarBegin()),
+        showErrorMessage: (msg) => dispatch(showErrorMessage(msg)),
+        changeTraceReplay: (traceReplayMsg) => dispatch(changeTraceReplay(traceReplayMsg)),
+        emptyTraceData: () => dispatch(emptyTraceData()),
+
     };
 }
 
 const mapStateToProps = createStructuredSelector({
-    repos: makeSelectRepos(),
-    //username: makeSelectUsername(),
-    loading: makeSelectLoading(),
-    error: makeSelectError(),
+    carDtasSource: carDataSourceSelector(),
+    traceDataSource: SelectorTraceDataSource(),
 });
 
 // Wrap the component to inject dispatch and state into it

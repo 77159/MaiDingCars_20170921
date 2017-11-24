@@ -150,23 +150,7 @@ class AreaFormPanel extends React.Component {
                         }
                     </FormItem>
                 </div>
-                {/*<div className={styles.dtPickerItem}>*/}
-                {/*<Row>*/}
-                {/*<Col span={8}>*/}
-                {/*<label>重点区域</label>*/}
-                {/*</Col>*/}
-                {/*<Col span={16}>*/}
-                {/*{*/}
-                {/*getFieldDecorator('areaType', {*/}
-                {/*valuePropName: 'checked',*/}
-                {/*initialValue: area.get('areaType') === 1 ? true : false,*/}
-                {/*})(*/}
-                {/*<Checkbox disabled={lock}>标记重点区域</Checkbox>*/}
-                {/*)*/}
-                {/*}*/}
-                {/*</Col>*/}
-                {/*</Row>*/}
-                {/*</div>*/}
+
                 <div className={styles.dtPickerItem}>
                     <FormItem key={'areaStyle'} labelCol={{span: 8}} wrapperCol={{span: 16}} label="区域样式"
                               hasFeedback={true}>
@@ -181,7 +165,6 @@ class AreaFormPanel extends React.Component {
                                 initialValue: area.areaStype.backgroundColor,
                             })(
                                 <Select>
-                                    {/*<Select className={styles.areaStyleSelect} disabled={lock}>*/}
                                     <Option value="#2196F3" title="蓝色">
                                         <span className={styles.areaStyleBlue}></span>
                                     </Option>

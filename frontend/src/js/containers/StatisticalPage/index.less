@@ -73,7 +73,7 @@
   }
 
   //车辆统计信息
-  .carsMsg, .carsMsg2, .carsMsg3{
+  .carsMsg, .carsMsg2, .carsMsg3 {
     width: 100%;
     background: #F6FBFD;
   }
@@ -142,11 +142,6 @@
   }
 }
 
-/*.searchBtn {
-  width: 84px;
-  font-size: 14px;
-}*/
-
 .resetBtn,
 .searchBtn:not(:last-child) {
   font-size: 14px;
@@ -189,13 +184,36 @@
     border: none;
     padding: 4px 10px;
   }
+  :global .ant-table-tbody > tr > td {
+    padding: 8px 10px;
+  }
+}
+
+.tableRow2 {
+  Table{
+    border-top-left-radius: 6px;
+  }
+  padding-top: 20px;
+  :global .ant-table-thead {
+    background: #45484a;
+  }
+  :global .ant-table-thead > tr > th:nth-of-type(4){
+    padding: 0;
+  }
+  :global .ant-table-thead > tr > th {
+    background: transparent;
+    color: #fff;
+    font-size: 15px;
+    border: none;
+    text-align: center;
+  }
+  :global .ant-table-tbody > tr > td:nth-of-type(1) {
+    padding: 8px 10px;
+  }
   :global .ant-table-tbody > tr > td:nth-of-type(2) {
     padding: 8px 10px;
   }
   :global .ant-table-tbody > tr > td:nth-of-type(3) {
-    padding: 8px 10px;
-  }
-  :global .ant-table-tbody > tr > td:nth-of-type(4) {
     padding: 8px 10px;
   }
   :global .ant-table-tbody > tr > td {
@@ -203,7 +221,41 @@
   }
 }
 
+.InscribedClock{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.InscribedClock .inscribedDiv:nth-of-type(1){
+   display: flex;
+   align-items: center;
+   width: 100%;
+   height: 35px;
+   border-right: 1px solid #E9E9E9;
+ }
+.InscribedClock .inscribedDiv:nth-of-type(2){
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 35px;
+  border-right: 1px solid #E9E9E9;
+}
+.InscribedClock .inscribedDiv:nth-of-type(3){
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 35px;
+  border-right: 1px solid #E9E9E9;
+}
+.InscribedClock .inscribedDiv:nth-of-type(4){
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 35px;
+}
+
 .gantt {
   background: #51B600;
-  height: 10px;
+  height: 10px !important;
 }

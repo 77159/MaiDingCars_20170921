@@ -1,47 +1,58 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备管理 selectors
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/09/25
+ * @describe 统计分析页面 selectors
  */
+
 'use strict';
-import {createSelector} from 'reselect';
+import {
+    createSelector
+} from 'reselect';
 
-const selectorDevice = (state) => state.get('statistical');
+const selectorStatistical = (state) => state.get('statistical');
 
-const deviceDataSourceSelector = () => createSelector(
-    selectorDevice,
-    (deviceState) => deviceState.get('deviceDataSource')
-);
-
-const tableDataLoadingSelector=()=>createSelector(
-    selectorDevice,
-    (deviceState) => deviceState.get('tableDataLoading')
+const tableDataLoadingSelector = () => createSelector(
+    selectorStatistical,
+    (statisticalState) => statisticalState.get('tableDataLoading')
 );
 
 const carMsgSelector = () => createSelector(
-    selectorDevice,
-    (deviceState) => deviceState.get('carMsg')
+    selectorStatistical,
+    (statisticalState) => statisticalState.get('carMsg')
 );
 
 const carMsgListSelector = () => createSelector(
-    selectorDevice,
-    (deviceState) => deviceState.get('carMsgList')
+    selectorStatistical,
+    (statisticalState) => statisticalState.get('carMsgList')
 );
 
+const statisticalEntitySelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('statisticalEntity')
+);
 
-const deviceEntitySelector = () => createSelector(
-    selectorDevice,
-    (deviceModalState) => deviceModalState.get('deviceEntity')
+const densityEntitySelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('densityEntity')
+);
+
+const speedEntitySelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('speedEntity')
+);
+
+const abnormalEntitySelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('abnormalEntity')
 );
 
 export {
-    deviceEntitySelector,
-    selectorDevice,
-    deviceDataSourceSelector,
+    statisticalEntitySelector,
+    selectorStatistical,
     tableDataLoadingSelector,
     carMsgSelector,
-    carMsgListSelector
+    carMsgListSelector,
+    densityEntitySelector,
+    speedEntitySelector,
+    abnormalEntitySelector
 };

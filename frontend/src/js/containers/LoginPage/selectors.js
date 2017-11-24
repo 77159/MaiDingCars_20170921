@@ -4,16 +4,18 @@
  * @describe 人员登陆 selectors
  */
 'use strict';
-import {createSelector} from 'reselect';
+import {
+    createSelector
+} from 'reselect';
 
-const selectHome = (state) => state.get('login');
+const loginSelector = (state) => state.get('login');
 
 /**
  * 人员登陆信息集合
  * loginMsg 人员信息对象
  */
 const makeSelectUsername = () => createSelector(
-    selectHome,
+    loginSelector,
     (homeState) => homeState.get('loginMsg')
 );
 
@@ -21,12 +23,11 @@ const makeSelectUsername = () => createSelector(
  * 当前操作状态
  */
 const operationRunningSelector = () => createSelector(
-    selectHome,
+    loginSelector,
     (loginModalState) => loginModalState.get('operationRunning')
 );
 
 export {
-    selectHome,
     makeSelectUsername,
     operationRunningSelector
 };

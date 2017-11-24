@@ -22,11 +22,13 @@ import {modifyFormModalShow} from '../ModifyPasswordModel/actions';
 import {Form} from 'antd';
 import ModifyPasswordModel from '../ModifyPasswordModel';
 
-let pathname = browserHistory.getCurrentLocation().pathname;  //获取当前页面地址
-pathname = pathname.substr(1);
 
 export class HeadContainer extends React.Component {
     constructor(props) {
+
+        let pathname = browserHistory.getCurrentLocation().pathname;  //获取当前页面地址
+        pathname = pathname.substr(1);
+
         super(props);
         this.state = {
             current: pathname,

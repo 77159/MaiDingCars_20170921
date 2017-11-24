@@ -14,7 +14,11 @@ import {openWS, closeWS, createWebWorker} from "../../api/locationWebWorker";
 
 import {createStructuredSelector} from 'reselect';
 
+import {updatCarSpeed} from '../CarMgrPage/actions';
+
 import {connect} from 'react-redux';
+
+import moment from 'moment';
 
 import {
     receivedCarLocation,
@@ -24,16 +28,19 @@ import {
     putMessageIsArea,
     putAlarmDatas,
     delAlarmDatas,
-    updateLastDateTime
+    updateLastDateTime,
+    updateOnLineDevice,
+    removeOnlineDevice,
+    updateAlarmDuration
 } from "./actions";
 
 import {
     alertMessageDataSelector,
-    alarmDatasSelector
+    alarmDatasSelector,
+    SelectorOnLineDevice
 } from './selectors'
 
 const {Content} = Layout;
-
 
 const OPEN_SOCKET_CONNECTION_BEGIN = 'OPEN_SOCKET_CONNECTION_BEGIN';            //正在打开与服务器的WS连接
 const OPEN_SOCKET_CONNECTION_SUCCESS = 'OPEN_SOCKET_CONNECTION_SUCCESS';        //成功建立与服务器的WS连接
@@ -87,17 +94,31 @@ export class MainContainer extends React.Component {
 
             if (!data) return;
 
+            const carCode = data.carCode;
+            const speed = data.speed;
+            //console.log(carCode, speed);
+
+            //更新在线列表；
+            this.updateOnLineDevice(data);
+
+            //更新车辆信息速度
+            this.props.updatCarSpeed({carCode: carCode, speed: speed});
+
             //车辆实时定位信息
             if (data.type === 0) {
                 this.props.receivedLocation(data);
                 //console.log('data', data);
 
+                //console.log('data', data);
                 //当前报警信息
                 const alertInfo = data.alertInfo;
-                alertInfo['carCode'] = data.carCode;
+                //console.log('alertInfo', alertInfo);
+                // if (alertInfo) {
+                //     alertInfo['carCode'] = carCode;
+                // }
 
-                //接触已在报警列表中的报警信息
-                this.removeAlarmDatas(alertInfo);
+                //解除已在报警列表中的报警信息
+                this.removeAlarmDatas(carCode, alertInfo);
 
                 //当前有报警信息
                 if (alertInfo && alertInfo.length > 0) {
@@ -107,21 +128,24 @@ export class MainContainer extends React.Component {
                         const {type} = item;
                         const {isExist, key} = this.isExistAlarmDatas(carCode, type);
 
+                        item.carStatus = 2; //报警状态
                         if (isExist) {
                             //存在，更新最后报警时间
-                            item.updateTime = data.dateTime;
+                            //item.updateTime = data.dateTime;
+                            //console.log('data.dateTime', data.dateTime);
                             this.props.updateLastDateTime({key: key, dateTime: data.dateTime})
-
                         } else {
+                            //console.log('不在执行');
                             item.key = this.key++;
                             item.carCode = data.carCode;
                             item.dateTime = data.dateTime;//时间
                             item.updateTime = data.dateTime;
+                            item.lastDateTime = data.dateTime;
+                            item.time = 0;          //持续时间
                             item.x = data.pointX;
                             item.y = data.pointY;
                             item.isRead = true;     //未读
                             item.isShow = true;  //显示提示
-
                             //不存在，添加到报警信息，添加到当前报警信息列表
                             this.props.pushAlarmMessage(item);
                             this.props.putAlarmDatas(item);
@@ -132,41 +156,101 @@ export class MainContainer extends React.Component {
                 }
                 return;
             }
+
+            //设备下线
+            if (data.type === 2) {
+                this.props.removeOnlineDevice(carCode);
+            }
+
+            //获取当前最新在线设备
+            // if (data.type === 1001) {
+            //     const list = data.list;
+            //     this.props.getOnlineDevice(list);
+            //     return;
+            // }
         }
     };
 
-
+    /**
+     * 判断是否在报警信息列表中
+     * @param carCode
+     * @param type
+     * @returns {{isExist: boolean, key: string}}
+     */
     isExistAlarmDatas = (carCode, type) => {
         //当前已经在报警列表中的信息
         const alarmDatas = this.props.alarmDatas;
         //console.log('alarmDatas', alarmDatas);
         let isExist = false;
         let key = '';
-        for (let i = 0; i < alarmDatas.size; i++) {
-            const item = alarmDatas.get(i);
+
+        const data = alarmDatas.filter((item) => {
+            return item.carCode === carCode;
+        });
+
+        for (let i = 0; i < data.size; i++) {
+            const item = data.get(i);
             if (carCode === item.carCode && type === item.type) {
                 isExist = true;
                 key = item.key;
+                break;
             }
         }
         return {isExist, key};
     };
 
     /**
-     * 移除已不在报警列表中的车辆
-     * @param alertInfo
+     * 是否已经在在线列表中
+     * @param carCode 车辆code
      */
-    removeAlarmDatas = (alertInfo) => {
+    isExistOnlineDevice = (carCode) => {
+        const onlineDevice = this.props.onlineDevice;
+        if (!onlineDevice || onlineDevice.size <= 0) return false;
+        for (let i = 0; i < onlineDevice.size; i++) {
+            const item = onlineDevice.get(i);
+            if (carCode === item.carCode) {
+                return true;
+            }
+        }
+        return false;
+    };
+    /**
+     * 更新在线车辆
+     * @param data 车辆信息对象
+     */
+    updateOnLineDevice = (data) => {
+        const carCode = data.carCode;
+        const flag = this.isExistOnlineDevice(carCode);
+        if (!flag) {
+            this.props.updateOnLineDevice(data);
+        }
+    };
+
+    /**
+     * 移除已不在报警列表中的车辆
+     * @param alertInfo 报警信息
+     */
+    removeAlarmDatas = (carCode, alertInfo) => {
         //当前已经在报警列表中的信息
         const alarmDatas = this.props.alarmDatas;
-        for (let i = 0; i < alarmDatas.size; i++) {
-            const item = alarmDatas.get(i);
+
+        const data = alarmDatas.filter((item) => {
+            return item.carCode === carCode;
+        });
+
+        for (let i = 0; i < data.size; i++) {
+            const item = data.get(i);
             let isExist = false;
             for (let j = 0; j < alertInfo.length; j++) {
                 const info = alertInfo[j];
-                const carCode = alertInfo.carCode;
                 if (item.carCode === carCode && item.type === info.type) {
                     isExist = true;
+                    const lastDate = moment(item.lastDateTime);
+                    const dateTime = moment(item.dateTime);
+                    const time = lastDate.diff(dateTime, 's');
+                    //更新持续时间
+                    this.props.updateAlarmDuration({key: item.key, time: time});
+                    //console.log('持续时间：' + item.carCode, dateTime.format('HH:mm:ss'), lastDate.format('HH:mm:ss'), lastDate.diff(dateTime, 's'));
                     break;
                 }
             }
@@ -176,6 +260,26 @@ export class MainContainer extends React.Component {
                 this.props.delAlarmDatas(i);
             }
         }
+
+
+        // for (let i = 0; i < alarmDatas.size; i++) {
+        //     const item = alarmDatas.get(i);
+        //     let isExist = false;
+        //     for (let j = 0; j < alertInfo.length; j++) {
+        //         const info = alertInfo[j];
+        //         if (item.carCode === carCode && item.type === info.type) {
+        //             isExist = true;
+        //             //console.log('持续时间：', info, alertInfo);
+        //             //console.log(moment(info.dateTime).diff(alertInfo.dateTime));
+        //             break;
+        //         }
+        //     }
+        //
+        //     //当前已有的报警列表中移除解除报警的信息
+        //     if (!isExist) {
+        //         this.props.delAlarmDatas(i);
+        //     }
+        // }
     };
 
     render() {
@@ -198,16 +302,21 @@ export function actionsDispatchToProps(dispatch) {
         putAlarmDatas: (data) => dispatch(putAlarmDatas(data)),
         delAlarmDatas: (index) => dispatch(delAlarmDatas(index)),
         updateLastDateTime: (date) => dispatch(updateLastDateTime(date)),
-        /****/
         getOnlineDevice: (onlineDevice) => dispatch(getOnlineDevice(onlineDevice)),
+        /****/
         putMessageLastDateTime: (obj) => dispatch(putMessageLastDateTime(obj)),
         putMessageIsArea: (obj) => dispatch(putMessageIsArea(obj)),
+        updateOnLineDevice: (data) => dispatch(updateOnLineDevice(data)),
+        removeOnlineDevice: (carCode) => dispatch(removeOnlineDevice(carCode)),
+        updatCarSpeed: (obj) => dispatch(updatCarSpeed(obj)),
+        updateAlarmDuration: (obj) => dispatch(updateAlarmDuration(obj))
     };
 }
 
 const selectorStateToProps = createStructuredSelector({
     alertMessageData: alertMessageDataSelector(),
     alarmDatas: alarmDatasSelector(),
+    onlineDevice: SelectorOnLineDevice()
 });
 
 // Wrap the component to inject dispatch and state into it

@@ -1,90 +1,40 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * Actions change things in your application
- * Since this boilerplate uses a uni-directional data flow, specifically redux,
- * we have these actions which are the only way your application interacts with
- * your application state. This guarantees that your state is up to date and nobody
- * messes it up weirdly somewhere.
- *
- * To add a new Action:
- * 1) Import your constant
- * 2) Add a function like this:
- *    export function yourAction(var) {
- *        return { type: YOUR_ACTION_CONSTANT, var: var }
- *    }
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备管理 Actions
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/09/25
+ * @describe 统计页面 Actions
  */
 'use strict';
 import {
-    DEVICE_OP_BEGIN,
-    DEVICE_OP_FINISH,
-    QUERY_ALL_DEVICE_BEGIN,
-    QUERY_ALL_DEVICE_FINISH,
-    CREATE_DEVICE,
-    MODIFY_DEVICE,
+    STATISTICAL_OP_BEGIN,
+    STATISTICAL_OP_FINISH,
     CAR_MSG_BEGIN,
     CAR_MSG_FINISH,
     CAR_MSG_LIST_BEGIN,
-    CAR_MSG_LIST_FINISH
+    CAR_MSG_LIST_FINISH,
+    GET_DENSITY_DATA,
+    GET_DENSITY_DATA_DONE,
+    GET_SPEED_DATA,
+    GET_SPEED_DATA_DONE,
+    GET_ABNORMAL_DATA,
+    GET_ABNORMAL_DATA_DONE
 } from './constants';
 
 /**
  * 对设备数据的操作（CURD）开始
  */
-export const deviceOpBegin = () => ({
-    type:DEVICE_OP_BEGIN
+export const statisticalOpBegin = () => ({
+    type: STATISTICAL_OP_BEGIN
 });
 
 /**
  * 对设备数据的操作（CURD）结束
  */
-export const deviceOpFinish = () => ({
-    type:DEVICE_OP_FINISH
+export const statisticalOpFinish = () => ({
+    type: STATISTICAL_OP_FINISH
 });
 
 /**
- * 查询所有设备信息-开始
- */
-export const queryAllDeviceBegin = () => ({
-    type: QUERY_ALL_DEVICE_BEGIN
-});
-
-/**
- * 查询所有设备信息-结束
- * @param deviceData 设备集合
- */
-export const queryAllDeviceFinish = (deviceData) => ({
-    type: QUERY_ALL_DEVICE_FINISH,
-    payload: deviceData
-});
-
-/**
- * 添加设备
- * @param deviceEntity 待添加的设备对象
- * @param callback
- */
-export const createDevice = (deviceEntity) => ({
-    type: CREATE_DEVICE,
-    payload: deviceEntity
-});
-
-/**
- * 修改设备信息
- * @param deviceEntity 要修改的设备对象
- * @param callback
- */
-export const modifyDevice = (deviceEntity) => ({
-    type: MODIFY_DEVICE,
-    payload: deviceEntity
-});
-
-/**
- * 查询所车辆信息-开始
+ * 查询所有车辆信息-开始
  */
 export const queryAllCarMsgBegin = () => ({
     type: CAR_MSG_BEGIN
@@ -113,4 +63,72 @@ export const queryAllCarMsgListBegin = () => ({
 export const queryAllCarMsgListFinish = (carMsgList) => ({
     type: CAR_MSG_LIST_FINISH,
     payload: carMsgList
+});
+
+/**
+ * [查询区域密度统计数据]
+ * @param  {[type]} startdate [起点日期]
+ * @param  {[type]} enddate   [终点日期]
+ * @return {[type]}           [发送后台请求]
+ */
+export const getDensityData = (startdate, enddate) => ({
+    type: GET_DENSITY_DATA,
+    payload: {
+        startdate,
+        enddate
+    }
+});
+
+/**
+ * [查询区域密度统计数据-请求完成回调]
+ **/
+export const getDensityDataDone = (response) => ({
+    type: GET_DENSITY_DATA_DONE,
+    payload: response
+});
+
+/**
+ * [查询车辆速度统计数据]
+ * @param  {[type]} startdate [起点日期]
+ * @param  {[type]} enddate   [终点日期]
+ * @return {[type]}           [发送后台请求]
+ */
+export const getSpeedData = (startdate, enddate) => ({
+    type: GET_SPEED_DATA,
+    payload: {
+        startdate,
+        enddate
+    }
+});
+
+/**
+ * [查询车辆速度统计数据-请求完成回调]
+ **/
+export const getSpeedDataDone = (response) => ({
+    type: GET_SPEED_DATA_DONE,
+    payload: response
+});
+
+
+/**
+ * [查询车辆异常统计数据]
+ * @param  {[type]} startdate [起点日期]
+ * @param  {[type]} enddate   [终点日期]
+ * @return {[type]}           [发送后台请求]
+ */
+export const getAbnormalData = (startdate, enddate) => ({
+    type: GET_ABNORMAL_DATA,
+    payload: {
+        startdate,
+        enddate
+    }
+});
+
+
+/**
+ * [查询车辆异常统计数据-请求完成回调]
+ **/
+export const getAbnormalDataDone = (response) => ({
+    type: GET_ABNORMAL_DATA_DONE,
+    payload: response
 });

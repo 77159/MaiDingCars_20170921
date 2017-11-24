@@ -10,6 +10,8 @@ import {
     invokeServerAPI,
 } from './restApi.js';
 
+import * as cookies from './cookies.js';
+
 /**
  * 查询所有设备信息
  * @returns {Promise.<TResult>|*}
@@ -34,7 +36,6 @@ export function queryDeviceAPI(deviceCode) {
  * @returns {Promise.<TResult>|*}
  */
 export function createDeviceAPI(deviceEntity) {
-    console.log('进入设备serverAPI');
     return invokeServerAPI(`devices`, 'POST', deviceEntity);
 }
 
@@ -44,7 +45,6 @@ export function createDeviceAPI(deviceEntity) {
  * @returns {Promise.<TResult>|*}
  */
 export function deleteDevicesAPI(deviceCode) {
-    console.log('进入删除设备serverAPI', deviceCode);
     return invokeServerAPI(`devices`, 'DELETE', deviceCode);
 }
 
@@ -54,7 +54,6 @@ export function deleteDevicesAPI(deviceCode) {
  * @returns {Promise.<TResult>|*}
  */
 export function modifyDeviceAPI(deviceEntity) {
-    console.log('进入修改设备信息service', deviceEntity);
     return invokeServerAPI(`devices`, 'PUT', deviceEntity);
 }
 
@@ -64,7 +63,6 @@ export function modifyDeviceAPI(deviceEntity) {
  * @returns {Promise.<TResult>|*}
  */
 export function queryAllNotDeviceAPI() {
-    console.log('进入未被使用的设备serverAPI');
     return invokeServerAPI(`devices/unbounded`, 'GET', null);
 }
 
@@ -75,7 +73,6 @@ export function queryAllNotDeviceAPI() {
  * @returns {Promise.<TResult>|*}
  */
 export function queryAllCarAPI() {
-    console.log('查询所有车辆信息serverAPI');
     return invokeServerAPI(`cars?pageNum=1&pageSize=1000&accessToken=${token}`, 'GET', null);
 }
 
@@ -94,7 +91,6 @@ export function queryCarAPI(carCode) {
  * @returns {Promise.<TResult>|*}
  */
 export function createCarAPI(carEntity) {
-    console.log('进入添加车辆serverAPI');
     return invokeServerAPI(`cars`, 'POST', carEntity);
 }
 
@@ -113,7 +109,6 @@ export function deleteCarsAPI(carCode) {
  * @returns {Promise.<TResult>|*}
  */
 export function modifyCarAPI(carEntity) {
-    console.log('进入修改车辆信息service', carEntity);
     return invokeServerAPI(`cars`, 'PUT', carEntity);
 }
 
@@ -133,7 +128,6 @@ export function getAllCarCategoryAPI() {
  * @returns {Promise.<TResult>|*}
  */
 export function postCarCategory(carCategory) {
-    console.log('进入创建车辆类型service', carCategory);
     return invokeServerAPI(`cartype`, 'POST', carCategory);
 }
 
@@ -161,7 +155,6 @@ export function getCarCategoryById(id) {
  * @returns {Promise.<TResult>|*}
  */
 export function putCarCategory(carCategory) {
-    console.log('修改车辆类型service', carCategory);
     return invokeServerAPI(`cartype`, 'PUT', carCategory);
 }
 
@@ -218,7 +211,6 @@ export function modifyArea(area) {
  * @returns {Promise.<TResult>|*}
  */
 export function changeUsernameAPI(loginMsg) {
-    console.log('进入登陆车辆serverAPI');
     return invokeServerAPI(`user/login`, 'POST', loginMsg);
 }
 
@@ -227,7 +219,6 @@ export function changeUsernameAPI(loginMsg) {
  * @returns {Promise.<TResult>|*}
  */
 export function modifyPasswordAPI(passwordMsg) {
-    console.log('进入修改密码serverAPI', passwordMsg);
     return invokeServerAPI(`user/getpass`, 'PUT', passwordMsg);
 }
 
@@ -236,8 +227,10 @@ export function modifyPasswordAPI(passwordMsg) {
  * @returns {Promise.<TResult>|*}
  */
 export function loginOutAPI() {
-    console.log('进入退出serverAPI');
-    return invokeServerAPI(`user/logout`, 'POST');
+    let token = {
+        token: window.token
+    };
+    return invokeServerAPI(`user/logout?token=${token}`, 'POST', null);
 }
 
 /************************* 统计分析 *************************/
@@ -254,6 +247,42 @@ export function queryAllCarMsgAPI() {
  * @returns {Promise.<TResult>|*}
  */
 export function queryAllCarMsgListAPI() {
-    console.log('进入查询车辆信息列表serverAPI');
     return invokeServerAPI(`cars/carinfoproportion`, 'GET', null);
+}
+
+/**
+ * [getCenterAreaStaticData 查询集中区域单条统计信息]
+ * @param  {[type]} deviceId [description]
+ * @return {[type]}          [description]
+ */
+export function getCenterAreaStaticData(deviceId) {
+    return invokeServerAPI(`cars/jzqu/${deviceId}`, 'GET', null);
+}
+
+/**
+ * 查询一个车辆信息
+ * @returns {Promise.<TResult>|*}
+ */
+export function queryOneCarMsgAPI(carCode) {
+    return invokeServerAPI(`cars/jzqu/${carCode}`, 'GET', null);
+}
+
+/**
+ * 轨迹回放
+ * @returns {Promise.<TResult>|*}
+ */
+export function traceReplayAPI(traceReplayMsg) {
+    return invokeServerAPI(`cars/history?carCode=${traceReplayMsg[0]}&beginTime=${traceReplayMsg[1]}&endTime=${traceReplayMsg[2]}`, 'GET');
+}
+
+export function queryDensityStatics(startdate, enddate) {
+    return invokeServerAPI(`area/areadensestatistics?beginTime=${startdate}&endTime=${enddate}`, 'GET');
+}
+
+export function querySpeedStatics(startdate, enddate) {
+    return invokeServerAPI(`cars/speedStatistics?beginTime=${startdate}&endTime=${enddate}`, 'GET');
+}
+
+export function queryAbnormalStatics(startdate, enddate) {
+    return invokeServerAPI(`cars/carsException?beginTime=${startdate}&endTime=${enddate}`, 'GET');
 }

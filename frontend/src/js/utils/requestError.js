@@ -9,33 +9,34 @@ const requestError = {
     CREATE_DEVICE_SUCCESS: '添加设备成功',
     DEVICE_NUM_ERROR: '设备编号或标识重复，请更改设备编号或标识',
     //修改设备
-    MODIFY_DEVICE_ERROR: '修改人员时出现错误',
+    MODIFY_DEVICE_ERROR: '修改设备时出现错误',
     MODIFY_DEVICE_SUCCESS: '修改成功',
     //删除设备
     DELETE_DEVICE_ERROR: '删除设备失败，请稍后再试',
     DELETE_DEVICE_SUCCESS: '删除设备成功',
 
-    /*************************** 人员类型 ***************************/
-    GET_CARCATEGORY_ERROR: '获取人员类型失败',
-    GET_CARCATEGORY_SUCCESS: '获取人员类型成功',
-    POST_CARCATEGORY_ERROR: '添加人员类型失败',
-    POST_CARCATEGORY_SUCCESS: '添加人员类型成功',
-    DELETE_CARCATEGORY_ERROR: '删除人员类型失败',
-    DELETE_CARCATEGORY_SUCCESS: '删除人员类型成功',
-    PUT_CARCATEGORY_ERROR: '修改人员类型失败',
-    PUT_CARCATEGORY_SUCCESS: '修改人员类型成功',
+    /*************************** 车辆类型 ***************************/
+    GET_CARCATEGORY_ERROR: '获取车辆类型失败',
+    GET_CARCATEGORY_SUCCESS: '获取车辆类型成功',
+    POST_CARCATEGORY_ERROR: '添加车辆类型失败',
+    POST_CARCATEGORY_TYPE_ERROR: '车辆类型重复',
+    POST_CARCATEGORY_SUCCESS: '添加车辆类型成功',
+    DELETE_CARCATEGORY_ERROR: '删除车辆类型失败',
+    DELETE_CARCATEGORY_SUCCESS: '删除车辆类型成功',
+    PUT_CARCATEGORY_ERROR: '修改车辆类型失败',
+    PUT_CARCATEGORY_SUCCESS: '修改车辆类型成功',
     DELETE_SUCCESS: '删除成功',
-    //添加人员
-    CREATE_CAR_ERROR: '添加人员时出现错误',
-    CREATE_CAR_NUM_ERROR: '人员编号重复，请重新输入',
-    CREATE_CAR_SUCCESS: '添加人员成功',
-    //修改人员
-    MODIFY_CAR_ERROR: '修改人员时出现错误',
-    MODIFY_CAR_SUCCESS: '修改人员成功',
-    //人员退出
+    //添加车辆
+    CREATE_CAR_ERROR: '添加车辆时出现错误',
+    CREATE_CAR_NUM_ERROR: '车辆编号重复，请重新输入',
+    CREATE_CAR_SUCCESS: '添加车辆成功',
+    //修改车辆
+    MODIFY_CAR_ERROR: '修改车辆时出现错误',
+    MODIFY_CAR_SUCCESS: '修改车辆成功',
+    //车辆退出
     DROP_OUT_ERROR: '退出失败',
     DROP_OUT_SUCCESS: '退出成功',
-    //人员登陆
+    //车辆登陆
     LOGIN_ERROR: '登陆失败',
     LOGIN_USER_ERROR: '用户名或密码错误',
     LOGIN_SUCCESS: '登陆成功',
@@ -49,6 +50,7 @@ const requestError = {
     DELETE_AREA_BY_ID_ERROR: '删除地图区域失败',
     DELETE_AREA_BY_ID_SUCCESS: '删除地图区域成功',
     CREATE_AREA_ERROR: '创建地图区域失败',
+    CREATE_AREA_NAME_ERROR: '地图区域名称重复',
     CREATE_AREA_SUCCESS: '创建地图区域成功',
     QUERY_AREA_BY_ID_ERROR: '查询地图区域失败',
     QUERY_AREA_BY_ID_SUCCES: '查询地图区域成功',

@@ -1,9 +1,6 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/9/7
  * @describe 设备信息对话框（Modal）组件，可支持添加、修改、查看功能。
  */
 
@@ -80,7 +77,6 @@ class DeviceFormModal extends React.Component {
                     return;
                 }
                 values.deviceStatus = (values.deviceStatus === '1') ? 0 : 1;
-                console.log('添加设备收集到的信息: ', values);
                 this.props.createDevice(values);
                 //form.resetFields();
             });
@@ -93,7 +89,6 @@ class DeviceFormModal extends React.Component {
                 }
                 //values.deviceStatus = values.deviceStatus ? 0 : 1;
                 values.deviceStatus = (values.deviceStatus === '1') ? 0 : 1;
-                console.log('修改设备收集到的信息: ', values);
                 this.props.modifyDevice(values);
                 //form.resetFields();
             });

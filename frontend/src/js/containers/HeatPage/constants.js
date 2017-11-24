@@ -16,3 +16,4 @@
  */
 'use strict';
 export const CHANGE_USERNAME = 'boilerplate/Home/CHANGE_USERNAME';
+export const UPDATE_LOADING = 'boilerplate/Home/UPDATE_LOADING';

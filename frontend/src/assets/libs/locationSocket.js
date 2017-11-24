@@ -41,12 +41,12 @@ self.onmessage = function (event) {
     return;
 }
 
-var wsUrl = "ws://192.168.1.168:8090/websocket.ws";
+var wsUrl = "ws://192.168.1.92:8080/websocket.ws";
 
 var ws = null;
 
 var onOpen = function (event) {
-    ws.send("type=1001");
+    //ws.send("type=1001");
     wrapPostMessage(OPEN_SOCKET_CONNECTION_SUCCESS, '成功连接到服务器');
 };
 

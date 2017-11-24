@@ -1,68 +1,80 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备管理页面。路径为'/device'
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/09/25
+ * @describe 统计分析页面。路径为'/statistical'
  */
 
 'use strict';
 import React from 'react';
-import {Layout} from 'antd';
-    
+import {
+    Layout,
+    Button,
+    Input,
+    Select,
+    AutoComplete,
+    Row,
+    Col,
+    Table,
+    DatePicker,
+    Icon,
+    TimePicker,
+    Tabs
+} from 'antd';
+
 const {Content} = Layout;
-import {Button} from 'antd';
-import {Input} from 'antd';
-import {Select} from 'antd';
-import {AutoComplete} from 'antd';
 const Option = Select.Option;
-import {Row, Col} from 'antd';
-import {Table} from 'antd';
 import styles from './index.less';
 import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
 import {showErrorMessage} from '../App/actions';
 import _ from 'lodash';
 import {
-    queryAllDeviceBegin,
-    modifyDevice,
-    deleteDevice,
     queryAllCarMsgBegin,
-    queryAllCarMsgListBegin
+    queryAllCarMsgListBegin,
+    getDensityData,
+    getSpeedData,
+    getAbnormalData,
 } from './actions';
-import {DatePicker, Icon} from 'antd';
-const {MonthPicker, RangePicker} = DatePicker;
-import {TimePicker} from 'antd';
+const {
+    MonthPicker,
+    RangePicker
+} = DatePicker;
 import moment from 'moment';
+import getHours from 'moment';
 import echarts from 'echarts';
-import {Tabs} from 'antd';
 const TabPane = Tabs.TabPane;
 import {
-    deviceDataSourceSelector,
     tableDataLoadingSelector,
-    deviceEntitySelector,
+    statisticalEntitySelector,
     carMsgSelector,
-    carMsgListSelector
+    carMsgListSelector,
+    densityEntitySelector,
+    speedEntitySelector,
+    abnormalEntitySelector
 } from './selectors';
 import {carCategorySourceSelector} from '../CategoryFormModel/selectors';
 import {getCarCategory} from '../CategoryFormModel/actions';
 
-import DeviceFormModal from '../StatisticalFormModal';
-import {deviceFormModalShow} from "../StatisticalFormModal/actions";
+import StatisticalFormModal from '../StatisticalFormModal';
+import {
+    statisticalFormModalShow,
+    getCenterAreaStaticData
+} from "../StatisticalFormModal/actions";
 
+
+//模拟数据
 const TEST_dataSource = [];
-for (let i = 1; i < 25; i++) {
+for (var i = 0; i < 24; i++) {
     TEST_dataSource.push({
-        title: i,
+        title: i + '*****',
         dataIndex: i,
-        key: i,
-        render: () => {
-            return (
-                <div className={styles.gantt} style={{width: `${101}%`}}>
-                </div>
-            )
-        }
+        key: i + 1,
+        // render: () => {
+        //     return (
+        //         <div className={styles.gantt} style={{width: `${101}%`}}>
+        //         </div>
+        //     )
+        // }
     });
 }
 
@@ -71,39 +83,38 @@ export class StatisticalPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            filter_deviceCode: '',              //设备编号-筛选条件，需要初始化，不要设置为null
-            filter_carCode: '',                 //安保编号-筛选条件，需要初始化，不要设置为null
-            filter_workStatus: 'all',           //工作状态-筛选条件 [all] 全部（默认）[0] 离线 [1] 工作
-            filter_deviceStatus: 'all',         //设备状态-筛选条件 [all] 全部（默认）[0] 禁用 [1] 启用
-            dataFilter: null,                   //数据过滤器数组，只有一条记录，将筛选条件用&&连接。格式：['设备编号'&&'安保编号'&&'工作状态'&&'设备状态']
+            filter_deviceCode: '', //设备编号-筛选条件，需要初始化，不要设置为null
+            filter_carCode: '', //安保编号-筛选条件，需要初始化，不要设置为null
+            filter_workStatus: 'all', //工作状态-筛选条件 [all] 全部（默认）[0] 离线 [1] 工作
+            filter_deviceStatus: 'all', //设备状态-筛选条件 [all] 全部（默认）[0] 禁用 [1] 启用
+            dataFilter: null, //数据过滤器数组，只有一条记录，将筛选条件用&&连接。格式：['设备编号'&&'安保编号'&&'工作状态'&&'设备状态']
             curSelectedRowKeys: [],
-            autoComplete_deviceCode: [],        //设备编号自动完成提示数组
-            autoComplete_carCode: [],           //车辆编号自动完成提示数组
+            autoComplete_deviceCode: [], //设备编号自动完成提示数组
+            autoComplete_carCode: [], //车辆编号自动完成提示数组
 
             TEST_dataSource: TEST_dataSource,
             filter_carType: 'all',
-            carsBeginDate: null,
+            carsBeginDate: new moment(),
             carsBeginTime: null,
-            carsEndDate: null,
-            carsEndTime: null,
+            carsEndDate: new moment(),
+            carsEndTime: new getHours(),
             carsDateTime: null,
+
+            busyCarsBeginDate: new moment(),
+            busyCarsBeginTime: null,
+            busyCarsEndDate: new moment(),
+            busyCarsEndTime: null,
+            busyCarsDateTime: null,
         };
     }
 
-    componentWillMount(){
-        //加载设备数据
-        this.props.queryAllDevice();
-        this.props.queryAllCarMsg();
-        this.props.queryAllCarMsgList();
-        this.props.getCarCategory();
-    }
-
-    componentWillReceiveProps (nextProps) {
-        if(_.eq(this.props.carMsgList, nextProps.carMsgList) === false){
+    componentWillReceiveProps(nextProps, nextStates) {
+        let densityData_ = nextProps.densityEntity;
+        if (densityData_ && densityData_.data) {
+            let densityDom_ = document.getElementById('main');
+            if (!densityDom_) return;
             // 初始化echarts实例
-            let myChart = echarts.init(document.getElementById('main'));
-            let myChart2 = echarts.init(document.getElementById('main2'));
-            let myChart3 = echarts.init(document.getElementById('main3'));
+            let myChart = echarts.init(densityDom_);
             // 绘制图表
             myChart.setOption({
                 tooltip: {
@@ -119,109 +130,131 @@ export class StatisticalPage extends React.Component {
                         fontSize: 14,
                         padding: [3, 4, 5, 6],
                     },
-                    //name: ['区域A\n密集程度', '区域B', '区域C', '区域D'],
-                    data: [
-                        '区域A\n密集程度：10% 报警次数：5',
-                        '区域B\n密集程度：30% 报警次数：8',
-                        '区域C\n密集程度：20% 报警次数：6',
-                        '区域D\n密集程度：40% 报警次数：15',
-                    ]
+                    data: densityData_.legendData
                 },
-                color: ['#F44336', '#1D9FF2', '#F9A825', '#00897B'],
-                series: [
-                    {
-                        name: '区域密度',
-                        type: 'pie',
-                        center: ['30%', '50%'],
-                        radius: ['50%', '70%'],
-                        //center: ['30%', '50%'],
-                        avoidLabelOverlap: false,
-                        label: {
-                            normal: {
-                                show: false,
-                                position: 'center'
-                            },
-                            /*emphasis: {
-                             show: true,
-                             textStyle: {
-                             fontSize: '30',
-                             fontWeight: 'bold'
-                             }
-                             }*/
-                        },
-                        // labelLine: {
-                        //     normal: {
-                        //         show: false
-                        //     }
-                        // },
-                        data: [
-                            {value: 10, name: '区域A\n密集程度：10% 报警次数：5'},
-                            {value: 40, name: '区域B\n密集程度：30% 报警次数：8'},
-                            {value: 20, name: '区域C\n密集程度：20% 报警次数：6'},
-                            {value: 10, name: '区域D\n密集程度：40% 报警次数：15'},
-                        ]
+                color: ['#F44336', '#1D9FF2', '#00897B', '#F9A825'],
+                series: [{
+                    name: '区域密度',
+                    type: 'pie',
+                    center: ['30%', '50%'],
+                    radius: ['50%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        }
                     },
-                ]
+                    data: densityData_.data,
+                    // itemStyle: {
+                    //     normal: {
+                    //         //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                    //         color: function(params) {
+                    //             console.log('color', params, arguments);
+                    //             if (params.value == 0) return 'yellow';
+                    //         }
+                    //     }
+                    // }
+                }]
             });
+        }
+
+        let speedData_ = nextProps.speedEntity;
+        if (speedData_ && speedData_.xdata) {
+            let speedDom_ = document.getElementById('main2');
+            if (!speedDom_) return;
+
+            //换算series渲染值取小数点后两位
+            let data = [];
+            speedData_.data.map((item, index) => {
+                let data_arr = Math.floor(item / 1000 * 100) / 100;
+                data.push(data_arr);
+            });
+            //换算速度取小数点后两位
+            let ymax = Math.floor(speedData_.ymax / 1000 * 100) / 100;
+
+            let myChart2 = echarts.init(speedDom_);
             myChart2.setOption({
-                baseOption:{
-                    xAxis:{
-                        name: '速度 km/h',
-                        data: [5, 10, 15],
+                baseOption: {
+                    xAxis: {
+                        name: '数量（辆）',
+                        data: speedData_.xdata,
                         // splitNumber: 2,
                     },
-                    yAxis:{
-                        name: '数量（辆）',
+                    yAxis: {
+                        name: '速度 km/h',
+                        max: ymax,
+                        //data: speedData_.ydata
+                        splitNumber: 2,
                         // interval: 5,
                     },
-                    series:[{
+                    series: [{
                         color: ['#95CFFA'],
-                        type:'bar',
-                        data: [12, 9, 20],
+                        type: 'bar',
+                        data: data,
                         // barWidth: '80%',
                         // barGap: '0',
-                        barCategoryGap: '0',
-                        itemStyle: {
-                            normal:{
-                                //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                                color: function (params){
-                                    let colorList = ['#C2D7AF','#AFEBFE','#95D0F7'];
-                                    return colorList[params.dataIndex];
-                                }
-                            },
-                        },
-                    }]
-                },
-            });
-            myChart3.setOption({
-                baseOption:{
-                    legend:{
-                        data:['超过五小时无位置信息','超速车辆']
-                    },
-                    xAxis:{
-                        name: '日期（天）',
-                        data:['9.4','9.6','9.7','9.8','9.9','9.10','9.11'],
-                    },
-                    yAxis:{
-                        name: '数量（辆）',
-                        splitNumber: 2,
-                    },
-                    series:[{
-                        name:'超过五小时无位置信息',
-                        color: ['#95CFFA'],
-                        type:'bar',
-                        barWidth: '20%',
-                        data:[45,25,36,47,89,60,38],
-                    },{
-                        name:'超速车辆',
-                        color: ['#FE1C69'],
-                        type:'line',
-                        data:[75,12,45,86,95,15,66],
+                        // barCategoryGap: '0',
+                        // itemStyle: {
+                        //     normal: {
+                        //         //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                        //         color: function(params) {
+                        //             let colorList = ['#C2D7AF', '#AFEBFE', '#95D0F7'];
+                        //             return colorList[params.dataIndex];
+                        //         }
+                        //     },
+                        // },
                     }]
                 },
             });
         }
-    }
+
+        let abnormalData_ = nextProps.abnormalEntity;
+        if (abnormalData_ && abnormalData_.xdata) {
+            let abnormalDom_ = document.getElementById('main3');
+            if (!abnormalDom_) return;
+
+            let myChart3 = echarts.init(abnormalDom_);
+            myChart3.setOption({
+                baseOption: {
+                    legend: {
+                        data: ['超过五小时无位置信息', '超速车辆']
+                    },
+                    xAxis: {
+                        name: '日期（天）',
+                        data: abnormalData_.xdata,
+                    },
+                    yAxis: {
+                        name: '数量（辆）',
+                        splitNumber: abnormalData_.yAxis,
+                    },
+                    series: [{
+                        name: '超过五小时无位置信息',
+                        color: ['#95CFFA'],
+                        type: 'bar',
+                        barWidth: '20%',
+                        data: abnormalData_.series[97],
+                    }, {
+                        name: '超速车辆',
+                        color: ['#FE1C69'],
+                        type: 'line',
+                        data: abnormalData_.series[99],
+                    }]
+                },
+            });
+        }
+        /*if (this.state.carsBeginDate != nextStates.carsBeginDate || this.state.carsBeginTime != nextStates.carsBeginTime || this.state.carsEndDate != nextStates.carsEndDate || this.state.carsEndTime != nextStates.carsEndTime) {}*/
+    };
+
+    componentWillMount() {
+        //加载数据
+        this.props.queryAllCarMsg();
+        this.props.queryAllCarMsgList();
+        this.props.getCarCategory();
+        this.props.getDensityStatic(`${this.state.carsBeginDate.format('YYYY-MM-DD')} 00:00:00`, `${this.state.carsEndDate.format('YYYY-MM-DD')} ${this.state.carsEndTime.format('HH:mm:ss')}`);
+        this.props.getSpeedStatic(`${this.state.carsBeginDate.format('YYYY-MM-DD')} 00:00:00`, `${this.state.carsEndDate.format('YYYY-MM-DD')} ${this.state.carsEndTime.format('HH:mm:ss')}`);
+        this.props.getAbnormalStatic(`${this.state.carsBeginDate.format('YYYY-MM-DD')} 00:00:00`, `${this.state.carsEndDate.format('YYYY-MM-DD')} ${this.state.carsEndTime.format('HH:mm:ss')}`);
+    };
 
     //密度统计图
     getDensity = () => {
@@ -249,7 +282,7 @@ export class StatisticalPage extends React.Component {
             filter_carType: 'all',
         });
         //刷新数据
-        this.props.queryAllDevice();
+        this.props.queryAllCarMsgList();
     };
 
     //数据过滤器 value:筛选条件 record 设备数据 index 数据索引
@@ -266,7 +299,7 @@ export class StatisticalPage extends React.Component {
             (record.carType == filters[2] || filters[2] == 'all')
     }
 
-    //查询设备（筛选）
+    //查询（筛选）
     onFilterDevice = () => {
         //保证参数不能为null、undefined
         let deviceCode = _.isEmpty(this.state.filter_deviceCode) ? '' : this.state.filter_deviceCode.trim();
@@ -280,11 +313,11 @@ export class StatisticalPage extends React.Component {
         });
     };
 
-
-    //查看设备
-    onViewDeviceInfo = (record) => {
+    //查看集中区域分析
+    onViewDeviceInfo = (carCode, count) => {
         //显示添加设备对话框
-        this.props.showDeviceFormModal('modify', record);
+        this.props.showStatisticalFormModal('modify', carCode);
+        this.props.queryCenterAreaData(carCode, count);
     };
 
     //设备编号自动完成填充
@@ -295,8 +328,10 @@ export class StatisticalPage extends React.Component {
         if (_.isEmpty(value) == false && value.trim().length > 2) {
             //遍历设备数据集合，将设备编号中包含输入字符的完整编号数据写入自动完成提示数据集合中。
             carMsgList.forEach(carMsgList => {
-                if (carMsgList.deviceCode.includes(value)) {
-                    data.push(carMsgList.deviceCode);
+                if(carMsgList.deviceCode) {
+                    if (carMsgList.deviceCode.includes(value)) {
+                        data.push(carMsgList.deviceCode);
+                    }
                 }
             });
         }
@@ -365,42 +400,187 @@ export class StatisticalPage extends React.Component {
 
     //根据用户选择的时间段查询车辆统计页面的信息
     getCars = () => {
-        const {carsBeginDate, carsBeginTime, carsEndDate, carsEndTime} = this.state;
+        const {
+            carsBeginDate,
+            carsBeginTime,
+            carsEndDate,
+            carsEndTime,
+        } = this.state;
+
+        //获取前一天的日期
+        // function GetDateStr(AddDayCount) {
+        //     let dd = new Date();
+        //     dd.setDate(dd.getDate()+AddDayCount);//获取AddDayCount天后的日期
+        //     let y = dd.getFullYear();
+        //     let m = dd.getMonth()+1;//获取当前月份的日期
+        //     let d = dd.getDate();
+        //     return y+"-"+m+"-"+d;
+        // }
+        // console.log(GetDateStr(-1));
+
         const beiginDate = carsBeginDate ? carsBeginDate.format('YYYY-MM-DD') : '';
-        const beiginTime = carsBeginTime ? carsBeginTime.format('HH') : '09';
+        const beiginTime = carsBeginTime ? carsBeginTime.format('HH') : '00';
         const endDate = carsEndDate ? carsEndDate.format('YYYY-MM-DD') : '';
-        const endTime = carsEndTime ? carsEndTime.format('HH') : '09';
-        if(!beiginDate) {
+        const endTime = carsEndTime ? carsEndTime.format('HH') : '';
+        if (!beiginDate) {
             this.props.showErrorMessage('请选择开始日期');
             return;
         }
-        if(!endDate) {
+        if (!endDate) {
+            this.props.showErrorMessage('请选择结束日期');
+            return;
+        }
+        if((Date.parse(new Date(beiginDate)) - Date.parse(new Date(endDate))) > 0) {
+            this.props.showErrorMessage('结束日期不能早于开始日期');
+            return;
+        }
+        this.setState({
+            carsDateTime: `${beiginDate}&&${beiginTime}&&${endDate}&&${endTime}`,
+        }, () => {
+            //查询的时候重新查询统计信息
+            this.props.getDensityStatic(`${beiginDate} ${beiginTime}:00:00`, `${endDate} ${endTime}:59:59`);
+            this.props.getSpeedStatic(`${beiginDate} ${beiginTime}:00:00`, `${endDate} ${endTime}:59:59`);
+            this.props.getAbnormalStatic(`${beiginDate} ${beiginTime}:00:00`, `${endDate} ${endTime}:59:59`);
+        });
+        console.log(beiginDate, beiginTime, endDate, endTime);
+    };
+
+
+    ///////////////////////////////////////////////繁忙统计///////////////////////////////////////////////////
+
+
+    //繁忙统计页面车辆编号自动完成填充 TODO 此处需要修改过滤数据来源
+    onBusyCarCodeAutoCompleteSearch = (value) => {
+        let carMsgList = this.props.carMsgList;
+        let data = [];
+        //非空，且自动提示最少需要输入3个字符
+        if (_.isEmpty(value) == false && value.trim().length > 2) {
+            //遍历设备数据集合，将车辆编号中包含输入字符的完整编号数据写入自动完成提示数据集合中。
+            carMsgList.forEach(carMsgList => {
+                if (carMsgList.carCode.includes(value)) {
+                    data.push(carMsgList.carCode);
+                }
+            });
+        }
+        this.setState({
+            autoComplete_carCode: data,
+        });
+    };
+
+    //根据用户选择的时间轴动态显示table的横向滑动距离
+    scrollBar = () => {
+        let dataNum;
+        if (TEST_dataSource.length) {
+            dataNum = TEST_dataSource.length * 100 + 330;
+            return dataNum;
+        }
+    };
+
+    //繁忙统计开始日期
+    handleBusyCarsBeginDate = (value) => {
+        this.setState({
+            busyCarsBeginDate: value
+        });
+    };
+
+    //繁忙统计开始时间
+    handleBusyCarsBeginTime = (value) => {
+        this.setState({
+            busyCarsBeginTime: value
+        });
+    };
+
+    //繁忙统计结束日期
+    handleBusyCarsEndDate = (value) => {
+        this.setState({
+            busyCarsEndDate: value
+        });
+    };
+
+    //繁忙统计结束时间
+    handleBusyCarsEndTime = (value) => {
+        this.setState({
+            busyCarsEndTime: value
+        });
+    };
+
+    //繁忙统计查询
+    onFilterCarBusy = () => {
+
+        const {
+            busyCarsBeginDate,
+            busyCarsBeginTime,
+            busyCarsEndDate,
+            busyCarsEndTime
+        } = this.state;
+        const beiginDate = busyCarsBeginDate ? busyCarsBeginDate.format('YYYY-MM-DD') : '';
+        const beiginTime = busyCarsBeginTime ? busyCarsBeginTime.format('HH') : '00';
+        const endDate = busyCarsEndDate ? busyCarsEndDate.format('YYYY-MM-DD') : '';
+        const endTime = busyCarsEndTime ? busyCarsEndTime.format('HH') : '23';
+        if (!beiginDate) {
+            this.props.showErrorMessage('请选择开始日期');
+            return;
+        }
+        if (!endDate) {
             this.props.showErrorMessage('请选择结束日期');
             return;
         }
         this.setState({
             carsDateTime: `${beiginDate}&&${beiginTime}&&${endDate}&&${endTime}`,
         });
+
+        if((beiginDate === endDate) && ((endTime*1 - beiginTime*1) !== 23)) {
+            this.props.showErrorMessage('选择的时间不能少于24小时');
+            return;
+        }
+        if((Date.parse(new Date(beiginDate)) - Date.parse(new Date(endDate))) > 0) {
+            this.props.showErrorMessage('结束日期不能早于开始日期');
+            return;
+        }
+
+        //判断日期差值天数
+        let strSeparator = "-";
+        let strDateArrayStart, strDateArrayEnd, intDay;
+        strDateArrayStart = beiginDate.split(strSeparator);
+        strDateArrayEnd = endDate.split(strSeparator);
+        let strDateS = new Date(strDateArrayStart[0] + "/" + strDateArrayStart[1] + "/" + strDateArrayStart[2]);
+        let strDateE = new Date(strDateArrayEnd[0] + "/" + strDateArrayEnd[1] + "/" + strDateArrayEnd[2]);
+        intDay = (strDateE-strDateS)/(1000*3600*24);
+        if((intDay === 1) && (((24 - beiginTime*1) + (endTime*1)) < 24)) {
+            this.props.showErrorMessage('选择的时间不能少于24小时');
+            return;
+        }
         console.log(beiginDate, beiginTime, endDate, endTime);
     };
 
-
-
     render() {
-        const {curSelectedRowKeys} = this.state;
         const selection = {
             selectedRowKeys: curSelectedRowKeys,
             onChange: this.onSelectChange,
         };
         const format = 'HH';
-        const {carsBeginDate, carsBeginTime, carsEndDate, carsEndTime} = this.state;
-        const {deviceDataSource, tableDataLoading, carMsg, carMsgList, carCategory} = this.props;
+        const {
+            curSelectedRowKeys,
+            carsBeginDate,
+            carsEndDate,
+            busyCarsBeginDate,
+            busyCarsEndDate,
+            carsEndTime,
+            carsBeginTime
+        } = this.state;
+        const {
+            tableDataLoading,
+            carMsg,
+            carMsgList,
+            carCategory
+        } = this.props;
+
         //车辆信息显示
         let carMsgShow, carTypeList, carMsgs;
-        if(carMsg) {
+        if (carMsg) {
             carMsgs = carMsg.typeCarnum;
             carMsgShow = carMsgs.map((item, index) => {
-                return(
+                return (
                     <div key={index} className={styles.carsMsg_div}><img src="../../img/Statistical/other.png" alt=""/><div>{item.type_name}<br/><span>{item.count}</span></div></div>
                 )
             })
@@ -420,14 +600,13 @@ export class StatisticalPage extends React.Component {
         const getSpeed = this.getSpeed();
         const abnormal = this.abnormal();
 
-
         //车辆信息列表
         const columns = [{
             title: '车辆编号',
             dataIndex: 'carCode',
             key: 'carCode',
-            filteredValue: this.state.dataFilter,      //设置过滤条件
-            onFilter: (value, record) => this.deviceDataFilter(value, record),   //每条数据都通过指定的函数进行过滤
+            filteredValue: this.state.dataFilter, //设置过滤条件
+            onFilter: (value, record) => this.deviceDataFilter(value, record), //每条数据都通过指定的函数进行过滤
         }, {
             title: '车辆类别',
             dataIndex: 'carType',
@@ -451,23 +630,32 @@ export class StatisticalPage extends React.Component {
             key: 'deviceCode',
         }, {
             title: '工作时间',
-            dataIndex: 'totalTime',
-            key: 'totalTime',
+            dataIndex: 'count',
+            key: 'count',
             render: (text) => {
-                return text/3600;
+                return Math.floor(text / 3600 * 10) / 10 + ' h';
             },
         }, {
             title: '行走里程',
             dataIndex: 'totalMileage',
             key: 'totalMileage',
+            render: (text) => {
+                return Math.floor(text / 1000 * 100) / 100 + ' km';
+            },
         }, {
             title: '最快速度',
             dataIndex: 'maxSpeed',
             key: 'maxSpeed',
+            render: (text) => {
+                return Math.floor(text / 1000 * 100) / 100 + ' km/h';
+            },
         }, {
             title: '平均速度',
             dataIndex: 'avgSpeed',
             key: 'avgSpeed',
+            render: (text) => {
+                return Math.floor(text * 100) / 100 + ' km/h';
+            },
         }, {
             title: '使用日期',
             dataIndex: 'createTime',
@@ -488,7 +676,7 @@ export class StatisticalPage extends React.Component {
                 return (
                     <div key={index}>
                         <Button type="primary" className={styles.tableBtn} ghost
-                                onClick={() => this.onViewDeviceInfo(record)}>查看</Button>
+                                onClick={() => this.onViewDeviceInfo(record.carCode,record.count)}>查看</Button>
                     </div>
                 );
             },
@@ -497,19 +685,22 @@ export class StatisticalPage extends React.Component {
         //甘特图列表
         const columnsBusy = [{
             title: '车辆数量：2/88',
-            dataIndex: 'deviceCode',
-            key: 'deviceCode',
+            dataIndex: 'carCode',
+            key: 'carCode',
             width: 130,
             fixed: 'left',
-            filteredValue: this.state.dataFilter,      //设置过滤条件
-            onFilter: (value, record) => this.deviceDataFilter(value, record),   //每条数据都通过指定的函数进行过滤
+            filteredValue: this.state.dataFilter, //设置过滤条件
+            onFilter: (value, record) => this.deviceDataFilter(value, record), //每条数据都通过指定的函数进行过滤
         }, {
             title: '公里数',
-            dataIndex: 'deviceName',
-            key: 'deviceName',
+            dataIndex: 'totalMileage',
+            key: 'totalMileage',
             width: 100,
             fixed: 'left',
-            sorter: (a, b) => a.kilometers - b.kilometers,      //排序
+            sorter: (a, b) => a.kilometers - b.kilometers, //排序
+            render: (text) => {
+                return Math.floor(text / 1000 * 100) / 100 + ' km';
+            },
         }, {
             title: '时间',
             dataIndex: 'workStatus',
@@ -518,68 +709,82 @@ export class StatisticalPage extends React.Component {
             fixed: 'left',
             sorter: (a, b) => a.timer - b.timer,
         }, {
-                children: this.state.TEST_dataSource.map((item, index) => {
-                    let title;
-                    if(index === 0) {
-                        title = `11-11 ${index}`
-                    }else {
-                        title = `${index}`
-                    }
-                    return (
-                        {
-                            title: title,
-                            dataIndex: index,
-                            key: index + 1,
-                            // width: 50,
-                            render: () => {
-                                return (
-                                    <div key={index} className={styles.gantt} style={{width: `${index + 1}%`}}>
+            children: this.state.TEST_dataSource.map((item, index) => {
+                let title;
+                if (index === 0) {
+                    title = `11.11 ${index}:00`
+                } else {
+                    title = `${index}:00`
+                }
+                return ({
+                    title: title,
+                    dataIndex: index,
+                    key: index + 1,
+                    width: 100,
+                    render: () => {
+                        return (
+                            <div className={styles.InscribedClock}>
+                                <div className={styles.inscribedDiv}>
+                                    <div key={index} className={styles.gantt} style={{width: `${0}%`}}>
                                     </div>
-                                )
-                            }
-                        }
-                    )
+                                </div>
+                                <div className={styles.inscribedDiv}>
+                                    <div key={index} className={styles.gantt} style={{width: `${100 + 1}%`}}>
+                                    </div>
+                                </div>
+                                <div className={styles.inscribedDiv}>
+                                    <div key={index} className={styles.gantt} style={{width: `${0}%`}}>
+                                    </div>
+                                </div>
+                                <div className={styles.inscribedDiv}>
+                                    <div key={index} className={styles.gantt} style={{width: `${0}%`}}>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    }
                 })
-            }];
+            })
+        }];
 
         return (
             <Layout className={styles.layout}>
                 <div className="cardContainer">
                     <Tabs type="card" className={styles.tabs}>
+                        {/*车辆统计页面*/}
                         <TabPane className={styles.tabPane} tab="车辆统计" key="1">
                             <div ref='carInfo'>
                                 <Row type="flex" align="middle">
                                     <Col span={10}>
                                         <span style={{marginRight: '20px'}}>时间选择</span>
-                                        
+
                                         <DatePicker style={{width: '18%'}} defaultValue={carsBeginDate}
                                                     format="YYYY-MM-DD"
                                                     onChange={this.handleCarsBeginDate}>
                                         </DatePicker>&nbsp;
-                                        <TimePicker style={{width: '18%'}} defaultValue={moment('09', format)}
+                                        <TimePicker style={{width: '18%'}} defaultValue={moment('00', format)}
                                                     format="HH"
                                                     onChange={this.handleCarsBeginTime}>
                                         </TimePicker>&nbsp;
-                                        
+
                                         <Icon style={{color: '#a8a8a8'}} type="minus"/>&nbsp;
                                         <DatePicker style={{width: '18%'}} defaultValue={carsEndDate}
                                                     format="YYYY-MM-DD"
                                                     onChange={this.handleCarsEndDate}>
                                         </DatePicker>&nbsp;
-                                        <TimePicker style={{width: '18%'}} defaultValue={moment('09', format)}
+                                        <TimePicker style={{width: '18%'}} defaultValue={carsEndTime}
                                                     format="HH"
                                                     onChange={this.handleCarsEndTime}>
                                         </TimePicker>
                                     </Col>
                                     <Col span={6}>
                                         <Button type="primary" icon="search" className={styles.searchBtn} onClick={this.getCars}>查询</Button>
-                                        <Button type="primary" icon="sync" className={styles.resetBtn} onClick={this.onResetSearch}>重置</Button>
                                     </Col>
                                 </Row>
-                                
+
                                 <Row type="flex" align="middle">
                                     <Col span={12} className={styles.item}>
-                                        <p style={{cursor: 'pointer'}} onClick={this.switchInfo}>车辆信息统计<span style={{fontSize: '12px'}}>（点击查看详情）</span></p>
+                                        <p style={{cursor: 'pointer'}} onClick={this.switchInfo}>车辆信息统计<span style={{fontSize: '12px', color: 'blue'}}>（点击查看详情）</span></p>
                                         <div className={styles.carsMsg}>
                                             <span>车辆总数：{carMsg ? carMsg.carsTotal : ''}</span>
                                             <span>单位：辆</span>
@@ -673,56 +878,67 @@ export class StatisticalPage extends React.Component {
                                             </Table>
                                         </Col>
                                     </Row>
-                                    <DeviceFormModal/>
+                                    <StatisticalFormModal/>
                                 </Content>
                             </div>
                         </TabPane>
 
+                        {/*繁忙统计页面*/}
                         <TabPane className={styles.tabPane} tab="繁忙统计" key="2">
                             <Content className={styles.content}>
-
                                 <Row type="flex" align="middle">
                                     <Col span={4} className={styles.itemTabs}>
                                         <span>车辆编号</span>
                                         <AutoComplete
-                                            dataSource={this.state.autoComplete_deviceCode}
-                                            onSearch={this.onDeviceCodeAutoCompleteSearch}
+                                            dataSource={this.state.autoComplete_carCode}
+                                            onSearch={this.onBusyCarCodeAutoCompleteSearch}
                                             allowClear={true}
-                                            placeholder="设备编号" size="large"
-                                            onChange={(value) => this.setState({filter_deviceCode: value})}
-                                            value={this.state.filter_deviceCode}
-                                        >
+                                            placeholder="车辆编号" size="large"
+                                            onChange={(value) => this.setState({filter_carCode: value})}
+                                            value={this.state.filter_carCode}>
                                             <Input maxLength="15"/>
                                         </AutoComplete>
                                     </Col>
 
                                     <Col span={10}>
                                         <span style={{marginRight: '20px'}}>时间选择</span>
-                                        <DatePicker style={{width: '18%'}}></DatePicker>&nbsp;&nbsp;
-                                        <TimePicker style={{width: '18%'}} defaultValue={moment('09', format)}
-                                                    format={format}></TimePicker>&nbsp;&nbsp;
-                                        <Icon style={{color: '#a8a8a8'}} type="minus"/>&nbsp;&nbsp;
-                                        <DatePicker style={{width: '18%'}}></DatePicker>&nbsp;&nbsp;
-                                        <TimePicker style={{width: '18%'}} defaultValue={moment('09', format)} format={format}></TimePicker>
+                                        <DatePicker style={{width: '18%'}} defaultValue={busyCarsBeginDate}
+                                                    format="YYYY-MM-DD"
+                                                    onChange={this.handleBusyCarsBeginDate}>
+                                        </DatePicker>&nbsp;
+                                        <TimePicker style={{width: '18%'}} defaultValue={moment('00', format)}
+                                                    format="HH"
+                                                    onChange={this.handleBusyCarsBeginTime}>
+                                        </TimePicker>&nbsp;
+
+                                        <Icon style={{color: '#a8a8a8'}} type="minus"/>&nbsp;
+                                        <DatePicker style={{width: '18%'}} defaultValue={busyCarsEndDate}
+                                                    format="YYYY-MM-DD"
+                                                    onChange={this.handleBusyCarsEndDate}>
+                                        </DatePicker>&nbsp;
+                                        <TimePicker style={{width: '18%'}} defaultValue={moment('23:59', format)}
+                                                    format="HH"
+                                                    onChange={this.handleBusyCarsEndTime}>
+                                        </TimePicker>
                                     </Col>
 
                                     <Col span={6}>
-                                        <Button type="primary" icon="search" className={styles.searchBtn} onClick={this.onFilterDevice}>查询</Button>
+                                        <Button type="primary" icon="search" className={styles.searchBtn} onClick={this.onFilterCarBusy}>查询</Button>
                                         <Button type="primary" icon="sync" className={styles.resetBtn} onClick={this.onResetSearch}>重置</Button>
                                     </Col>
                                 </Row>
 
                                 {/*甘特图*/}
-                                <Row className={styles.tableRow}>
+                                <Row className={styles.tableRow2}>
                                     <Col span={24}>
-                                        <Table rowSelection={selection} rowKey={record => record.carCode}
+                                        <Table rowKey={record => record.carCode}
                                                className={styles.table} bordered={true}
                                                footer={(record) => '共计 ' + record.length + ' 条数据'}
                                                size="middle"
                                                loading={tableDataLoading}
-                                               scroll={{x: 1800}}
                                                columns={columnsBusy}
-                                               dataSource={deviceDataSource}>
+                                               dataSource={carMsgList}
+                                               scroll={{x: this.scrollBar()}}>
                                         </Table>
                                     </Col>
                                 </Row>
@@ -738,28 +954,29 @@ export class StatisticalPage extends React.Component {
 
 export function actionsDispatchToProps(dispatch) {
     return {
-        queryAllDevice: () => dispatch(queryAllDeviceBegin()),
         showErrorMessage: (message) => dispatch(showErrorMessage(message)),
-        showDeviceFormModal: (operation, deviceCode) => dispatch(deviceFormModalShow(operation, deviceCode)),
-        deleteDevice: (deviceCodes) => dispatch(deleteDevice(deviceCodes)),
-        modifyDevice: (deviceEntity) => dispatch(modifyDevice(deviceEntity)),
-
+        showStatisticalFormModal: (operation, deviceCode) => dispatch(statisticalFormModalShow(operation, deviceCode)),
+        queryCenterAreaData: (deviceCode, count) => dispatch(getCenterAreaStaticData(deviceCode, count)),
         queryAllCarMsg: () => dispatch(queryAllCarMsgBegin()),
         queryAllCarMsgList: () => dispatch(queryAllCarMsgListBegin()),
         getCarCategory: () => dispatch(getCarCategory()),
-
-
+        getDensityStatic: (startdate, enddate) => dispatch(getDensityData(startdate, enddate)),
+        getSpeedStatic: (startdate, enddate) => dispatch(getSpeedData(startdate, enddate)),
+        getAbnormalStatic: (startdate, enddate) => dispatch(getAbnormalData(startdate, enddate))
     };
 }
 
 const selectorStateToProps = createStructuredSelector({
-    deviceDataSource: deviceDataSourceSelector(),
     tableDataLoading: tableDataLoadingSelector(),
-    deviceEntity: deviceEntitySelector(),
-    
+    statisticalEntity: statisticalEntitySelector(),
+
     carMsg: carMsgSelector(),
     carMsgList: carMsgListSelector(),
     carCategory: carCategorySourceSelector(),
+
+    densityEntity: densityEntitySelector(),
+    speedEntity: speedEntitySelector(),
+    abnormalEntity: abnormalEntitySelector()
 });
 
 export default connect(selectorStateToProps, actionsDispatchToProps)(StatisticalPage);

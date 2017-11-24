@@ -32,7 +32,10 @@ import {
     UPDATE_MESSAGE_SHOW,
     UPDATE_UNREAD_MESSAGE,
     DELETE_ALARM_MESSAGE_BY_KEYS,
-    UPDATE_ALARM_LASTDATETIME
+    UPDATE_ALARM_LASTDATETIME,
+    UPDATE_ONLINEDEVICE,
+    REMOVE_ONLINE_DEVICE,
+    UPDATE_ALARM_DURATION
 } from './constants';
 
 /**
@@ -146,4 +149,32 @@ export const deleteAlarmMessageByKeys = (keys) => ({
 export const updateLastDateTime = (data) => ({
     type: UPDATE_ALARM_LASTDATETIME,
     payload: data
+});
+
+/**
+ * 更新在线列表
+ * @param data 在线车辆信息对象
+ */
+export const updateOnLineDevice = (data) => ({
+    type: UPDATE_ONLINEDEVICE,
+    payload: data
+});
+
+/**
+ * 移除在线列表
+ */
+export const removeOnlineDevice = (carCode) => ({
+    type: REMOVE_ONLINE_DEVICE,
+    payload: {
+        carCode
+    }
+});
+
+/**
+ * 更新持续报警时间
+ * @param obj
+ */
+export const updateAlarmDuration = (obj) => ({
+    type: UPDATE_ALARM_DURATION,
+    payload: obj
 });

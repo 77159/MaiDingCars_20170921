@@ -88,9 +88,13 @@ export function* postCarCategorySaga(action) {
         const response = yield call(postCarCategory, action.carCategory);
         //判断是否发生错误并处理
         if (!response || response.success == false) {
-            yield put(showErrorMessage(response.error_message));   //提示信息
+            if(response.error_code === 10008) {
+                yield put(showErrorMessage(requestError.POST_CARCATEGORY_TYPE_ERROR));
+            }else {
+                yield put(showErrorMessage(requestError.POST_CARCATEGORY_ERROR));
+            }
         } else {
-            yield put(showSuccessMessage(requestError.POST_CARCATEGORY_SUCCESS));   //提示信息
+            yield put(showSuccessMessage(requestError.POST_CARCATEGORY_SUCCESS));
         }
     } catch (err) {
         yield put(showErrorMessage(requestError.POST_CARCATEGORY_ERROR));

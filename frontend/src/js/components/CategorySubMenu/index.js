@@ -28,12 +28,10 @@ export class CategorySubMenu extends React.Component {
 
     render() {
         const {carCategory} = this.props;    //数据源
-        // console.log(carCategory);
         return (
             <Menu
                 mode="inline"
                 className={styles.menu}
-                //openKeys={[]}
             >
                 {
                     carCategory.map((item, index) => {

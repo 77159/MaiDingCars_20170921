@@ -56,6 +56,7 @@ export default function createReducer(asyncReducers) {
         carFormModal: carFormModalReducer,
         categoryFormModal: categoryFormModalReducer,
         ModifyPasswordModel: ModifyPasswordModelReducer,
+
         ...asyncReducers,
     });
 }

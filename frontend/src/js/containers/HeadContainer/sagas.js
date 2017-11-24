@@ -4,12 +4,30 @@
  * @describe 顶部导航 Sagas
  */
 'use strict';
-import {take, call, put, select, cancel, takeLatest} from 'redux-saga/effects';
-import {LOCATION_CHANGE} from 'react-router-redux';
-import {LOGIN_OUT} from '../HeadContainer/constants';
-import {showSuccessMessage, showErrorMessage} from '../App/actions';
-import {loginOutAPI} from '../../api/serverApi';
-import {browserHistory} from 'react-router';
+import {
+    take,
+    call,
+    put,
+    select,
+    cancel,
+    takeLatest
+} from 'redux-saga/effects';
+import {
+    LOCATION_CHANGE
+} from 'react-router-redux';
+import {
+    LOGIN_OUT
+} from '../HeadContainer/constants';
+import {
+    showSuccessMessage,
+    showErrorMessage
+} from '../App/actions';
+import {
+    loginOutAPI
+} from '../../api/serverApi';
+import {
+    browserHistory
+} from 'react-router';
 import requestError from "../../utils/requestError";
 
 
@@ -24,7 +42,7 @@ export function* loginOutSaga(action) {
             yield put(showErrorMessage(requestError.DROP_OUT_ERROR));
         } else {
             yield put(showSuccessMessage(requestError.DROP_OUT_SUCCESS));
-            browserHistory.push('/');    //切换页面
+            browserHistory.push('/'); //切换页面
         }
     } catch (error) {
         //异常提示

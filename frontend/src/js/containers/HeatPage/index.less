@@ -2,40 +2,60 @@
   height: 100%;
 }
 
+/*内容区域*/
+.content {
+  //padding: 0 0 0 256px;
+  width: 100%;
+  height: 100%;
+}
+
 .sider {
-  background-color: #fff;
+  background-color: #443a49;
   position: absolute;
   height: ~'calc(100% - 54px)';
   height: ~'-mozcalc(100% - 54px)';
   height: ~'-webkitcalc(100% - 54px)';
+  z-index: 9;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
 
   :global .ant-layout-sider-children {
     height: 100%;
   }
   :global .ant-layout {
+    //background: #F6F5FC;
     background: #fff;
-    box-shadow: 0 0 10px #888888;
+    //box-shadow: 0 0 10px #888888;
   }
 
   :global .ant-layout-content {
-    height: ~'calc(100% - 38px - 38px - 160px)';
+    height: ~'calc(100% - 208px)';
   }
 
   :global .ant-menu {
-    height: ~'calc(100% - 49px)';
+    height: ~'calc(100% - 100px)';
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #fff;
     color: #5B5B5B;
     border-right: none;
 
-    .ant-menu-item-selected {
-      color: #5b5b5b;
-      background-color: #FFF8F8;
+    :global .ant-menu-item {
+      padding: 13px 16px !important;
+      height: 66px;
+      line-height: 40px;
+      border-bottom: 1px solid #EEEEEE;
+      text-overflow: clip;
+      border-right: 5px solid #52C646;
     }
 
+    :global .ant-menu-item-selected {
+      color: #5b5b5b;
+      background-color: #FFF8F8;;
+      border-right: 5px solid #FF0000;
+    }
     :global .ant-menu-item-disabled {
       color: #8f8992 !important;
+      border-right: 5px solid #999999 !important;
       border-bottom: 1px solid #EEEEEE !important;
       background: none !important;
       :global .ant-avatar > img {
@@ -43,7 +63,6 @@
         filter: grayscale(1);
       }
     }
-
     :global .ant-menu-item:after {
       border-right: none;
     }
@@ -60,7 +79,6 @@
   }
 
   :global .ant-menu::-webkit-scrollbar-track {
-    //-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     background-color: #302036;
   }
 
@@ -76,7 +94,7 @@
     padding: 5px;
     line-height: 16px;
     border-radius: 0 4px 4px 0;
-    background: #45484a;
+    background: #5b5b5b;
     &:after {
       content: "车辆信息"
     }
@@ -122,8 +140,8 @@
   background: #F6F5FC;
   border: none;
   color: #fff;
-  margin: 10px 13px;
-  width: 230px;
+  width: 100%;
+  margin-bottom: 13px;
 
   :global .ant-input-prefix {
     color: #000;
@@ -166,8 +184,7 @@
 }
 
 .selectDrop {
-  margin: 10px 13px;
-  width: 230px;
+  width: 100%;
 }
 
 :global .ant-select-lg .ant-select-selection--single {
@@ -224,28 +241,32 @@
     white-space: nowrap;
     position: relative;
     overflow: hidden;
-    width: 50px;
-    text-align: right;
 
     :global .ant-btn {
       color: #f2f2f2;
       font-size: 18px;
       margin-right: 7px;
-      background-color: #5b5b5b;
-      border-color: #5b5b5b;
+      background-color: transparent;
+      border-color: transparent;
     }
 
-    :global .ant-btn:focus {
-      //color: #f2f2f2;
-      background-color: #5b5b5b;
-      border-color: #5b5b5b;
+    :global .anticon-eye,
+    :global .anticon-eye-o,
+    :global .anticon-environment {
+      color: #5B5B5B;
     }
 
-    :global .ant-btn:hover {
-      color: #FFC600;
-      background-color: #5b5b5b;
-      border-color: #5b5b5b;
-    }
+    //:global .ant-btn:focus {
+    //  //color: #f2f2f2;
+    //  background-color: #fff;
+    //  border-color: #fff;
+    //}
+    //
+    //:global .ant-btn:hover {
+    //  color: #FFC600;
+    //  background-color: #fff;
+    //  border-color: #fff;
+    //}
 
     :global .ant-btn:not(.ant-btn-circle):not(.ant-btn-circle-outline).ant-btn-icon-only {
       padding-left: 4px;
@@ -261,14 +282,15 @@
 /*轨迹回放时的列表样式*/
 .planMenu {
   :global .ant-menu-item {
-    //padding: 13px 16px !important;
-    height: 40px;
+    padding: 13px 16px !important;
+    height: 66px;
     border-bottom: 1px solid #EEEEEE;
     text-overflow: clip;
-    line-height: 40px;
   }
 
   .planContent {
+    height: 40px;
+    line-height: 40px;
     display: inline-block;
     width: 120px;
     white-space: nowrap;
@@ -276,22 +298,33 @@
     overflow: hidden;
     padding-left: 10px;
 
+    div {
+      line-height: 20px;
+      height: 20px;
+    }
     .code {
       letter-spacing: 0.04em;
     }
   }
 
   .planBtnContent {
+    height: 40px;
+    line-height: 40px;
     display: inline-block;
     white-space: nowrap;
     position: relative;
     width: 50px;
     text-align: right;
-    top: -15px;
-    right: -30px;
+
+    :global span {
+      position: relative;
+      top: -25px;
+      right: -55px;
+    }
 
     :global .ant-btn {
       font-size: 18px;
+      margin-right: 7px;
       background-color: transparent;
       border-color: transparent;
     }
@@ -300,6 +333,11 @@
     :global .anticon-environment {
       color: #5B5B5B;
     }
+    :global .ant-btn:not(.ant-btn-circle):not(.ant-btn-circle-outline).ant-btn-icon-only {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
     :global .anticon {
       margin: 0px;
     }
@@ -334,7 +372,7 @@
 .peopleCard {
   z-index: 1;
   position: absolute;
-  right: 20px;
+  right: 80px;
   bottom: 20px;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
   border-color: transparent;
@@ -457,6 +495,8 @@
 .footer {
 
   padding: 0px;
+  background: #fff;
+  overflow: hidden;
 
   .allChkPanel {
     padding: 8px 10px;
@@ -485,6 +525,19 @@
   box-shadow: inset 0 0px 4px rgba(0, 0, 0, 0.25);
 }
 
+
+.buttonPanel {
+  color: #224CB8;
+  margin: 10px;
+  height: 42px;
+  padding: 6px 10px;
+  text-align: center;
+  background-color: #F4F6FC;
+  border: 1px solid #BDCAEA;
+  border-radius: 2px;
+  box-shadow: inset 0 0px 4px rgba(0, 0, 0, 0.25);
+}
+
 .stopPlayback {
   color: #224CB8;
   margin: 10px;
@@ -502,8 +555,7 @@
 }
 
 .startReplay {
-  margin: 0 5px;
-  width: 80px;
+  width: 140px;
   color: #fff;
   background-color: #2C56C0;
   border-color: #2C56C0;

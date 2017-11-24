@@ -1,30 +1,20 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * Each action has a corresponding type, which the reducer knows and picks up on.
- * To avoid weird typos between the reducer and the actions, we save them as
- * constants here. We prefix them with 'YourComponent' so we avoid
- * reducers accidentally picking up actions they shouldn't.
- *
- * CONSTANT的定义请遵循以下格式：
- * export const YOUR_ACTION_CONSTANT = 'YourContainer/YOUR_ACTION_CONSTANT';
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备管理 constants，用于Action
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/09/25
+ * @describe 统计页面 constants
  */
 'use strict';
-export const DEVICE_OP_BEGIN = 'DeviceMgr/DEVICE_OP_BEGIN';                             //对设备数据的操作（CURD）开始
-export const DEVICE_OP_FINISH = 'DeviceMgr/DEVICE_OP_FINISH';                           //对设备数据的操作（CURD）结束
-export const QUERY_ALL_DEVICE_BEGIN = 'DeviceMgr/QUERY_ALL_DEVICE_BEGIN';               //查询所有设备信息-开始
-export const QUERY_ALL_DEVICE_FINISH = 'DeviceMgr/QUERY_ALL_DEVICE_FINISH';             //查询所有设备信息-结束
-export const CREATE_DEVICE = 'DeviceMgr/CREATE_DEVICE';                                 //添加设备
-export const MODIFY_DEVICE = 'DeviceMgr/MODIFY_DEVICE';                                 //修改设备信息
+export const STATISTICAL_OP_BEGIN = 'StatisticalMgr/STATISTICAL_OP_BEGIN'; //对设备数据的操作（CURD）开始
+export const STATISTICAL_OP_FINISH = 'StatisticalMgr/STATISTICAL_OP_FINISH'; //对设备数据的操作（CURD）结束
 
-export const CAR_MSG_BEGIN = 'StatisticalMgr/CAR_MSG_BEGIN';                             //对车辆信息的操作（CURD）开始
-export const CAR_MSG_FINISH = 'StatisticalMgr/CAR_MSG_FINISH';                           //对车辆信息的操作（CURD）结束
-export const CAR_MSG_LIST_BEGIN = 'StatisticalMgr/CAR_MSG_LIST_BEGIN';                   //对车辆信息列表的操作（CURD）开始
-export const CAR_MSG_LIST_FINISH = 'StatisticalMgr/CAR_MSG_LIST_FINISH';                 //对车辆信息列表的操作（CURD）结束
+export const CAR_MSG_BEGIN = 'StatisticalMgr/CAR_MSG_BEGIN'; //对车辆信息的操作（CURD）开始
+export const CAR_MSG_FINISH = 'StatisticalMgr/CAR_MSG_FINISH'; //对车辆信息的操作（CURD）结束
+export const CAR_MSG_LIST_BEGIN = 'StatisticalMgr/CAR_MSG_LIST_BEGIN'; //对车辆信息列表的操作（CURD）开始
+export const CAR_MSG_LIST_FINISH = 'StatisticalMgr/CAR_MSG_LIST_FINISH'; //对车辆信息列表的操作（CURD）结束
 
-
+export const GET_DENSITY_DATA = 'StatisticalMgr/GET_DENSITY_DATA'; //区域密度统计
+export const GET_DENSITY_DATA_DONE = 'StatisticalMgr/GET_DENSITY_DATA_DONE'; //区域密度统计
+export const GET_SPEED_DATA = 'StatisticalMgr/GET_SPEED_DATA'; //车辆速度统计
+export const GET_SPEED_DATA_DONE = 'StatisticalMgr/GET_SPEED_DATA_DONE'; //车辆速度统计
+export const GET_ABNORMAL_DATA = 'StatisticalMgr/GET_ABNORMAL_DATA'; //车辆异常统计
+export const GET_ABNORMAL_DATA_DONE = 'StatisticalMgr/GET_ABNORMAL_DATA_DONE'; //车辆异常统计

@@ -1,20 +1,8 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * The reducer takes care of our data. Using actions, we can change our
- * application state.
- * To add a new action, add it to the switch statement in the reducer function
- *
- * Example:
- * case YOUR_ACTION_CONSTANT:
- *   return state.set('yourStateVariable', true);
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备信息对话框（Modal）组件，可支持添加、修改、查看功能。 Reducer
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/9/7
+ * @describe 设备信息对话框（Modal）组件 sagas
  */
-
 
 'use strict';
 import {take, call, put, select, cancel, takeLatest, takeEvery} from 'redux-saga/effects';
@@ -81,11 +69,10 @@ export function* modifyDeviceSaga(action) {
         yield put(deviceFormModalOpBegin());
         //发起异步网络请求，并获取返回结果
         const response = yield call(modifyDeviceAPI, action.payload);
-        console.log(response);
         //是否发生了错误，或者请求失败
         if (!response || response.success == false) {
             //TODO 此处以后要对应接口的错误码，目前只能显示一种错误类型
-            yield put(showErrorMessage(requestError.MODIFY_DEVICE_ERROR));
+            yield put(showErrorMessage(response.error_message));
         } else {
             yield put(showSuccessMessage(requestError.MODIFY_DEVICE_SUCCESS));
             //关闭窗口

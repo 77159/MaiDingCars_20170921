@@ -8,15 +8,24 @@
  */
 'use strict';
 
+import * as cookies from '../api/cookies.js';
+
 export const AppConfig = {
     //后台接口服务地址
-    // serviceUrl: 'http://192.168.1.95:9095/',
+    serviceUrl: 'http://192.168.1.92:8080/',
+
+    fmTokenCookieName: 'fm-factorcar-token',
     // serviceUrl: 'http://192.168.1.72:8080/',
-    serviceUrl: 'http://192.168.1.168:8080/',
+    // serviceUrl: 'http://192.168.1.168:8080/',
     get token() {
-        //let token = cookies.getItem(this.fmTokenCookieName);
-        //return (token != null ? token : null);
-        return '44A16F0A4D45492FA6EC8791CAEC2E2C';
+        let token = cookies.getItem(this.fmTokenCookieName);
+        return token;
+        //return '44A16F0A4D45492FA6EC8791CAEC2E2C';
+    },
+
+    set token(value) {
+        window.token = value;
+        cookies.setItem(this.fmTokenCookieName, value);
     },
 
     get fmapID() {

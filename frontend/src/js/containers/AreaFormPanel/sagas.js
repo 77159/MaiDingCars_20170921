@@ -49,7 +49,11 @@ function* createAreaSaga(action) {
         const response = yield call(createArea, area);
         //判断是否发生错误并处理
         if (!response || response.success == false) {
-            yield put(showErrorMessage(response.error_message));   //提示错误信息
+            if(response.error_code === 10008){
+                yield put(showErrorMessage(requestError.CREATE_AREA_NAME_ERROR));
+            } else {
+                yield put(showErrorMessage(requestError.CREATE_AREA_ERROR));
+            }
         } else {
             yield put(showSuccessMessage(requestError.CREATE_AREA_SUCCESS));   //提示成功信息
             yield put(queryAreaListBegin());        //更新区域列表

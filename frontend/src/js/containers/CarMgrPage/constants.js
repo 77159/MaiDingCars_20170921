@@ -18,3 +18,4 @@ export const CREATE_CAR = 'CarMgr/CREATE_CAR';                             //添
 export const MODIFY_CAR = 'CarMgr/MODIFY_CAR';                             //修改车辆信息
 export const GET_CAR = 'CarMgr/GET_CAR';                                   //查询一个车辆的信息
 export const DELETE_CAR = 'CarMgr/DELETE_CAR';                             //删除车辆（一个或多个）
+export const UPDAT_CAR_SPEED = 'CarMgr/UPDAT_CAR_SPEED';                   //修改车辆信息（速度）

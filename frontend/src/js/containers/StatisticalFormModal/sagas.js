@@ -1,109 +1,73 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * The reducer takes care of our data. Using actions, we can change our
- * application state.
- * To add a new action, add it to the switch statement in the reducer function
- *
- * Example:
- * case YOUR_ACTION_CONSTANT:
- *   return state.set('yourStateVariable', true);
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备信息对话框（Modal）组件，可支持添加、修改、查看功能。 Reducer
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/09/25
+ * @describe 统计信息对话框（Modal） sagas
  */
 
-
 'use strict';
-import {take, call, put, select, cancel, takeLatest, takeEvery} from 'redux-saga/effects';
+import {
+    take,
+    call,
+    put,
+    select,
+    cancel,
+    takeLatest,
+    takeEvery
+} from 'redux-saga/effects';
 
 import {
-    DEVICE_FORM_MODAL_SHOW,
-    DEVICE_FORM_MODAL_HIDE,
-    DEVICE_FORM_MODAL_OP_BEGIN,
-    DEVICE_FORM_MODAL_OP_FINISH,
-    DEVICE_FORM_MODAL_CREATE_DEVICE,
-    DEVICE_FORM_MODAL_MODIFY_DEVICE,
-    DEVICE_FORM_MODAL_VIEW_DEVICE,
+    GET_CENTER_AREA_DATA
 } from './constants';
 
 import {
-    deviceFormModalHide,
-    deviceFormModalOpBegin, deviceFormModalOpFinish,
+    getCenterAreaStaticDataDone
 } from './actions';
 
 import {
-    showErrorMessage, showSuccessMessage
+    showErrorMessage,
+    showSuccessMessage
 } from "../App/actions";
 
-import {createDeviceAPI, queryAllDeviceAPI, modifyDeviceAPI} from '../../api/serverApi';
+import {
+    getCenterAreaStaticData as queryCenterAreaStaticData
+} from '../../api/serverApi';
 import requestError from "../../utils/requestError";
-import {queryAllDeviceBegin} from "../DeviceMgrPage/actions";
+
+import {
+    LOCATION_CHANGE
+} from 'react-router-redux';
+
+export function* getCenterAreaStaticDataSaga(action) {
+    try {
+        const response = yield call(queryCenterAreaStaticData, action.payload.deviceID);
+        //TODO 获取成功提示
+        console.log("queryCenterAreaStaticData is successful!");
+        //错误提示
+        if (!response || response.success == false) {
+            yield put(showErrorMessage(response.error_message));
+        } else if (response.success == true) {
+            yield put(getCenterAreaStaticDataDone(response, action.payload.count));
+        }
+    } catch (error) {
+        //TODO 提示错误信息
+        console.log("queryCenterAreaStaticData error:" + (error.message ? error.message : error));
+        yield put(showErrorMessage(requestError.GET_DATA_ERROR));
+    }
+    //TODO 隐藏加载进度条
+    console.log("queryCenterAreaStaticData finish.");
+}
 
 /**
- * 添加设备
+ * 监听
  */
-export function* createDeviceSaga(action) {
-    try {
-        //操作开始，更新loading的state
-        yield put(deviceFormModalOpBegin());
-        //发起异步网络请求，并获取返回结果
-        const response = yield call(createDeviceAPI,action.payload);
-        //是否发生了错误，或者请求失败
-        if (!response || response.success == false) {
-            //TODO 此处以后要对应接口的错误码，目前只能显示一种错误类型
-            //yield put(showErrorMessage(requestError.CREATE_DEVICE_ERROR));
-            if(response.error_code === 200101) {
-                yield put(showErrorMessage(requestError.DEVICE_NUM_ERROR));
-            }else {
-                yield put(showErrorMessage(requestError.CREATE_DEVICE_ERROR));
-            }
-        } else {
-            yield put(showSuccessMessage(requestError.CREATE_DEVICE_SUCCESS));
-            //关闭窗口
-            yield put(deviceFormModalHide());
-            //设备管理页面的数据重新加载
-            yield put(queryAllDeviceBegin());
-        }
-    } catch (error) {
-        //异常提示
-        console.log(error);
-        yield put(showErrorMessage(requestError.CREATE_DEVICE_ERROR));
-    }
-    //结束请求操作，更新loading的state
-    yield put(deviceFormModalOpFinish());
-
+export function* watchFetchData() {
+    //监听查询车辆信息
+    const queryCenterAreaWatcher = yield takeLatest(GET_CENTER_AREA_DATA, getCenterAreaStaticDataSaga);
+    //当发生页面切换动作时，中断未完成的saga动作
+    yield take([LOCATION_CHANGE]);
+    yield cancel(queryCenterAreaWatcher);
 }
 
-
-/*
- * 修改设备信息
- * */
-export function* modifyDeviceSaga(action) {
-    try {
-        //操作开始，更新loading的state
-        yield put(deviceFormModalOpBegin());
-        //发起异步网络请求，并获取返回结果
-        const response = yield call(modifyDeviceAPI, action.payload);
-        console.log(response);
-        //是否发生了错误，或者请求失败
-        if (!response || response.success == false) {
-            //TODO 此处以后要对应接口的错误码，目前只能显示一种错误类型
-            yield put(showErrorMessage(requestError.MODIFY_DEVICE_ERROR));
-        } else {
-            yield put(showSuccessMessage(requestError.MODIFY_DEVICE_SUCCESS));
-            //关闭窗口
-            yield put(deviceFormModalHide());
-            //人员管理页面的数据重新加载
-            yield put(queryAllDeviceBegin());
-        }
-    } catch (error) {
-        //异常提示
-        console.log(error);
-        yield put(showErrorMessage(requestError.REQUEST_ERROR));
-    }
-    //结束请求操作，更新loading的state
-    yield put(deviceFormModalOpFinish());
-}
+export default [
+    watchFetchData,
+];

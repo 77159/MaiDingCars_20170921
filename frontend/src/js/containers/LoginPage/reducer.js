@@ -4,7 +4,9 @@
  * @describe 人员登陆 Reducer
  */
 'use strict';
-import {fromJS} from 'immutable';
+import {
+    fromJS
+} from 'immutable';
 
 import {
     CHANGE_USERNAME,
@@ -16,7 +18,7 @@ const initialState = fromJS({
 
     //操作执行状态  [True] 执行中 [False] 未执行
     operationRunning: false,
-
+    loginMsg: null,
 });
 
 export default (state = initialState, action = {}) => {
@@ -28,17 +30,13 @@ export default (state = initialState, action = {}) => {
 
     //登陆开始
     if (type === LOGIN_BEGIN) {
-        return state
-            .set('operationRunning', true);
+        return state.set('operationRunning', true);
     }
 
     //登陆结束
     if (type === LOGIN_FINISH) {
-        return state
-            .set('operationRunning', false);
+        return state.set('operationRunning', false);
     }
 
     return state;
 }
-
-

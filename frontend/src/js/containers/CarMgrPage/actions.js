@@ -12,7 +12,8 @@ import {
     CREATE_CAR,
     MODIFY_CAR,
     GET_CAR,
-    DELETE_CAR
+    DELETE_CAR,
+    UPDAT_CAR_SPEED
 } from './constants';
 
 /**
@@ -81,4 +82,13 @@ export const getCar = (carCode) => ({
 export const deleteCar = (carCode) => ({
     type: DELETE_CAR,
     carCode
+});
+
+/**
+ * 修改车辆速度（实时更新）
+ * @param obj
+ */
+export const updatCarSpeed = (obj) => ({
+    type: UPDAT_CAR_SPEED,
+    payload: obj
 });

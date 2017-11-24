@@ -19,7 +19,7 @@ import _ from 'lodash';
 
 import styles from './index.less';
 
-export default class TraceReplayMap extends React.Component {
+export default class HeatMap extends React.Component {
     constructor(props) {
         super(props);
 
@@ -28,26 +28,26 @@ export default class TraceReplayMap extends React.Component {
             begin: true,
             seconds: 0,
             level: 1,
+            index: 0,
+            size: 0,
         };
 
         this.fmapID = window.fmapID;    //地图fengmapId
         this.videoMarkerLayer = null;   //视频imageLaye
 
-        const {emptyPlay, visibleNaviLineMarkers} = this;
-
+        const {emptyPlay} = this;
         this.map = {
             fmMap: null,            //地图对象
             totalTime: null,        //总共小时
             secondsSum: 0,          //总共秒数
             speed: 1000,            //速度1000毫秒
-            preCoords: {},
-            naviCoords: {},
-            naviLineMarkers: {},
-            carMarkers: {},
             emptyPlay: emptyPlay,
-            visibleNaviLineMarkers: visibleNaviLineMarkers, //显示/隐藏marker
-            positionCarCode: '',
-        }
+            currentPage: 0,         //当前第几页的热力图
+            pageSize: 10,           //每次创建10张
+            createIndex: 5          //剩余5张的时候创建新的热力图
+        };
+
+        //this.heatmapInstance = null;
     }
 
     /**
@@ -68,30 +68,16 @@ export default class TraceReplayMap extends React.Component {
                 this.map.totalTime = getHours(secondsSum);
             }
             this.map.secondsSum = secondsSum;
+            this.map.mapCount = this.map.secondsSum / 300;  //总热力图数
             //计时器清零
             this.setState({
                 seconds: 0,
-            })
-        }
-
-        //判断当前是否有定位的车辆
-        if (this.props.positionMarker !== nextProps.positionMarker && nextProps.positionMarker) {
-            const fmMap = this.map.fmMap;
-            const carCode = nextProps.positionMarker;
-            //放大地图效果
-            fmMap.mapScaleLevel = {
-                level: 24,
-                duration: 1,
-                callback: () => {
-                    const {carImageMarkers} = fmMap;
-                    if (!carImageMarkers) return;
-                    const carImageMarker = carImageMarkers[carCode];
-                    if (!carImageMarker) return;
-                    const {x, y, groupID} = carImageMarker;
-                    const coords = {x, y, groupID};
-                    fmMap.moveToCenter(coords);
-                }
-            };
+            });
+            //创建热力图
+            const ts = this.createHeatMap();
+            // 设置Texture
+            this.hma.setTextures(ts);
+            this.props.closeLoading();
         }
     };
 
@@ -116,8 +102,7 @@ export default class TraceReplayMap extends React.Component {
             defaultFocusGroup: 1,
             useStoreApply: true, //使用storeapply
         });
-
-
+        window['map'] = fmMap;
         fmMap.openMapById(this.fmapID);  //打开Fengmap服务器的地图数据和主题
         fmMap.showCompass = true;   //显示指北针
         // 点击指南针事件, 使角度归0
@@ -133,15 +118,39 @@ export default class TraceReplayMap extends React.Component {
             if (getMap) {
                 getMap(this.map);
             }
+
+            this.hma = new fengmap.HeatMapAnimation({
+                map: fmMap,
+                fadeTime: 0.5, 	// 过度时间, 默认为 .5 秒
+                stayTime: 0.5,	// 停留时间, 默认为 .5 秒
+                loop: false	 	// 是否循环播放, 默认为 true
+            });
         });
 
         // 点击地图事件
         fmMap.on('mapClickNode', function (event) {
-
+            //console.log('event', event);
         });
 
         this.map.fmMap = fmMap;
+    };
 
+    generalPoints = () => {
+        let res = [];
+
+        const width = map.maxX - map.minX;
+        const height = map.maxY - map.minY;
+
+        for (let i = 0; i < 200; i++) {
+            res.push({
+                x: width * Math.random() + map.minX,
+                y: height * Math.random() + map.minY,
+                value: Math.round(Math.random() * 100)
+                //value: 1
+            })
+        }
+
+        return res;
     };
 
     /**
@@ -218,10 +227,61 @@ export default class TraceReplayMap extends React.Component {
     };
 
     /**
+     * 常见热力图
+     */
+    createHeatMap = () => {
+        const {currentPage, pageSize} = this.map;
+        let ps = [];
+        // const datas = [
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL102', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL102', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
+        // ];
+
+        //console.log('this.map.secondsSum', this.map.secondsSum);
+
+        /*for (let i = 0; i < this.map.mapCount; i++) {
+           const points = this.generalPoints();
+           ps.push(points);
+       }*/
+
+        let i = currentPage * pageSize;
+
+        //判断是或已经超出数组范围
+        if (i + pageSize > this.map.mapCount) {
+            i = this.map.mapCount;
+        }
+
+        for (let j = i; j < i + pageSize; j++) {
+            const points = this.generalPoints();
+            ps.push(points);
+        }
+
+        // 将点集生成 纹理集
+        const ts = this.hma.createTextures(ps);
+        this.map.currentPage++;
+        if (currentPage > 0) {
+            this.map.maxCount = currentPage * pageSize + pageSize;
+        } else {
+            this.map.maxCount = pageSize;
+        }
+
+        return ts;
+    };
+
+    /**
      * 开始
      */
     tracePlay = () => {
-
         const {begin} = this.state;
 
         if (begin) {
@@ -230,6 +290,7 @@ export default class TraceReplayMap extends React.Component {
         } else {
             //暂停
             const {clearID} = this.map;
+            //this.hma.pause();
             clearInterval(clearID);
         }
 
@@ -245,8 +306,8 @@ export default class TraceReplayMap extends React.Component {
         //速度
         const {speed} = this.map;
         this.map.clearID = setInterval(() => {
-            let {seconds} = this.state;
-            let {secondsSum, clearID} = this.map;
+            let {seconds, size} = this.state;
+            let {secondsSum, clearID,} = this.map;
 
             //判断时间是否结束
             if (secondsSum <= seconds) {
@@ -254,13 +315,24 @@ export default class TraceReplayMap extends React.Component {
                 return;
             }
 
-            let t = _.cloneDeep(this.props.startValue);
-            const dataTime = t.add(seconds, 's').format('YYYY-MM-DD HH:mm:ss');
+            //是否是当前最后一张热力图，如果是，则新一轮播放
+            if (this.state.index === this.map.pageSize - 1) {
+                this.state.index = 0;
+            }
 
-            //开始轨迹
-            this.move(dataTime);
+            //当前还剩余几张开始创建新的热力图 this.map.createIndex = 5,当前还有5张的时候创建新的地图
+            if (this.map.maxCount - size - 1 === this.map.createIndex) {
+                this.map.ts = this.createHeatMap();
+            }
+
+            this.hma.indexTo(this.state.index);
+
             this.setState({
-                seconds: ++seconds,
+                seconds: seconds + 300,
+                size: ++this.state.size,
+                index: ++this.state.index,
+            }, () => {
+
             });
         }, speed);
     };
@@ -269,42 +341,25 @@ export default class TraceReplayMap extends React.Component {
      * 清空
      */
     emptyPlay = () => {
-        let {fmMap, clearID, preCoords, naviCoords, naviLineMarkers, carMarkers} = this.map;
+        let {clearID} = this.map;
         clearInterval(clearID);
-
-        //清除人员
-        for (let item in carMarkers) {
-            const marker = carMarkers[item];
-            if (!marker) continue;
-            marker.dispose();
-            carMarkers[item] = null;
-        }
-
-        //清除路劲线
-        for (let item in naviLineMarkers) {
-            let naviLineMarker = naviLineMarkers[item];
-            for (let key in naviLineMarker) {
-                fmMap.clearLineMark(naviLineMarker[key]);
-            }
-            naviLineMarkers[item] = {};
-        }
-
-        //清空点
-        for (let item in naviCoords) {
-            naviCoords[item] = {};
-        }
-
-        for (let item in preCoords) {
-            preCoords[item] = {};
-        }
-
+        this.hma.stop();
         this.setState({
             level: 1,
             seconds: 0,
             begin: true,
+            index: 0,
+            size: 0,
         });
         this.map.speed = 1000;
+        this.map.currentPage = 0;
 
+        const ts = this.createHeatMap();
+        // 设置Texture
+        this.hma.setTextures(ts);
+
+        // this.hma.fadeTime = .5;
+        // this.hma.stayTime = .5;
     };
 
     /**
@@ -325,6 +380,11 @@ export default class TraceReplayMap extends React.Component {
         //速度
         this.map.speed = 1000 / l;
 
+        //热力图速度
+        //const t = this.map.speed / 1000 / 2;
+        //this.hma.fadeTime = t;
+        //this.hma.stayTime = t;
+
         this.setState({
             level: l,
             begin: false
@@ -337,231 +397,16 @@ export default class TraceReplayMap extends React.Component {
      * 获取当前已经回放的秒数
      */
     getBeginTime = () => {
+        //如果是24小时的热力图，则返回24:00:00
+        if (this.state.size >= 287) {
+            return '24:00:00';
+        }
         return moment('00:00:00', 'HH:mm:ss').add(this.state.seconds, 's').format('HH:mm:ss');
-    };
-
-    /**
-     * 移动
-     * @param dataTime
-     */
-    move = (dataTime) => {
-        const {traceDataSource} = this.props;
-
-        for (let carCode in traceDataSource) {
-            const data = traceDataSource[carCode];
-
-            if (!data) continue;
-            let coords = data.filter((item) => {
-                return item.dataTime === dataTime;
-            });
-
-            const coord = coords[0];
-            if (coord) {
-                this.updateMark(carCode, coord);
-
-                //画线
-                const lineCoords = {x: coord.pointX, y: coord.pointY, z: 0, groupID: 1};
-                this.addLines(carCode, lineCoords);
-                this.drawLines(carCode);
-            }
-        }
-    };
-
-    //添加线
-    addLines = (carCode, lineCoords) => {
-        const preCoords = this.map.preCoords[carCode];
-        if (preCoords) {
-            const x = preCoords.x;
-            const y = preCoords.y;
-            if (_.trim(x) === _.trim(lineCoords.x) && _.trim(y) === _.trim(lineCoords.y)) {
-                return;
-            }
-        }
-
-        let naviCoords = this.map.naviCoords[carCode];
-        if (!naviCoords) {
-            naviCoords = {};
-        }
-
-        let key = 0;
-        if (!_.isEmpty(naviCoords)) {
-            for (let i in naviCoords) {
-                key = i;
-            }
-        }
-
-        if (!naviCoords[key]) {
-            naviCoords[key] = [lineCoords];
-        } else {
-            if (naviCoords[key].length === 20) {
-                naviCoords[parseInt(key) + 1] = [naviCoords[key][19], lineCoords];
-            } else {
-                naviCoords[key].push(lineCoords);
-            }
-        }
-        this.map.preCoords[carCode] = lineCoords;
-        this.map.naviCoords[carCode] = naviCoords;
-    };
-
-    //绘制线图层
-    drawLines = (carCode) => {
-        const map = this.map.fmMap;
-
-        let naviCoords = this.map.naviCoords[carCode];
-        let key = 0;
-        if (!_.isEmpty(naviCoords)) {
-            for (let i in naviCoords) {
-                key = i;
-            }
-        }
-
-        const naviLineMarker = this.map.naviLineMarkers[carCode];
-        if (!_.isEmpty(naviLineMarker) && !_.isEmpty(naviLineMarker[key])) {
-            map.clearLineMark(naviLineMarker[key]);
-        }
-
-        const results = this.map.naviCoords[carCode][key];
-
-        const lineStyle = {
-            lineWidth: 4,
-            //alpha: this.carMarkers[carCode].alpha,
-            alpha: .8,
-            offsetHeight: 1,
-            lineType: fengmap.FMLineType.FMARROW,
-            noAnimate: false,
-        };
-
-        //绘制部分
-        const line = new fengmap.FMLineMarker();
-        let gid = 1;
-        let points = results;
-        let seg = new fengmap.FMSegment();
-        seg.groupId = gid;
-        seg.points = points;
-        line.addSegment(seg);
-        let lineObject = map.drawLineMark(line, lineStyle);
-
-        if (lineObject) {
-            const lineVisible = this.map.carMarkers[carCode].visible;
-
-            if (!_.isEmpty(lineObject.brothers)) {
-                lineObject.brothers.map((item) => {
-                    item.visible = lineVisible;
-                })
-            }
-
-            lineObject.visible = lineVisible;
-        }
-
-        if (!this.map.naviLineMarkers[carCode]) {
-            this.map.naviLineMarkers[carCode] = {};
-        }
-
-        this.map.naviLineMarkers[carCode][key] = lineObject;
-    };
-
-    //更新Marker位置
-    updateMark = (carCode, locationEntity) => {
-        if (!this.map.fmMap) return;
-        const personMarker = this.map.carMarkers[carCode];
-
-        if (personMarker) {
-            const speed = this.map.speed / 1000;
-            //更新ImageMarker的位置
-            personMarker.moveTo({
-                time: speed,
-                //设置imageMarker的x坐标
-                x: locationEntity.pointX,
-                //设置imageMarker的y坐标
-                y: locationEntity.pointY,
-            });
-
-            //移动到中心点
-            if (this.map.positionCarCode === carCode) {
-                this.map.fmMap.moveToCenter({
-                    x: locationEntity.pointX,
-                    //设置imageMarker的y坐标
-                    y: locationEntity.pointY,
-                    groupID: 1
-                });
-            }
-        } else {
-            //创建ImageMarker
-            let group = this.map.fmMap.getFMGroup(this.map.fmMap.groupIDs[0]);
-            if (!group) return;
-            //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
-            let imageMarkerLayer = group.getOrCreateLayer('imageMarker');
-            let imageMarker = new fengmap.FMImageMarker({
-                x: locationEntity.pointX,
-                y: locationEntity.pointY,
-                height: 0,
-                url: './img/car.png',//设置图片路径
-                size: 46, //设置图片显示尺寸
-                callback: () => {
-                    imageMarker.alwaysShow();
-                }
-            });
-            //添加至图层
-            imageMarkerLayer.addMarker(imageMarker);
-            //保存全局
-            imageMarker.visible = true;
-            this.map.carMarkers[carCode] = imageMarker;
-            this.props.addCarImageVisible(carCode);
-            //this.props.addPersonMarker({carCode: carCode, imageMarker: imageMarker});
-        }
-    };
-
-    //添加Marker
-    addMarker = (coord) => {
-        if (!this.map.fmMap) return;
-        let group = this.map.fmMap.getFMGroup(this.fmMap.groupIDs[0]);
-        if (!group) return;
-        //返回当前层中第一个imageMarkerLayer,如果没有，则自动创建
-        let layer2 = group.getOrCreateLayer('imageMarker');
-        let imageMarker = new fengmap.FMImageMarker({
-            x: coord.x,
-            y: coord.y,
-            height: 1,
-            //设置图片路径
-            url: './img/peopleMarker.png',
-            //设置图片显示尺寸
-            size: 46,
-            callback: () => {
-                imageMarker.alwaysShow();
-            }
-        });
-        layer2.addMarker(imageMarker);
-    };
-
-    visibleNaviLineMarkers = (carCode, visible) => {
-        //暂停
-        clearInterval(this.map.clearID);
-        const naviLineMarker = this.map.naviLineMarkers[carCode];
-        if (naviLineMarker) {
-            for (let key in naviLineMarker) {
-                let line = naviLineMarker[key];
-                if (!line) continue;
-                if (!_.isEmpty(line.brothers)) {
-                    line.brothers.map((item) => {
-                        item.visible = visible;
-                    })
-                }
-                line.visible = visible;
-            }
-        }
-
-        //开始
-        this.setState({
-            begin: false,
-        }, function () {
-            this.timer();
-        });
     };
 
     render() {
         const {startValue, endValue} = this.props;
         const {totalTime, secondsSum} = this.map;
-
 
         return (
             <div style={{width: '100%', height: '100%'}}>

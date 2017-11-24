@@ -32,7 +32,7 @@ import {realTimeLocationsSelector} from "../MainContainer/selectors";
 //action car
 import {queryAllCarBegin} from '../CarMgrPage/actions';
 //selectors car
-import {carListSelector} from '../CarMgrPage/selectors';
+import {carListSelector, carDataSourceSelector} from '../CarMgrPage/selectors';
 //action area
 import {queryAreaListBegin} from '../AreaSettingPage/actions';
 //action category
@@ -48,7 +48,7 @@ import {
     deleteAlarmMessageByKeys
 } from '../MainContainer/actions';
 //selectors main
-import {alertMessageDataSelector, alarmDatasSelector} from '../MainContainer/selectors';
+import {alertMessageDataSelector, alarmDatasSelector, SelectorOnLineDevice} from '../MainContainer/selectors';
 
 import styles from './index.less';
 
@@ -61,470 +61,6 @@ const {Sider, Content, Footer} = Layout;
 const TabPane = Tabs.TabPane;
 const {RangePicker} = DatePicker;
 
-
-const CollectionCreateForm = Form.create()(
-    (props) => {
-        const {alertMessageData, visible, onCancel, updateUnReadMessage} = props;
-        const {speedSelectedRowKeys, setSelectedRowKeys, deleteAlarmMessageByKeys, deleteAlarmMessageByKey} = props;
-        const {areaSelectedRowKeys, densitySelectedRowKeys} = props;
-        const {areaList} = props;
-        const {handleChangeArea, handleChangeAraeDateTime} = props;
-        const {area, areaDateTime} = props;
-        const {handleChangeDensityCarCode, handleChangeDensityDateTime} = props;
-        const {densityCarCode, densityDateTime} = props;
-        const {handleChangeSpeedDateTime, handleChangeSpeedCarCode} = props;
-        const {speedDateTime, speedCarCode} = props;
-        const {setFilterType} = props;
-        const {areaDataFilter, areaFilter} = props;
-        const {densityDataFilter, densityFilter} = props;
-        const {speedDataFilter, speedFilter} = props;
-
-        let speedDatas = [];//速度报警
-        let areaDatas = []; //区域报警
-        let densityDatas = [];//密度报警
-
-        let speedUnRead = 0;
-        let densityUnRead = 0;
-        let areaUnRead = 0;
-
-        for (let i = 0; i < alertMessageData.size; i++) {
-            const item = alertMessageData.get(i);
-            if (!item) return;
-            const type = item.type;
-
-            //闲置报警
-            if (type === 97) {
-                densityDatas.push(item);
-                densityUnRead++;
-            }
-
-            //密度报警
-            if (type === 98) {
-                areaDatas.push(item);
-                areaUnRead++;
-            }
-
-            //超速报警
-            if (type === 99) {
-                speedDatas.push(item);
-                speedUnRead++;
-            }
-        }
-
-
-        //区域集中报警
-        const columnsCenter = [
-            {
-                title: '报警时间',
-                dataIndex: 'dateTime',
-                key: 'dateTime',
-                filteredValue: [areaFilter],
-                onFilter: (value, record) => areaDataFilter(value, record),
-                render: function (text, record, index) {
-                    return <span
-                        className={record.isRead === true ? styles.bold : styles.normal}>{record.dateTime}</span>
-                }
-            }, {
-                title: '车辆编号',
-                dataIndex: 'carCode',
-                filteredValue: ['CL103'],
-                key: 'carCode',
-                render: function (text, record, index) {
-                    return <span
-                        className={record.isRead === true ? styles.bold : styles.normal}>{record.carCode}</span>
-                }
-            }, {
-                title: '报警区域',
-                dataIndex: 'areaName',
-                key: 'areaName',
-                render: function (text, record, index) {
-                    return <span
-                        className={record.isRead === true ? styles.bold : styles.normal}>{record.areaName}</span>
-                }
-            }, {
-                title: '报警内容',
-                dataIndex: 'remark',
-                key: 'remark',
-                width: 600,
-                render: function (text, record, index) {
-                    return <span
-                        className={record.isRead === true ? styles.bold : styles.normal}>{record.remark}</span>
-                }
-            }, {
-                title: '操作',
-                key: 'operation',
-                width: 200,
-                render: (text, record) => {
-                    return (
-                        <div>
-                            <Button type="primary" className={styles.tableBtn} ghost>热力图</Button>
-                            <Popconfirm title="确认要删除此设备吗？" onConfirm={() => {
-                                deleteAlarmMessageByKey('areaSelectedRowKeys', record.key);
-                            }}>
-                                <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
-                            </Popconfirm>
-                        </div>
-                    );
-                },
-            }];
-
-        //区域密度
-        const areaFooter = () => `共计 ${areaDatas.length} 条数据`;
-
-        //区域密度分页
-        const areaPagination = {
-            defaultCurrent: 1,
-            total: areaDatas.length,
-            pageSize: 10
-        };
-
-        //区域密度选择列表
-        const areaRowSelection = {
-            onChange: (selectedRowKeys) => {
-                setSelectedRowKeys(selectedRowKeys, 'areaSelectedRowKeys');
-            },
-            selectedRowKeys: areaSelectedRowKeys
-        };
-
-        //状态报警
-        const columnsStatus = [{
-            title: '报警时间',
-            dataIndex: 'alarmTime',
-            key: 'alarmTime',
-            filteredValue: [densityFilter],
-            onFilter: (value, record) => densityDataFilter(value, record),
-            render: function (text, record, index) {
-                return <span
-                    className={record.isRead === true ? styles.bold : styles.normal}>{record.dateTime}</span>
-            }
-        }, {
-            title: '车辆编号',
-            dataIndex: 'carCode',
-            key: 'carCode',
-            render: function (text, record, index) {
-                return <span
-                    className={record.isRead === true ? styles.bold : styles.normal}>{record.carCode}</span>
-            }
-        }, {
-            title: '报警车辆',
-            dataIndex: 'carNum',
-            key: 'carNum',
-        }, {
-            title: '报警内容',
-            dataIndex: 'alarmInfo',
-            key: 'alarmInfo',
-            width: 400,
-        }, {
-            title: '上次工作时间',
-            dataIndex: 'prevTime',
-            key: 'prevTime',
-        }, {
-            title: '上次工作区域',
-            dataIndex: 'prevArea',
-            key: 'prevArea',
-        }, {
-            title: '操作',
-            key: 'operation',
-            width: 200,
-            render: (text, record) => {
-                return (
-                    <div>
-                        <Button type="primary" className={styles.tableBtn} ghost>定位</Button>
-                        <Popconfirm title="确认要删除此设备吗？" onConfirm={() => {
-                            deleteAlarmMessageByKey('densitySelectedRowKeys', record.key);
-                        }}>
-                            <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
-                        </Popconfirm>
-                    </div>
-                );
-            },
-        }];
-
-
-        //闲置
-        const densityFooter = () => `共计 ${densityDatas.length} 条数据`;
-
-        //闲置分页
-        const densityPagination = {
-            defaultCurrent: 1,
-            total: densityDatas.length,
-            pageSize: 10
-        };
-
-        //闲置选择列表
-        const densityRowSelection = {
-            onChange: (selectedRowKeys) => {
-                setSelectedRowKeys(selectedRowKeys, 'densitySelectedRowKeys');
-            },
-            selectedRowKeys: densitySelectedRowKeys
-        };
-
-
-        /*********************** 超速报警 ***********************/
-        const SpeedColumns = [{
-            title: '报警时间',
-            dataIndex: 'dateTime',
-            key: 'dateTime',
-            filteredValue: [speedFilter],
-            onFilter: (value, record) => speedDataFilter(value, record),
-            render: function (text, record, index) {
-                return <span className={record.isRead === true ? styles.bold : styles.normal}>{record.dateTime}</span>
-            }
-        }, {
-            title: '车辆编号',
-            dataIndex: 'carCode',
-            key: 'carCode',
-            render: function (text, record, index) {
-                return <span className={record.isRead === true ? styles.bold : styles.normal}>{record.carCode}</span>
-            }
-        }, {
-            title: '报警内容',
-            dataIndex: 'remark',
-            key: 'remark',
-            render: function (text, record, index) {
-                return <span className={record.isRead === true ? styles.bold : styles.normal}>{record.remark}</span>
-            }
-        }, {
-            title: '安全速度',
-            dataIndex: 'SafeSpeed',
-            key: 'SafeSpeed',
-        }, {
-            title: '报警速度',
-            dataIndex: 'alarmSpeed',
-            key: 'alarmSpeed',
-        }, {
-            title: '所在区域',
-            dataIndex: 'reaName',
-            key: 'reaName',
-            render: function (text, record, index) {
-                return <span className={record.isRead === true ? styles.bold : styles.normal}>{record.areaName}</span>
-            }
-        }, {
-            title: '超速时长',
-            dataIndex: 'overspeedLength',
-            key: 'overspeedLength',
-        }, {
-            title: '操作',
-            key: 'operation',
-            width: 200,
-            render: (text, record) => {
-                return (
-                    <div>
-                        <Button type="primary" className={styles.tableBtn} ghost>定位</Button>
-                        <Popconfirm title="确认要删除此设备吗？" onConfirm={() => {
-                            deleteAlarmMessageByKey('speedSelectedRowKeys', record.key);
-                        }}>
-                            <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
-                        </Popconfirm>
-                    </div>
-                );
-            },
-        }];
-
-        //车辆超速
-        const speedFooter = () => `共计 ${speedDatas.length} 条数据`;
-
-        //车辆超速分页
-        const speedPagination = {
-            defaultCurrent: 1,
-            total: speedDatas.length,
-            pageSize: 10
-        };
-
-        //车辆超速选择列表
-        const speedRowSelection = {
-            onChange: (selectedRowKeys) => {
-                setSelectedRowKeys(selectedRowKeys, 'speedSelectedRowKeys');
-            },
-            selectedRowKeys: speedSelectedRowKeys
-        };
-
-        return (
-            <Modal
-                title={<span><Icon type="hdd"/>异常报警</span>}
-                visible={visible}
-                onCancel={onCancel}
-                width={1280}
-                className={styles.redModal}
-                footer={[
-                    <Button key="cancel" type="primary" size="large" onClick={onCancel}>确定</Button>,
-                ]}
-            >
-                <div className="card-container">
-                    <Tabs type="card">
-                        {/*密度*/}
-                        <TabPane tab="区域集中报警" key="1">
-                            <Row type="flex" align="middle" style={{height: '100px', marginTop: '-20px'}}>
-                                <Col span={5} className={styles.item}>
-                                    <span>区域选择</span>
-                                    <Select style={{width: '75%'}}
-                                            size="large"
-                                            placeholder="请选择区域"
-                                            allowClear={true}
-                                            defaultValue={!area ? [] : area}
-                                            onChange={handleChangeArea}>
-                                        {areaList.map((item) => {
-                                            return <Option key={item.id} value={`${item.id}`}>{item.areaName}</Option>
-                                        })}
-                                    </Select>
-                                </Col>
-                                <Col span={12} className={styles.item}>
-                                    <span>报警时间</span>
-                                    <RangePicker
-                                        defaultValue={areaDateTime}
-                                        showTime={{format: 'hh:mm'}}
-                                        format="YYYY-MM-DD hh:mm"
-                                        placeholder={['开始时间', '结束时间']}
-                                        onChange={handleChangeAraeDateTime}
-                                    />
-                                </Col>
-                                <Col span={7}>
-                                    <Button type="primary" icon="search" className={styles.searchBtn} onClick={() => {
-                                        setFilterType('area');
-                                    }}>查询</Button>
-                                    <Popconfirm title="确认要标记为已读状态吗？" onConfirm={() => {
-                                        updateUnReadMessage('areaSelectedRowKeys');
-                                    }}>
-                                        <Button type="primary" icon="hdd" className={styles.addBtn}>标记已读</Button>
-                                    </Popconfirm>
-                                    <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
-                                        deleteAlarmMessageByKeys('areaSelectedRowKeys');
-                                    }}>
-                                        <Button type="primary" icon="delete" className={styles.addBtn}>批量删除</Button>
-                                    </Popconfirm>
-                                </Col>
-                            </Row>
-                            <Table className={styles.table}
-                                   bordered={true}
-                                   footer={(record) => {
-                                       return `共计 ${record.length} 条数据`;
-                                   }}
-                                   size="middle"
-                                   pagination={areaPagination}
-                                   rowSelection={areaRowSelection}
-                                   columns={columnsCenter}
-                                   dataSource={areaDatas}>
-                            </Table>
-                        </TabPane>
-                        {/*闲置*/}
-                        <TabPane tab="车辆状态报警" key="2">
-                            <Row type="flex" align="middle" style={{height: '100px', marginTop: '-20px'}}>
-                                <Col span={5} className={styles.item}>
-                                    <span>车辆查询</span>
-                                    <AutoComplete
-                                        style={{width: '75%'}}
-                                        allowClear={true}
-                                        placeholder="请输入车辆编号" size="large"
-                                        defaultValue={densityCarCode}
-                                        onChange={handleChangeDensityCarCode}
-                                    >
-                                        <Input maxLength="15"/>
-                                    </AutoComplete>
-                                </Col>
-                                <Col span={12} className={styles.item}>
-                                    <span>报警时间</span>
-                                    <RangePicker
-                                        showTime={{format: 'hh:mm'}}
-                                        format="YYYY-MM-DD hh:mm"
-                                        placeholder={['开始时间', '结束时间']}
-                                        onChange={handleChangeDensityDateTime}
-                                        defaultValue={densityDateTime}
-                                    />
-                                </Col>
-                                <Col span={7}>
-                                    <Button type="primary" icon="search" className={styles.searchBtn} onClick={() => {
-                                        setFilterType('density');
-                                    }}>查询</Button>
-                                    <Popconfirm title="确认要标记为已读状态吗？" onConfirm={() => {
-                                        updateUnReadMessage('densitySelectedRowKeys');
-                                    }}>
-                                        <Button type="primary" icon="hdd" className={styles.addBtn}>标记已读</Button>
-                                    </Popconfirm>
-                                    <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
-                                        deleteAlarmMessageByKeys('densitySelectedRowKeys');
-                                    }}>
-                                        <Button type="primary" icon="delete" className={styles.addBtn}>批量删除</Button>
-                                    </Popconfirm>
-                                </Col>
-                            </Row>
-                            <Table className={styles.table}
-                                   bordered={true}
-                                   footer={(record) => {
-                                       return `共计 ${record.length} 条数据`;
-                                   }}
-                                   size="middle"
-                                   pagination={densityPagination}
-                                   rowSelection={densityRowSelection}
-                                   columns={columnsStatus}
-                                   dataSource={densityDatas}>
-                            </Table>
-                        </TabPane>
-                        {/*超速*/}
-                        <TabPane tab="车辆超速报警" key="3">
-                            <Row type="flex" align="middle" style={{height: '100px', marginTop: '-20px'}}>
-                                <Col span={5} className={styles.item}>
-                                    <span>车辆查询</span>
-                                    <AutoComplete
-                                        style={{width: '75%'}}
-                                        allowClear={true}
-                                        placeholder="请输入车辆编号" size="large"
-                                        onChange={handleChangeSpeedCarCode}
-                                        defaultValue={speedCarCode}>
-                                        <Input maxLength="15"/>
-                                    </AutoComplete>
-                                </Col>
-                                <Col span={12} className={styles.item}>
-                                    <span>报警时间</span>
-                                    <RangePicker
-                                        showTime={{format: 'hh:mm'}}
-                                        format="YYYY-MM-DD hh:mm"
-                                        placeholder={['开始时间', '结束时间']}
-                                        onChange={handleChangeSpeedDateTime}
-                                        defaultValue={speedDateTime}
-                                    />
-                                </Col>
-                                <Col span={7}>
-                                    <Button type="primary" icon="search" className={styles.searchBtn} onClick={() => {
-                                        setFilterType('speed');
-                                    }}>查询</Button>
-                                    <Popconfirm title="确认要标记为已读状态吗？" onConfirm={() => {
-                                        updateUnReadMessage('speedSelectedRowKeys');
-                                    }}>
-                                        <Button type="primary" icon="hdd" className={styles.addBtn}>标记已读</Button>
-                                    </Popconfirm>
-                                    <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
-                                        deleteAlarmMessageByKeys('speedSelectedRowKeys');
-                                    }}>
-                                        <Button type="primary" icon="delete" className={styles.addBtn} onClick={() => {
-                                        }}>批量删除</Button>
-                                    </Popconfirm>
-                                </Col>
-                            </Row>
-                            {/*超速报警信息列表*/}
-                            <Table
-                                className={styles.table}
-                                bordered={true}
-                                footer={(record) => {
-                                    return `共计 ${record.length} 条数据`;
-                                }}
-                                size="middle"
-                                pagination={speedPagination}
-                                rowSelection={speedRowSelection}
-                                columns={SpeedColumns}
-                                dataSource={speedDatas}>
-                            </Table>
-                        </TabPane>
-                    </Tabs>
-                    <Badge className={styles.badge1} count={areaUnRead}/>
-                    <Badge className={styles.badge2} count={densityUnRead}/>
-                    <Badge className={styles.badge3} count={speedUnRead}/>
-                </div>
-            </Modal>
-        );
-    }
-);
-
-// end form
 
 export class MonitoringPage extends React.Component {
     constructor(props) {
@@ -539,45 +75,50 @@ export class MonitoringPage extends React.Component {
             carInfoWinClassName: styles.carCard,
             carCardHidden: true,
             alarmModalVisible: false,
-            // speedSelectedRowKeys: [],   //速度列表keys集合
-            // densitySelectedRowKeys: [], //闲置列表keys集合
-            // areaSelectedRowKeys: [],    //区域密度列表keys集合
-            // area: null,            //区域选择
-            // areaDateTime: null,    //区域报警时间
-            // speedDateTime: null,
-            // speedCarCode: null,
-            // densityCarCode: null,
-            // densityDateTime: null,
-            // filterType: null,
-            // areaFilter: null,
-            // densityFilter: null,
-            // speedFilter: null,
+            carStatus: 'all',
         };
 
         //定义全局map变量
         this.fmMap = null;
         this.notificationKeys = []; //当前提示框
-        this.keys = [];             //批量/单个选择报警信息key值
-
     };
 
     componentWillMount() {
         //查询所有车辆
         this.props.queryAllCarBegin();
-        //查询人员类型
+        //查询车辆类型
         this.props.getCarCategory();
         //查询区域列表
         this.props.queryAreaListBegin();
     };
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            carList: nextProps.carList
-        });
-    };
-
     componentDidUpdate() {
         this.showNotification();
+    };
+
+    componentWillReceiveProps(nextProps) {
+        if (_.eq(this.props.carList, nextProps.carList) == false) {
+            this.setState({
+                carList: nextProps.carList
+            });
+        }
+
+        if (_.eq(this.onLineDevice, nextProps.onLineDevice) == false) {
+            this.onLineDevice = nextProps.onLineDevice;
+            this.state.carList.map((car) => {
+                if (!this.onLineDevice) return;
+                car.onLine = false;
+                this.onLineDevice.map((device) => {
+                    if (device.deviceCode === car.deviceCode) {
+                        car.onLine = true;
+                    }
+                });
+            });
+
+            this.setState({
+                carList: nextProps.carList
+            });
+        }
     };
 
     /**
@@ -638,17 +179,22 @@ export class MonitoringPage extends React.Component {
         }
     };
 
+    getCarImage = () => {
+        const {carCategory} = this.props;
+    };
+
+
     /**
      * 获取左侧菜单
      */
     getMenu = () => {
         const carList = this.state.carList;
         this.onLineCount = 0;   //在线人数
+
         //检查在线人数
         // carList.map((car) => {
         //     if (!this.onLineDevice) return;
         //     this.onLineDevice.map((device) => {
-        //         console.log(device);
         //         if (device.deviceCode === car.deviceCode) {
         //             car.onLine = true;
         //             this.onLineCount++;
@@ -657,63 +203,87 @@ export class MonitoringPage extends React.Component {
         // });
 
         //根据在线排序
-        // carList.sort((a, b) => {
-        //     const x = a.onLine ? 1 : 0;
-        //     const y = b.onLine ? 1 : 0;
-        //
-        //     if (x < y) {
-        //         return 1;
-        //     }
-        //     if (x > y) {
-        //         return -1;
-        //     }
-        //     if (x === y) {
-        //         return 0;
-        //     }
-        // });
+        carList.sort((a, b) => {
+            const x = a.onLine ? 1 : 0;
+            const y = b.onLine ? 1 : 0;
 
-        return carList.map((car) => {
+            if (x > y) {
+                return -1;
+            }
+            if (x < y) {
+                return 1;
+            }
+            if (x === y) {
+                return 0;
+            }
+        });
+
+        //const {onLineDevice} = this.props;
+
+        //菜单列表
+        let menuList = [];
+
+        for (let i = 0; i < carList.length; i++) {
+            const car = carList[i];
             const carCode = car.carCode;
-            car.onLine = true;
 
             //定位当前车辆
             const carImagePosition = this.state.positionCarCode === carCode ? true : false;
             //当前车辆在地图上显示(true)/隐藏(false)状态
             const carImageVisible = this.getVisibleCarImageMarkerStatus(carCode);
 
-            return (
-                <Menu.Item key={carCode} disabled={!car.onLine}>
-                    <Avatar size="large" src="img/avatar/avatar.png"/>
+            // if (onLineDevice) {
+            //     for (let i = 0; i < onLineDevice.length; i++) {
+            //         if (onLineDevice[i].carCode === carCode) {
+            //             car.onLine = false;
+            //             break;
+            //         }
+            //     }
+            // }
+
+            if (carImageVisible === true && car.onLine === false) {
+                //TODO 等待测试
+                console.log('车辆下线，删除车辆');
+            }
+
+            if (car.onLine) {
+                this.onLineCount++;
+            }
+
+            if (this.state.carStatus === 'online' && !car.onLine) {
+                continue;
+            } else if (this.state.carStatus === 'offline' && car.onLine) {
+                continue;
+            }
+
+            menuList.push(
+                <Menu.Item key={carCode} disabled={!carImageVisible}>
+                    <Avatar size="large" src={window.serviceUrl + car.imgurl}/>
                     <div className={styles.content}>
                         <div className={styles.code}>{car.carCode}</div>
-                        <div>{car.safetySpeed} km/h</div>
+                        <div>{car.speed ? Math.ceil(car.speed) : 0} km/h</div>
                     </div>
-                    {
-                        car.onLine
-                            ?
-                            <div className={styles.btnContent}>
-                                <Button onClick={(e) => {
-                                    e.stopPropagation();
-                                    this.visibleCarImageMarkerByCarCode(carCode);
-                                }}
-                                        type="primary"
-                                        icon={carImageVisible ? 'eye-o' : 'eye'}
-                                        title="隐藏/可见"/>
-                                <Button style={{color: '#5B5B5B'}} onClick={(e) => {
-                                    e.stopPropagation();
-                                    this.getCarInfoByCarCode(carCode);
-                                    this.positionCarMarker(carCode);
-                                }}
-                                        type="primary"
-                                        icon={carImagePosition ? 'environment-o' : 'environment'}
-                                        title="定位"/>
-                            </div>
-                            :
-                            null
-                    }
+                    <div className={styles.btnContent}>
+                        <Button disabled={!car.onLine} onClick={(e) => {
+                            e.stopPropagation();
+                            this.visibleCarImageMarkerByCarCode(carCode);
+                        }}
+                                type="primary"
+                                icon={carImageVisible ? 'eye-o' : 'eye'}
+                                title="隐藏/可见"/>
+                        <Button disabled={!car.onLine} onClick={(e) => {
+                            e.stopPropagation();
+                            this.getCarInfoByCarCode(carCode);
+                            this.positionCarMarker(carCode);
+                        }}
+                                type="primary"
+                                icon={carImagePosition ? 'environment' : 'environment-o'}
+                                title="定位"/>
+                    </div>
                 </Menu.Item>
             )
-        })
+        }
+        return menuList;
     };
 
 
@@ -727,7 +297,6 @@ export class MonitoringPage extends React.Component {
                 cardVisible: 'visible'
             })
         }
-
         if (this.state.carCardHidden) {
             //显示人员信息窗口
             this.setState({
@@ -759,7 +328,12 @@ export class MonitoringPage extends React.Component {
         if (!this.fmMap) return;
         const {carMarkerLayer} = this.fmMap;
         if (!carMarkerLayer) return;
-        carMarkerLayer.visible = visible;
+        const markers = carMarkerLayer.markers;
+        markers.map((item) => {
+            if (item.visible !== visible) {
+                item.visible = visible;
+            }
+        });
     };
 
     /**
@@ -843,7 +417,6 @@ export class MonitoringPage extends React.Component {
             carInfo = carInfos[0];
         }
 
-
         //如果当前卡片关闭状态则显示
         //如果当前卡片展开状态，并且当前carCode与点击的carCode相同则关闭，反正则只更新数据不进行关闭
         //关闭
@@ -903,19 +476,6 @@ export class MonitoringPage extends React.Component {
     onShowAlarmModal = () => {
         this.setState({
             alarmModalVisible: !this.state.alarmModalVisible,
-            // speedSelectedRowKeys: [],       //超速
-            // densitySelectedRowKeys: [],     //闲置
-            // areaSelectedRowKeys: [],        //密度
-            // area: null,            //区域选择
-            // areaDateTime: null,    //区域报警时间
-            // speedDateTime: null,
-            // speedCarCode: null,
-            // densityCarCode: null,
-            // densityDateTime: null,
-            // filterType: null,
-            // areaFilter: null,
-            // densityFilter: null,
-            // speedFilter: null,
         });
     };
 
@@ -933,12 +493,6 @@ export class MonitoringPage extends React.Component {
     /**
      * 更新报警信息已读
      */
-    /*updateUnReadMessage = (type) => {
-        const selectedRowKeys = this.state[type];
-        if (selectedRowKeys.length <= 0) return;
-        this.props.updateUnReadMessage(selectedRowKeys);
-    };*/
-
     updateUnReadMessage = (selectedRowKeys) => {
         this.props.updateUnReadMessage(selectedRowKeys);
     };
@@ -946,173 +500,82 @@ export class MonitoringPage extends React.Component {
     /**
      * 批量删除报警信息
      */
-    /*deleteAlarmMessageByKeys = (type) => {
-        let speedSelectedRowKeys = this.state[type];
-        if (speedSelectedRowKeys.length <= 0) return;
-        this.props.deleteAlarmMessageByKeys(speedSelectedRowKeys);
-        this.updateSelectedKeys(type, speedSelectedRowKeys);
-    };*/
     deleteAlarmMessageByKeys = (speedSelectedRowKeys) => {
         this.props.deleteAlarmMessageByKeys(speedSelectedRowKeys);
     };
 
     /**
-     * 根据当前主键删除报警信息
-     * @key 当前要删除的主键/key
+     * 当前显示车辆列表的状态
+     * @param value 车辆状态
      */
-    deleteAlarmMessageByKey = (type, key) => {
-        if (!key) return;
-        this.props.deleteAlarmMessageByKeys([key]);
-        this.updateSelectedKeys(type, [key]);
+    onChangeHandleCarStatus = (value) => {
+        this.setState({
+            carStatus: value,
+        });
     };
 
     /**
-     * 需要排除key的集合
-     * @keys 当前排除的key集合
+     * 信息搜索（模糊搜索，根据车辆编号）
+     * @parm e 事件对象
      */
-    updateSelectedKeys = (type, keys) => {
-        let selectedRowKeys = this.state[type];
-        const rowKeys = selectedRowKeys.filter((item) => {
-            let flag = false;
-            for (let i = 0; i < keys.length; i++) {
-                if (keys[i] === item) {
-                    flag = true;
-                    break;
-                }
+    onSearchKeyword = (e) => {
+        e.persist();
+        const value = e.target.value;
+        this.timeStamp = e.timeStamp;
+
+        this.setState({
+            userName: value
+        });
+
+        setTimeout(() => {
+            if (this.timeStamp === e.timeStamp) {
+                const carList = this.getCarListBykeyword(value);
+                this.setState({
+                    carList: carList,
+                })
             }
-            return flag === false;
-        });
-
-        let stateKeys = {};
-        stateKeys[type] = rowKeys;
-        this.setState(stateKeys);
+        }, 500);
     };
 
     /**
-     * 报警区域选择
-     * @param value
+     * 模糊查询车辆列表
+     * @param keyword
+     * @returns {Array}
      */
-    handleChangeArea = (value) => {
-        console.log('value', value);
-        this.setState({
-            area: value
-        });
-    };
-
-    /**
-     * 报警区域时间
-     * @param value 报警区域时间
-     */
-    handleChangeAraeDateTime = (value) => {
-        this.setState({
-            areaDateTime: value
-        });
-    };
-
-    /**
-     * 闲置车辆编号
-     * @param value 车辆编号
-     */
-    handleChangeDensityCarCode = (value) => {
-        this.setState({
-            densityCarCode: value
-        })
-    };
-
-    /**
-     * 限制车辆报警时间
-     * @param value 报警时间
-     */
-    handleChangeDensityDateTime = (value) => {
-        this.setState({
-            densityDateTime: value
-        })
-    };
-
-    handleChangeSpeedCarCode = (value) => {
-        this.setState({
-            speedCarCode: value
-        });
-    };
-
-    handleChangeSpeedDateTime = (value) => {
-        this.setState({
-            speedDateTime: value
-        });
-    };
-
-    setFilterType = (value) => {
-        if (value === 'area') {
-            const {area, areaDateTime} = this.state;
-            const beiginDateTime = areaDateTime && areaDateTime.length > 0 ? areaDateTime[0].format('YYYY-MM-DD hh:mm:ss') : '';
-            const endDateTime = areaDateTime && areaDateTime.length > 0 ? areaDateTime[1].format('YYYY-MM-DD hh:mm:ss') : '';
-            this.setState({
-                areaFilter: `${area ? area : ''}&&${beiginDateTime}&&${endDateTime}`,
-            })
-        }
-
-        if (value === 'density') {
-            const {densityCarCode, densityDateTime} = this.state;
-            const beiginDateTime = densityDateTime && densityDateTime.length > 0 ? densityDateTime[0].format('YYYY-MM-DD hh:mm:ss') : '';
-            const endDateTime = densityDateTime && densityDateTime.length > 0 ? densityDateTime[1].format('YYYY-MM-DD hh:mm:ss') : '';
-            this.setState({
-                densityFilter: `${densityCarCode ? densityCarCode : ''}&&${beiginDateTime}&&${endDateTime}`,
+    getCarListBykeyword = (keyword) => {
+        const carList = this.props.carList;
+        let list = [];
+        if (keyword) {
+            list = carList.filter((item) => {
+                if (this.state.carStatus === 'all') {
+                    return item.carCode.indexOf(keyword) >= 0;
+                } else if (this.state.carStatus === 'online' && !item.onLine) {
+                    return item.carCode.indexOf(keyword) >= 0;
+                } else if (this.state.carStatus === 'online' && item.onLine) {
+                    return item.carCode.indexOf(keyword) >= 0;
+                }
             });
+        } else {
+            list = carList;
         }
-
-        if (value === 'speed') {
-            const {speedCarCode, speedDateTime} = this.state;
-            const beiginDateTime = speedDateTime && speedDateTime.length > 0 ? speedDateTime[0].format('YYYY-MM-DD hh:mm:ss') : '';
-            const endDateTime = speedDateTime && speedDateTime.length > 0 ? speedDateTime[1].format('YYYY-MM-DD hh:mm:ss') : '';
-            this.setState({
-                speedFilter: `${speedCarCode ? speedCarCode : ''}&&${beiginDateTime}&&${endDateTime}`,
-            });
-        }
+        return list;
     };
 
-    areaDataFilter = (value, record) => {
-        if (!value) return record;
-        const {id, dateTime} = record;
-        let filters = value.split('&&');
-        const areaId = filters[0];
-        const beiginDateTime = filters[1];
-        const endDateTime = filters[2];
-
-        if ((areaId === '' || areaId == id) && (beiginDateTime === '' || new Date(beiginDateTime) < new Date(dateTime)) && (endDateTime === '' || new Date(dateTime) < new Date(endDateTime))) {
-            return record;
-        }
-
-    };
-
-    densityDataFilter = (value, record) => {
-        if (!value) return record;
-        const {carCode, dateTime} = record;
-        let filters = value.split('&&');
-        const densityCarCode = filters[0];
-        const beiginDateTime = filters[1];
-        const endDateTime = filters[2];
-
-        if ((densityCarCode === '' || carCode.toUpperCase() == densityCarCode.toUpperCase()) && (beiginDateTime === '' || new Date(beiginDateTime) < new Date(dateTime)) && (endDateTime === '' || new Date(dateTime) < new Date(endDateTime))) {
-            return record;
-        }
-    };
-
-    speedDataFilter = (value, record) => {
-        if (!value) return record;
-        const {carCode, dateTime} = record;
-        let filters = value.split('&&');
-        const speedCarCode = filters[0];
-        const beiginDateTime = filters[1];
-        const endDateTime = filters[2];
-
-        if ((speedCarCode === '' || carCode.toUpperCase() == speedCarCode.toUpperCase()) && (beiginDateTime === '' || new Date(beiginDateTime) < new Date(dateTime)) && (endDateTime === '' || new Date(dateTime) < new Date(endDateTime))) {
-            return record;
-        }
+    /**
+     * 清空搜索框
+     */
+    emitEmpty = () => {
+        this.userNameInput.focus();
+        this.userNameInput.refs.input.value = '';
+        this.setState({
+            carDtasSource: this.props.carDtasSource,
+        })
     };
 
     render() {
         const {userName} = this.state;
-        const suffix = userName ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
+        const suffix = userName ?
+            <Icon type="close-circle" style={{color: '#5B5B5B'}} onClick={this.emitEmpty}/> : null;
 
         //车辆菜单
         const menu = this.getMenu();
@@ -1120,7 +583,7 @@ export class MonitoringPage extends React.Component {
         //获取当前车辆详细信息
         const {carCode, mileage, electric, status, area, carType} = this.getCarInfoByCard();
 
-        const {alertMessageData} = this.props;
+        const {alertMessageData, carList} = this.props;
 
         //获取未读信息集合
         const unReadMessage = alertMessageData.filter((item) => {
@@ -1137,13 +600,15 @@ export class MonitoringPage extends React.Component {
                     <Layout style={{height: '100%'}}>
                         <div style={{
                             height: '38px',
-                            background: '#302036',
+                            background: '#45484A',
                             lineHeight: '38px',
                             color: '#fff',
                             padding: '0 10px'
-                        }}>车辆信息&nbsp;&nbsp;&nbsp;6 / 8
-                            <span className={styles.left_arrow} title="收起窗口" onClick={this.onCollapse.bind(this)}><Icon
-                                type="left"/></span>
+                        }}>车辆信息&nbsp;&nbsp;&nbsp;{this.onLineCount}
+                            / {this.props.carList ? this.props.carList.length : 0}
+                            <span className={styles.left_arrow} title="收起窗口" onClick={this.onCollapse.bind(this)}>
+                                <Icon type="left"/>
+                            </span>
                         </div>
                         <Content>
                             <div className={styles.headContainer}>
@@ -1151,16 +616,20 @@ export class MonitoringPage extends React.Component {
                                     placeholder="请输入编号筛选"
                                     prefix={<Icon type="search"/>}
                                     suffix={suffix}
-                                    value={userName}
-                                    onChange={this.onChangeUserName}
+                                    //value={userName}
+                                    onInput={this.onSearchKeyword}
                                     className={styles.searchInput}
-                                    ref={node => this.userNameInput = node}
+                                    ref={(ref) => {
+                                        this.userNameInput = ref;
+                                    }}
                                 />
-                                <Select className={styles.selectDrop} defaultValue="all" size="large">
+                                <Select className={styles.selectDrop} value={this.state.carStatus} size="large"
+                                        onChange={
+                                            this.onChangeHandleCarStatus
+                                        }>
                                     <Option value="all">显示全部</Option>
-                                    <Option value="0">在线状态</Option>
-                                    <Option value="1">离线状态</Option>
-                                    <Option value="2">报警状态</Option>
+                                    <Option value="online">在线状态</Option>
+                                    <Option value="offline">离线状态</Option>
                                 </Select>
                             </div>
                             {/*菜单*/}
@@ -1224,42 +693,6 @@ export class MonitoringPage extends React.Component {
                         updateUnReadMessage={this.updateUnReadMessage}
                         deleteAlarmMessageByKeys={this.deleteAlarmMessageByKeys}
                     />
-                    {/*<CollectionCreateForm
-                        ref={this.saveFormRef}
-                        visible={this.state.alarmModalVisible}
-                        onCancel={this.onShowAlarmModal}
-                        alertMessageData={alertMessageData}
-                        setSelectKeys={this.setSelectKeys}
-                        updateUnReadMessage={this.updateUnReadMessage}
-                        speedSelectedRowKeys={this.state.speedSelectedRowKeys}
-                        setSelectedRowKeys={this.setSelectedRowKeys}
-                        deleteAlarmMessageByKeys={this.deleteAlarmMessageByKeys}
-                        deleteAlarmMessageByKey={this.deleteAlarmMessageByKey}
-                        densitySelectedRowKeys={this.state.densitySelectedRowKeys}
-                        areaSelectedRowKeys={this.state.areaSelectedRowKeys}
-                        speedFliter={this.state.speedFliter}
-                        areaList={this.props.areaList}
-                        handleChangeArea={this.handleChangeArea}
-                        handleChangeAraeDateTime={this.handleChangeAraeDateTime}
-                        area={this.state.area}
-                        areaDateTime={this.state.areaDateTime}
-                        handleChangeDensityCarCode={this.handleChangeDensityCarCode}
-                        handleChangeDensityDateTime={this.handleChangeDensityDateTime}
-                        DensityCarCode={this.state.DensityCarCode}
-                        DensityDateTime={this.state.DensityDateTime}
-                        handleChangeSpeedDateTime={this.handleChangeSpeedDateTime}
-                        handleChangeSpeedCarCode={this.handleChangeSpeedCarCode}
-                        speedDateTime={this.state.speedDateTime}
-                        speedCarCode={this.state.speedCarCode}
-                        setFilterType={this.setFilterType}
-                        filterType={this.state.filterType}
-                        areaDataFilter={this.areaDataFilter}
-                        areaFilter={this.state.areaFilter}
-                        densityDataFilter={this.densityDataFilter}
-                        densityFilter={this.state.densityFilter}
-                        speedDataFilter={this.speedDataFilter}
-                        speedFilter={this.state.speedFilter}
-                    />*/}
                 </Content>
             </Layout>
         );
@@ -1284,6 +717,8 @@ const selectorStateToProps = createStructuredSelector({
     alarmDatas: alarmDatasSelector(),
     alertMessageData: alertMessageDataSelector(),
     areaList: SelectorAreaList(),
+    onLineDevice: SelectorOnLineDevice(),
+    carDataSource: carDataSourceSelector(),
 });
 
 export default connect(selectorStateToProps, actionsDispatchToProps)(MonitoringPage);

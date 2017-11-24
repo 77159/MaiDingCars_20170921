@@ -5,9 +5,9 @@
  */
 'use strict';
 import {
-    CHANGE_USERNAME,
-    LOGIN_BEGIN,
-    LOGIN_FINISH
+	CHANGE_USERNAME,
+	LOGIN_BEGIN,
+	LOGIN_FINISH
 } from './constants';
 
 
@@ -15,14 +15,17 @@ import {
  * 登陆开始
  */
 export const loginFormModalOpBegin = () => ({
-    type: LOGIN_BEGIN
+	type: LOGIN_BEGIN
 });
 
 /**
  * 登陆结束
  */
-export const loginFormModalOpFinish = () => ({
-    type: LOGIN_FINISH
+export const loginFormModalOpFinish = (token) => ({
+	type: LOGIN_FINISH,
+	payload: {
+		token
+	}
 });
 
 /**
@@ -30,8 +33,8 @@ export const loginFormModalOpFinish = () => ({
  * @param loginMsg 登陆信息对象
  */
 export function changeUsername(loginMsg) {
-    return {
-        type: CHANGE_USERNAME,
-        payload: loginMsg
-    };
+	return {
+		type: CHANGE_USERNAME,
+		payload: loginMsg
+	};
 }

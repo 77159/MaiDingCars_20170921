@@ -4,10 +4,11 @@
  * @describe 车辆管理 Reducer
  */
 'use strict';
-import {fromJS} from 'immutable';
+import {
+    fromJS
+} from 'immutable';
 
 import {
-    CHANGE_USERNAME,
     CREATE_CAR,
     MODIFY_CAR,
     GET_CAR,
@@ -15,30 +16,32 @@ import {
     QUERY_ALL_CAR_BEGIN,
     QUERY_ALL_CAR_FINISH,
     CAR_OP_BEGIN,
-    CAR_OP_FINISH
+    CAR_OP_FINISH,
+    UPDAT_CAR_SPEED
 } from './constants';
 
-// The initial state of the App
 const initialState = fromJS({
-    username: '',
     tableDataLoading: true,
     carDataSource: null,
 });
 
 export default (state = initialState, action = {}) => {
-    const {type, payload} = action;
+    const {
+        type,
+        payload
+    } = action;
     //对车辆数据的操作开始
-    if(type === CAR_OP_BEGIN) {
+    if (type === CAR_OP_BEGIN) {
         return state
             .set('tableDataLoading', true);
     }
     //对车辆数据的操作结束
-    if(type === CAR_OP_FINISH) {
+    if (type === CAR_OP_FINISH) {
         return state
             .set('tableDataLoading', false);
     }
     //查询所有车辆信息结束
-    if(type === QUERY_ALL_CAR_FINISH) {
+    if (type === QUERY_ALL_CAR_FINISH) {
         return state
             .set('carDataSource', payload)
     }
@@ -58,11 +61,19 @@ export default (state = initialState, action = {}) => {
     if (type === DELETE_CAR) {
 
     }
+    //更新车辆的实时速度
+    if (type === UPDAT_CAR_SPEED) {
+        let carDataSource = state.get('carDataSource');
+        const {
+            carCode,
+            speed
+        } = payload;
+        carDataSource.map((item) => {
+            if (item.carCode === carCode) {
+                item.speed = speed;
+            }
+        })
+    }
+
     return state;
 }
-
-
-
-
-
-

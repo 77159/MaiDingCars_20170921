@@ -17,27 +17,20 @@
 }
 
 .login {
-  width: 600px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  width: 550px;
   border-color: transparent;
-  background: #fff;
+  background: rgba(255,255,255,0.4);
   height: 314px;
   border-radius: 4px;
-}
-
-.leftImg {
-  background: ~'url("/img/earth_bg.png")' no-repeat;
-  height: 314px;
-  width: 200px;
-  border-radius: 4px 0 0 4px;
-  display: inline-block;
-  float: left;
+  box-shadow:1px 1px 5px #FFFFFF, -1px -1px 5px #FFFFFF;
 }
 
 .rightForm {
-  width: ~'calc(100% - 200px)';
+  width: 350px;
   display: inline-block;
-  padding: 35px 50px 0 50px;
+  padding: 35px 0px 0 0px;
+  margin-left:100px;
+  margin-right:100px;
 }
 
 .formItem {
@@ -53,7 +46,6 @@
 }
 
 .userName {
-
   :global .ant-input-prefix {
     color: #666;
   }
@@ -86,13 +78,13 @@
   label:first-child {
     margin: 0px 8px 0 0;
     font-size: 26px;
-    color: #443a49;
+    color: white;
     font-weight: 500;
     letter-spacing: 1px;
   }
   label:last-child {
     font-size: 18px;
-    color: #999;
+    color: white;
   }
 }
 
@@ -102,6 +94,7 @@
   background-color: #FFDE00;
   border-color: #FFDE00;
   height: 34px;
+  margin-left:105px;
 
   &:hover {
     color: #333;
@@ -117,10 +110,10 @@
 
 .info {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   background: ~'url("/img/title.png")' no-repeat;
   width: 328px;
-  height:105px;
+  height:56px;
 
   h1 {
     margin: 5px 0px;

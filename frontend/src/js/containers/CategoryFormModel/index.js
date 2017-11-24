@@ -215,7 +215,6 @@ class CategoryForm extends React.Component {
             this.props.handlePostCarCategory(values);
             form.resetFields();
             //this.props.getImgUrl('');
-            console.log('收集到的信息', values);
         });
     };
 

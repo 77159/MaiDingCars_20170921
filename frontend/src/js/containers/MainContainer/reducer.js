@@ -33,7 +33,10 @@ import {
     UPDATE_MESSAGE_SHOW,
     UPDATE_UNREAD_MESSAGE,
     DELETE_ALARM_MESSAGE_BY_KEYS,
-    UPDATE_ALARM_LASTDATETIME
+    UPDATE_ALARM_LASTDATETIME,
+    UPDATE_ONLINEDEVICE,
+    REMOVE_ONLINE_DEVICE,
+    UPDATE_ALARM_DURATION
 } from './constants';
 
 // The initial state of the App
@@ -41,7 +44,7 @@ const initialState = fromJS({
     loading: false,
     error: false,
     onlineCar: null,
-    onlineDevice: null,         //获取当前最新设备
+    onlineDevice: [],         //获取当前最新设备
     isReadCount: 0,             //已读条数
     /*************************/
     realTimeLocations: null,    //实时位置信息
@@ -66,7 +69,7 @@ export default (state = initialState, action = {}) => {
         return state.set('onlineCar', payload);
     }
 
-    //接受当前最新设备
+    //接收当前最新设备
     if (type === GET_ONLINE_DEVICE) {
         return state.set('onlineDevice', payload);
     }
@@ -204,6 +207,35 @@ export default (state = initialState, action = {}) => {
                 break;
             }
         }
+    }
+
+    // 更新在线列表
+    if (type === UPDATE_ONLINEDEVICE) {
+        let onlineDevice = state.get('onlineDevice').push(payload);
+        return state.set('onlineDevice', onlineDevice);
+    }
+
+    // 移除在线列表
+    if (type === REMOVE_ONLINE_DEVICE) {
+        const carCode = payload.carCode;
+        let carList = [];
+        let onlineDevice = state.get('onlineDevice');
+        onlineDevice.map((item) => {
+            if (item.carCode !== carCode) {
+                carList.push(item);
+            }
+        });
+        return state.set('onlineDevice', carList);
+    }
+
+    if (type === UPDATE_ALARM_DURATION) {
+        let alertMessageData = state.get('alertMessageData');
+        const {key, time} = payload;
+        alertMessageData.map((item) => {
+            if (item.key === key) {
+                item.time = time;
+            }
+        });
     }
 
     return state;

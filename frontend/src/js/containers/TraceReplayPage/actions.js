@@ -21,7 +21,9 @@
  */
 'use strict';
 import {
-  CHANGE_USERNAME,
+    TRACE_REPLAY,
+    GET_TRACE_DATA,
+    EMPTY_TRACE_DATA
 } from './constants';
 
 /**
@@ -31,9 +33,31 @@ import {
  *
  * @return {object}    An action object with a type of CHANGE_USERNAME
  */
-export function changeUsername(name) {
-  return {
-    type: CHANGE_USERNAME,
-    name,
-  };
+export function changeTraceReplay(traceReplayMsg) {
+    return {
+        type: TRACE_REPLAY,
+        payload: traceReplayMsg
+    };
 }
+
+/**
+ * 获取轨迹回放数据
+ * @returns {{type}}
+ */
+export function getTraceData(traceData) {
+    return {
+        type: GET_TRACE_DATA,
+        payload: traceData,
+    };
+}
+
+/**
+ * 清空人员轨迹回访数据
+ * @returns {{type}}
+ */
+export function emptyTraceData() {
+    return {
+        type: EMPTY_TRACE_DATA,
+    };
+}
+

@@ -15,26 +15,30 @@
  * @describe 轨迹回放 Reducer
  */
 'use strict';
-import { fromJS } from 'immutable';
+import {fromJS} from 'immutable';
 
 import {
-  CHANGE_USERNAME,
+    CHANGE_USERNAME,
+    UPDATE_LOADING
 } from './constants';
 
 // The initial state of the App
 const initialState = fromJS({
-  username: '',
+    username: '',
+    playing: false,
 });
 
-function homeReducer(state = initialState, action) {
-  switch (action.type) {
-    case CHANGE_USERNAME:
-      // Delete prefixed '@' from the github username
-      return state
-        .set('username', action.name.replace(/@/gi, ''));
-    default:
-      return state;
-  }
+export default (state = initialState, action = {}) => {
+    switch (action.type) {
+        case CHANGE_USERNAME:
+            // Delete prefixed '@' from the github username
+            return state
+                .set('username', action.name.replace(/@/gi, ''));
+        case UPDATE_LOADING:
+            return state
+                .set('playing', action.loading);
+        default:
+            return state;
+    }
 }
 
-export default homeReducer;

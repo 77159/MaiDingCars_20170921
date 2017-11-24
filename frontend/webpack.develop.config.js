@@ -46,7 +46,7 @@ const config = {
         historyApiFallback: true                    //启用HTML5的历史记录？
     },
     module: {
-        noParse: /fengmap/,                         //排除对FengMapSDK的编译
+        //noParse: /fengmap/,                         //排除对FengMapSDK的编译
         rules: [{
             test: /\.(js|jsx)$/,                    //匹配.js||.jsx后缀名的文件
             loader: ['babel-loader'],               //使用babel-loader转换器

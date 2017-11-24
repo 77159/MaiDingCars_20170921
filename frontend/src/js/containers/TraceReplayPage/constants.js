@@ -15,4 +15,7 @@
  * @describe 轨迹回放 constants
  */
 'use strict';
-export const CHANGE_USERNAME = 'boilerplate/Home/CHANGE_USERNAME';
+export const TRACE_REPLAY = 'TraceReplayPage/TRACE_REPLAY';
+export const GET_TRACE_DATA = 'TraceReplayPage/GET_TRACE_DATA';     //过去轨迹回放数据
+export const EMPTY_TRACE_DATA = 'TraceReplayPage/EMPTY_TRACE_DATA';     //清空轨迹回放数据
+

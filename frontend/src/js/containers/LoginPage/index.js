@@ -5,26 +5,51 @@
  */
 'use strict';
 import React from 'react';
-import {Icon} from 'antd';
-import {Button} from 'antd';
+import {
+    Icon
+} from 'antd';
+import {
+    Button
+} from 'antd';
 import md5 from 'js-md5';
 
-import {Input} from 'antd';
-import {Table} from 'antd';
+import {
+    Input
+} from 'antd';
+import {
+    Table
+} from 'antd';
 
-const {Column, ColumnGroup} = Table;
+const {
+    Column,
+    ColumnGroup
+} = Table;
 
 import styles from './index.less';
 
-import {createStructuredSelector} from 'reselect';
-import {connect} from 'react-redux';
-import {loadRepos} from '../App/actions';
-import {changeUsername} from './actions';
-import {makeSelectUsername, operationRunningSelector} from './selectors';
+import {
+    createStructuredSelector
+} from 'reselect';
+import {
+    connect
+} from 'react-redux';
+import {
+    loadRepos
+} from '../App/actions';
+import {
+    changeUsername
+} from './actions';
+import {
+    operationRunningSelector
+} from './selectors';
 
-import {Form} from 'antd';
+import {
+    Form
+} from 'antd';
 const FormItem = Form.Item;
-import {appRegExp} from "../../utils/validation";
+import {
+    appRegExp
+} from "../../utils/validation";
 
 export class LoginPage extends React.Component {
 
@@ -45,27 +70,45 @@ export class LoginPage extends React.Component {
         const form = this.props.form;
         form.validateFields((err, loginMsg) => {
             if (err) {
-                this.setState({visible: false, confirmLoading: false});
+                this.setState({
+                    visible: false,
+                    confirmLoading: false
+                });
                 return;
             }
             console.log('收集到的人员登陆信息', loginMsg);
             loginMsg['password'] = md5(loginMsg.password);
             this.props.changeUsername(loginMsg);
-            this.setState({loginLoading: false});
+            this.setState({
+                loginLoading: false
+            });
         })
     }
 
 
     render() {
-        const {getFieldDecorator} = this.props.form;
-        const {operationRunning} = this.props;
+        const {
+            getFieldDecorator
+        } = this.props.form;
+        const {
+            operationRunning
+        } = this.props;
         const formItemLayout = {
-            labelCol: {span: 0},
-            wrapperCol: {span: 24},
+            labelCol: {
+                span: 0
+            },
+            wrapperCol: {
+                span: 24
+            },
         };
         const formItemLayout2 = {
-            labelCol: {span: 0},
-            wrapperCol: {span: 24, offset: 6},
+            labelCol: {
+                span: 0
+            },
+            wrapperCol: {
+                span: 24,
+                offset: 6
+            },
         };
 
         return (
@@ -73,7 +116,7 @@ export class LoginPage extends React.Component {
                 <div className={styles.info}>
                 </div>
                 <div className={styles.login}>
-                    <div className={styles.leftImg}/>
+                    {/*<div className={styles.leftImg}/>*/}
                     <div className={styles.rightForm}>
                         <Form className="login-form">
                             <FormItem className={styles.loginTitle}>
@@ -135,7 +178,7 @@ export class LoginPage extends React.Component {
                     </div>
                 </div>
                 <div className={styles.support}>
-                    <a href="http://www.madintech.com/">技术支持：北京麦钉艾特科技有限公司</a>
+                    <a href="http://www.madintech.com/">技术支持：北京麦钉艾特科技有限公司&蜂鸟云</a>
                 </div>
             </div>
         );
@@ -150,7 +193,7 @@ export function actionsDispatchToProps(dispatch) {
 }
 
 const selectorStateToProps = createStructuredSelector({
-    loginMsg: makeSelectUsername,
+    //loginMsg: makeSelectUsername(),
     operationRunning: operationRunningSelector(),
 });
 

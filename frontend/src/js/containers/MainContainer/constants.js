@@ -31,3 +31,6 @@ export const UPDATE_MESSAGE_SHOW = 'MainContainer/UPDATE_MESSAGE_SHOW';         
 export const UPDATE_UNREAD_MESSAGE = 'MainContainer/UPDATE_UNREAD_MESSAGE';                 //更新当前未读信息状态
 export const DELETE_ALARM_MESSAGE_BY_KEYS = 'MainContainer/DELETE_ALARM_MESSAGE_BY_KEYS';   //删除当前报警信息
 export const UPDATE_ALARM_LASTDATETIME = 'MainContainer/UPDATE_ALARM_LASTDATETIME';         //更新报警最后时间
+export const UPDATE_ONLINEDEVICE = 'MainContainer/UPDATE_ONLINEDEVICE';                     //更新在线列表
+export const REMOVE_ONLINE_DEVICE = 'MainContainer/REMOVE_ONLINE_DEVICE';                   //下线在线列表
+export const UPDATE_ALARM_DURATION = 'MainContainer/UPDATE_ALARM_DURATION';                 //更新持续报警时间

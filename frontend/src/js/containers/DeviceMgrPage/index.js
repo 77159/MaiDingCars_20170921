@@ -1,10 +1,7 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备管理页面。路径为'/device'
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/9/7
+ * @describe 设备管理页面 路径为'/device'
  */
 
 'use strict';
@@ -123,7 +120,6 @@ export class DeviceMgrPage extends React.Component {
     //改变设备状态
     onChangeDeviceStatus = (record) => {
         record.deviceStatus = record.deviceStatus ? 0 : 1;
-        console.log('修改设备状态收集到的信息: ', record);
         this.props.modifyDevice(record);
     }
 
@@ -162,7 +158,6 @@ export class DeviceMgrPage extends React.Component {
         if (_.isEmpty(value) == false && value.trim().length > 2) {
             //遍历设备数据集合，将安保编号中包含输入字符的完整编号数据写入自动完成提示数据集合中。
             deviceDataSource.forEach(deviceEntity => {
-                console.log(deviceEntity);
                 if (deviceEntity.carCode) {
                     if (deviceEntity.carCode.includes(value)) {
                         data.push(deviceEntity.carCode);

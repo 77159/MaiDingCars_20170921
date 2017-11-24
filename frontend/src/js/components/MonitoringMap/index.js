@@ -49,6 +49,7 @@ export default class MonitoringMap extends React.Component {
 
         //判断当前是否有定位的车辆
         if (this.props.positionCarCode !== nextProps.positionCarCode && nextProps.positionCarCode) {
+            debugger;
             const fmMap = this.fmMap;
             const carCode = nextProps.positionCarCode;
             //放大地图效果
@@ -76,7 +77,7 @@ export default class MonitoringMap extends React.Component {
 
         this.fmMap = new fengmap.FMMap({
             container: document.getElementById('fengMap'),  //渲染dom
-            mapServerURL: 'assets/map/', //地图数据位置
+            mapServerURL: 'assets/map', //地图数据位置
             mapThemeURL: 'assets/theme',  //主题数据位置
             defaultThemeName: '3006',       //设置主题 2001, 2002, 3006, 746199
             defaultMapScaleLevel: 20, // 默认比例尺级别设置为20级
@@ -210,18 +211,10 @@ export default class MonitoringMap extends React.Component {
         //判断是否已经添加摄像头，如果没有，则执行添加摄像头并显示；如果已经添加摄像头，则显示执行显示/隐藏操作；
         if (!this.videoMarkerLayer) {
             const coord = [
-                {x: 13155879.262894774, y: 2813434.3748671124, z: 1},
-                {x: 13155849.552118609, y: 2813444.1627199077, z: 1},
-                {x: 13155910.160209117, y: 2813424.2834379645, z: 1},
-                {x: 13155856.806917202, y: 2813466.9958207505, z: 1},
-                {x: 13155852.881658334, y: 2813455.432382258, z: 1},
-                {x: 13155881.193788545, y: 2813461.3959688926, z: 1},
-                {x: 13155900.462375376, y: 2813454.1607708493, z: 1},
-                {x: 13155904.09549146, y: 2813466.616971347, z: 1},
-                {x: 13155923.325809158, y: 2813479.4329843214, z: 1},
-                {x: 13155929.397945976, y: 2813454.6551750996, z: 1},
-                {x: 13155915.801642923, y: 2813440.025870851, z: 1},
-                {x: 13155910.75592826, y: 2813424.5772141065, z: 1},
+                {x: 12961698.59373515, y: 4860178.818219011, z: 1},
+                {x: 12961636.02474005, y: 4860229.473547427, z: 1},
+                {x: 12961677.888478693, y: 4860284.574363407, z: 1},
+                {x: 12961744.46568206, y: 4860227.997212034, z: 1},
             ];
 
             const group = fmMap.getFMGroup(gid);
@@ -282,7 +275,8 @@ export default class MonitoringMap extends React.Component {
     render() {
 
         return (
-            <div id="fengMap" className={styles.fengmap}>
+            <div style={{width: '100%', height: '100%'}}>
+                <div id="fengMap" style={{width: '100%', height: '100%', overflow: 'hidden'}}></div>
                 <div className={styles.mapActions}>
                      <span className={styles.mapActionBtn} onClick={this.visibleVideo}
                            title="摄像头点位"><img src="./img/fm_controls/video.png"></img>

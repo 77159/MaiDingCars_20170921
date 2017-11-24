@@ -12,8 +12,10 @@
  * @describe 全局路由配置
  */
 'use strict';
-import {getAsyncInjectors} from '../utils/asyncInjectors';
-import Login from '../containers/LoginPage';
+import {
+    getAsyncInjectors
+} from '../utils/asyncInjectors';
+
 import MainContainer from '../containers/MainContainer';
 
 const errorLoading = (err) => {
@@ -26,201 +28,211 @@ const loadModule = (cb) => (componentModule) => {
 
 export default function createRoutes(store) {
     // create reusable async injectors using getAsyncInjectors factory
-    const {injectReducer, injectSagas} = getAsyncInjectors(store);
+    const {
+        injectReducer,
+        injectSagas
+    } = getAsyncInjectors(store);
 
-    return [
-        {
-            path: '/main',
-            //name: 'mainContainer',
+    return [{
+        path: '/main',
+        //name: 'mainContainer',
+        getComponent(nextState, cb) {
+            const importModules = Promise.all([
+                import ('../containers/MainContainer/reducer'),
+                import ('../containers/MainContainer'),
+                import ('../containers/ModifyPasswordModel/sagas'),
+                import ('../containers/HeadContainer/sagas'),
+                import ('../containers/AreaSettingPage/reducer'),
+                import ('../containers/AreaSettingPage/sagas'),
+                import ('../containers/CarMgrPage/reducer'),
+                import ('../containers/CarMgrPage/sagas'),
+                import ('../containers/CategoryFormModel/sagas'),
+            ]);
+            const renderRoute = loadModule(cb);
+            importModules.then(([reducer, component, sagas, sagas2, areaReducer, areaSagas, carReducer, carSagas, categorySagas]) => {
+                injectReducer('mainContainer', reducer.default);
+                injectSagas(sagas.default);
+                injectSagas(sagas2.default);
+                injectSagas(areaSagas.default);
+                injectReducer('area', areaReducer.default);
+                injectReducer('car', carReducer.default);
+                injectSagas(carSagas.default);
+                injectSagas(categorySagas.default);
+                renderRoute(component);
+            });
+            importModules.catch(errorLoading);
+        },
+        childRoutes: [{
+            path: '/monitoring', //动态监控页面
+            name: 'monitoring',
             getComponent(nextState, cb) {
                 const importModules = Promise.all([
-                    import('../containers/MainContainer/reducer'),
-                    import('../containers/MainContainer'),
-                    import('../containers/ModifyPasswordModel/sagas'),
-                    import('../containers/HeadContainer/sagas'),
-                    import('../containers/AreaSettingPage/reducer'),
-                    import('../containers/AreaSettingPage/sagas'),
+                    import ('../containers/MonitoringPage/reducer'),
+                    import ('../containers/MonitoringPage/sagas'),
+                    import ('../containers/CarMgrPage/reducer'),
+                    import ('../containers/MonitoringPage'),
                 ]);
+
                 const renderRoute = loadModule(cb);
-                importModules.then(([reducer, component, sagas, sagas2, areaReducer, areaSagas]) => {
-                    injectReducer('mainContainer', reducer.default);
+
+                importModules.then(([reducer, sagas, carReducer, component]) => {
+                    injectReducer('monitoring', reducer.default);
                     injectSagas(sagas.default);
-                    injectSagas(sagas2.default);
-                    injectSagas(areaSagas.default);
-                    injectReducer('area', areaReducer.default);
+                    injectReducer('car', carReducer.default);
                     renderRoute(component);
                 });
                 importModules.catch(errorLoading);
-            },
-            childRoutes: [
-                {
-                    path: '/monitoring',                      //动态监控页面
-                    name: 'monitoring',
-                    getComponent(nextState, cb) {
-                        const importModules = Promise.all([
-                            import('../containers/MonitoringPage/reducer'),
-                            import('../containers/MonitoringPage/sagas'),
-                            import('../containers/CarMgrPage/reducer'),
-                            import('../containers/CarMgrPage/sagas'),
-                            import('../containers/CategoryFormModel/sagas'),
-                            import('../containers/MonitoringPage'),
-                        ]);
-
-                        const renderRoute = loadModule(cb);
-
-                        importModules.then(([reducer, sagas, carReducer, carSagas, categorySagas, component]) => {
-                            injectReducer('monitoring', reducer.default);
-                            injectSagas(sagas.default);
-                            injectReducer('car', carReducer.default);
-                            injectSagas(carSagas.default);
-                            injectSagas(categorySagas.default);
-                            renderRoute(component);
-                        });
-                        importModules.catch(errorLoading);
-                    }
-                },
-                {
-                    path: '/trace',                  //轨迹回放页面
-                    name: 'trace',
-                    getComponent(nextState, cb) {
-                        import('../containers/TraceReplayPage')
-                            .then(loadModule(cb))
-                            .catch(errorLoading);
-                    }
-                },
-                {
-                    path: '/heat',                  //热力图
-                    name: 'heat',
-                    getComponent(nextState, cb) {
-                        import('../containers/HeatPage')
-                            .then(loadModule(cb))
-                            .catch(errorLoading);
-                    }
-                },
-                {
-                    path: '/area',                  //区域设置页面
-                    name: 'area',
-                    getComponent(nextState, cb) {
-                        const importModules = Promise.all([
-                            import('../containers/AreaSettingPage/reducer'),
-                            import('../containers/AreaFormPanel/sagas'),
-                            import('../containers/AreaFormPanel/reducer'),
-                            import('../containers/AreaSettingPage'),
-                        ]);
-
-                        const renderRoute = loadModule(cb);
-
-                        importModules.then(([reducer, sagas2, reducer2, component]) => {
-                            injectReducer('area', reducer.default);
-                            injectSagas(sagas2.default);
-                            injectReducer('areaForm', reducer2.default);
-                            renderRoute(component);
-                        });
-
-                        importModules.catch(errorLoading);
-                    }
-                },
-
-
-                {
-                    path: '/statistical',                  //统计分析
-                    name: 'statistical',
-                    getComponent(nextState, cb) {
-                        const importModules = Promise.all([
-                            import('../containers/StatisticalPage/reducer'),
-                            import('../containers/StatisticalPage/sagas'),
-                            import('../containers/CategoryFormModel/reducer'),
-                            import('../containers/CategoryFormModel/sagas'),
-                            import('../containers/StatisticalPage'),
-                        ]);
-
-                        const renderRoute = loadModule(cb);
-
-                        importModules.then(([reducer, sagas, reducer2, sagas2, component]) => {
-                            injectReducer('statistical', reducer.default);
-                            injectReducer('categoryForm', reducer2.default);
-                            injectSagas(sagas.default);
-                            injectSagas(sagas2.default);
-                            renderRoute(component);
-                        });
-
-                        importModules.catch(errorLoading);
-                    }
-                },
-
-
-                {
-                    path: '/device',                  //设备管理页面
-                    name: 'device',
-                    getComponent(nextState, cb) {
-                        const importModules = Promise.all([
-                            import('../containers/DeviceMgrPage/reducer'),
-                            import('../containers/DeviceMgrPage/sagas'),
-                            import('../containers/DeviceMgrPage'),
-                        ]);
-
-                        const renderRoute = loadModule(cb);
-
-                        importModules.then(([reducer, sagas, component]) => {
-                            injectReducer('device', reducer.default);
-                            injectSagas(sagas.default);
-                            renderRoute(component);
-                        });
-
-                        importModules.catch(errorLoading);
-                    }
-                },
-                {
-                    path: '/car',                  //车辆管理页面
-                    name: 'car',
-                    getComponent(nextState, cb) {
-                        const importModules = Promise.all([
-                            import('../containers/CarMgrPage/reducer'),
-                            import('../containers/CarMgrPage/sagas'),
-                            import('../containers/CategoryFormModel/sagas'),
-                            import('../containers/DeviceMgrPage/reducer'),
-                            import('../containers/DeviceMgrPage/sagas'),
-                            import('../containers/CarMgrPage'),
-                        ]);
-
-                        const renderRoute = loadModule(cb);
-
-                        importModules.then(([reducer, sagas, sagas2, deviceReducer, sagas3, component]) => {
-                            injectReducer('car', reducer.default);
-                            injectReducer('device', deviceReducer.default);
-                            injectSagas(sagas.default);
-                            injectSagas(sagas2.default);
-                            injectSagas(sagas3.default);
-                            renderRoute(component);
-                        });
-
-                        importModules.catch(errorLoading);
-                    }
-                }
-            ]
-        },
-        {
-            path: '/',
-            name: 'login',
-            //component: Login
+            }
+        }, {
+            path: '/trace', //轨迹回放页面
+            name: 'trace',
             getComponent(nextState, cb) {
+
                 const importModules = Promise.all([
-                    import('../containers/LoginPage/reducer'),
-                    import('../containers/LoginPage/sagas'),
-                    import('../containers/LoginPage'),
+                    import ('../containers/TraceReplayPage/reducer'),
+                    import ('../containers/TraceReplayPage/sagas'),
+                    import ('../containers/TraceReplayPage')
                 ]);
 
                 const renderRoute = loadModule(cb);
 
                 importModules.then(([reducer, sagas, component]) => {
-                    injectReducer('login', reducer.default);
+                    injectReducer('trace', reducer.default);
+                    injectSagas(sagas.default);
+
+                    renderRoute(component);
+                });
+                importModules.catch(errorLoading);
+
+            }
+        }, {
+            path: '/heat', //热力图
+            name: 'heat',
+            getComponent(nextState, cb) {
+                const importModules = Promise.all([
+                    import ('../containers/HeatPage/reducer'),
+                    import ('../containers/HeatPage/sagas'),
+                    import ('../containers/HeatPage')
+                ]);
+
+                const renderRoute = loadModule(cb);
+                importModules.then(([reducer, sagas, component]) => {
+                    injectReducer('heat', reducer.default);
                     injectSagas(sagas.default);
                     renderRoute(component);
                 });
 
                 importModules.catch(errorLoading);
             }
-        },
+        }, {
+            path: '/area', //区域设置页面
+            name: 'area',
+            getComponent(nextState, cb) {
+                const importModules = Promise.all([
+                    import ('../containers/AreaSettingPage/reducer'),
+                    import ('../containers/AreaFormPanel/sagas'),
+                    import ('../containers/AreaFormPanel/reducer'),
+                    import ('../containers/AreaSettingPage'),
+                ]);
+
+                const renderRoute = loadModule(cb);
+
+                importModules.then(([reducer, sagas2, reducer2, component]) => {
+                    injectReducer('area', reducer.default);
+                    injectSagas(sagas2.default);
+                    injectReducer('areaForm', reducer2.default);
+                    renderRoute(component);
+                });
+
+                importModules.catch(errorLoading);
+            }
+        }, {
+            path: '/statistical', //统计分析
+            name: 'statistical',
+            getComponent(nextState, cb) {
+                const importModules = Promise.all([
+                    import ('../containers/StatisticalPage/reducer'),
+                    import ('../containers/StatisticalPage/sagas'),
+                    import ('../containers/StatisticalFormModal/reducer'),
+                    import ('../containers/StatisticalFormModal/sagas'),
+                    import ('../containers/StatisticalPage'),
+                ]);
+
+                const renderRoute = loadModule(cb);
+
+                importModules.then(([reducer, sagas, reducer2, sagas2, component]) => {
+                    injectReducer('statistical', reducer.default);
+                    injectSagas(sagas.default);
+                    injectReducer('StatisticalFormModal', reducer2.default);
+                    injectSagas(sagas2.default);
+                    renderRoute(component);
+                });
+
+                importModules.catch(errorLoading);
+            }
+        }, {
+            path: '/device', //设备管理页面
+            name: 'device',
+            getComponent(nextState, cb) {
+                const importModules = Promise.all([
+                    import ('../containers/DeviceMgrPage/reducer'),
+                    import ('../containers/DeviceMgrPage/sagas'),
+                    import ('../containers/DeviceMgrPage'),
+                ]);
+
+                const renderRoute = loadModule(cb);
+
+                importModules.then(([reducer, sagas, component]) => {
+                    injectReducer('device', reducer.default);
+                    injectSagas(sagas.default);
+                    renderRoute(component);
+                });
+
+                importModules.catch(errorLoading);
+            }
+        }, {
+            path: '/car', //车辆管理页面
+            name: 'car',
+            getComponent(nextState, cb) {
+                const importModules = Promise.all([
+                    import ('../containers/DeviceMgrPage/reducer'),
+                    import ('../containers/DeviceMgrPage/sagas'),
+                    import ('../containers/CarMgrPage'),
+                ]);
+
+                const renderRoute = loadModule(cb);
+
+                importModules.then(([deviceReducer, sagas3, component]) => {
+                    injectReducer('device', deviceReducer.default);
+                    injectSagas(sagas3.default);
+                    renderRoute(component);
+                });
+
+                importModules.catch(errorLoading);
+            }
+        }]
+    }, {
+        path: '/',
+        name: 'login',
+        //component: Login
+        getComponent(nextState, cb) {
+            const importModules = Promise.all([
+                import ('../containers/LoginPage/reducer'),
+                import ('../containers/LoginPage/sagas'),
+                import ('../containers/LoginPage'),
+            ]);
+
+            const renderRoute = loadModule(cb);
+
+            importModules.then(([reducer, sagas, component]) => {
+                injectReducer('login', reducer.default);
+                injectSagas(sagas.default);
+                renderRoute(component);
+            });
+
+            importModules.catch(errorLoading);
+        }
+    },
         /*{
          path: '*',
          name: 'notfound',

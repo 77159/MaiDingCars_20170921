@@ -32,7 +32,6 @@ import {AppConfig} from '../../core/appConfig';
 
 const serviceUrl = AppConfig.serviceUrl;
 
-
 const SubMenu = Menu.SubMenu;
 import styles from './index.less';
 
@@ -50,6 +49,7 @@ import {Switch} from 'antd';
 import {CommonUtil} from "../../utils/util";
 
 
+
 import CarFormModal from '../CarFormModal';
 import {carFormModalShow} from "../CarFormModal/actions";
 import {carCategorySourceSelector} from '../CategoryFormModel/selectors';
@@ -61,9 +61,8 @@ export class CarMgrPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            workState: 'all',   //工作状态 默认:全部
+            workState: 'all',
             curSelectedRowKeys: [],
-            ModalText: 'Content of the modal',
             visible: false,
             confirmLoading: false,
             loading: false,
@@ -118,7 +117,6 @@ export class CarMgrPage extends React.Component {
         this.setState({
             workState: 'all',   //工作状态 默认:全部
             curSelectedRowKeys: [],
-            ModalText: 'Content of the modal',
             visible: false,
             confirmLoading: false,
             loading: false,
@@ -204,11 +202,6 @@ export class CarMgrPage extends React.Component {
                 filterStr
             ]
         });
-
-
-        // let carType =
-        // this.props.queryAllCar();
-
     };
 
     //添加车辆
@@ -221,9 +214,6 @@ export class CarMgrPage extends React.Component {
         this.props.showCarFormModal('modify', record);
     };
 
-    saveFormRef = (form) => {
-        this.form = form;
-    };
 
     onSelectChange = (keys) => {
         this.setState({curSelectedRowKeys: keys});
@@ -271,7 +261,6 @@ export class CarMgrPage extends React.Component {
             onChange: this.onSelectChange,
         };
         let carTypeList;
-
         if (carCategory) {
             carTypeList = carCategory.map((item, index) => {
                 return (
@@ -279,31 +268,8 @@ export class CarMgrPage extends React.Component {
                 )
             })
         }
-
-        const columns = [/*{
-            title: '照片',
-            dataIndex: 'avatarImgPath',
-            key: 'avatarImgPath',
-            width: 70,
-            render: (text, record, index) => {
-                //头像显示
-                const showImg = (record.avatarImgPath) ? (`${serviceUrl}${record.avatarImgPath}`)
-                    : ((record.sex === 0) ? '../../../img/avatar/man.png' : '../../../img/avatar/woman.png');
-
-                //头像预览
-                const avatarPopoverContent = (record.avatarImgPath) ? (
-                    <img style={{width: '150px', height: '150px'}} src={`${serviceUrl}${record.avatarImgPath}`}/>)
-                    : ((record.sex === 0) ? (<img style={{width: '150px', height: '150px'}} src="../../../img/avatar/man.png"/>) : (
-                        <img style={{width: '150px', height: '150px'}} src="../../../img/avatar/woman.png"/>));
-
-                return (
-                    <Popover content={avatarPopoverContent} placement="right" overlayClassName={styles.avatarPopover}>
-                        <Avatar size="large" className={styles.avatar} shape="square"
-                                src={showImg}/>
-                    </Popover>
-                );
-            }
-        }, */{
+        
+        const columns = [{
             title: '车辆编号',
             dataIndex: 'carCode',
             key: 'carCode',
@@ -349,18 +315,30 @@ export class CarMgrPage extends React.Component {
             title: '最大速度',
             dataIndex: 'maxSpeed',
             key: 'maxSpeed',
+            render: (text) => {
+                return Math.floor(text * 100) / 100 + ' km/h';
+            },
         }, {
             title: '平均速度',
             dataIndex: 'averageSpeed',
             key: 'averageSpeed',
+            render: (text) => {
+                return Math.floor(text * 100) / 100 + ' km/h';
+            },
         }, {
             title: '安全速度',
             dataIndex: 'safetySpeed',
             key: 'safetySpeed',
+            render: (text) => {
+                return Math.floor(text * 100) / 100 + ' km/h';
+            },
         }, {
             title: '行驶里程',
             dataIndex: 'mileage',
             key: 'mileage',
+            render: (text) => {
+                return Math.floor(text / 1000 * 100) / 100 + ' km';
+            },
         }, {
             title: '报警次数',
             dataIndex: 'warningNum',
@@ -373,13 +351,6 @@ export class CarMgrPage extends React.Component {
             title: '修改日期',
             dataIndex: 'updateTime',
             key: 'updateTime',
-            // render: (text) => {
-            //     if (_.isNumber(text)) {
-            //         return new Date(text).format("yyyy-M-d hh:mm");
-            //     } else {
-            //         return text;
-            //     }
-            // },
         }, {
             title: '操作',
             dataIndex: 'operation',
@@ -431,7 +402,6 @@ export class CarMgrPage extends React.Component {
                                 <Input maxLength="30"/>
                             </AutoComplete>
                         </Col>
-
                         <Col span={4} className={styles.item}>
                             <span>车辆类别</span>
                             <Select defaultValue="all" size="large" value={this.state.filter_carType}
@@ -456,7 +426,6 @@ export class CarMgrPage extends React.Component {
                             <Button type="primary" icon="bars" size="large" className={styles.addBtn}
                                     onClick={this.showPostSettingModal}>类别设置</Button>
                         </Col>
-
                     </Row>
                     <Row className={styles.tableRow}>
                         <Col span={24}>
@@ -489,12 +458,11 @@ export function actionsDispatchToProps(dispatch) {
         queryAllCar: () => dispatch(queryAllCarBegin()),
         showErrorMessage: (message) => dispatch(showErrorMessage(message)),
         showCarFormModal: (operation, carCode) => dispatch(carFormModalShow(operation, carCode)),
-        onChangeUsername: (evt) => dispatch(changeUsername(evt.target.value)),
         onSubmitForm: (evt) => {
             if (evt !== undefined && evt.preventDefault) evt.preventDefault();
             dispatch(loadRepos());
         },
-        deleteCar: (carCodes) => dispatch(deleteCar(carCodes))
+        deleteCar: (carCodes) => dispatch(deleteCar(carCodes)),
     }
 }
 

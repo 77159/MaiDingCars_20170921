@@ -10,19 +10,32 @@
 // Needed for redux-saga es6 generator support
 import 'babel-polyfill';
 import React from 'react';
-import {render} from 'react-dom';
-import {Provider} from 'react-redux';
-import {Router, browserHistory} from 'react-router';
-import {syncHistoryWithStore} from 'react-router-redux';
+import {
+    render
+} from 'react-dom';
+import {
+    Provider
+} from 'react-redux';
+import {
+    Router,
+    browserHistory
+} from 'react-router';
+import {
+    syncHistoryWithStore
+} from 'react-router-redux';
 //引入主容器
 import App from './containers/App';
 import Login from './containers/LoginPage';
 
 //Import selector for `syncHistoryWithStore`
-import {makeSelectLocationState} from './containers/App/selectors';
+import {
+    makeSelectLocationState
+} from './containers/App/selectors';
 //import 'sanitize.css/sanitize.css';   // CSS 基础库，增强兼容性
 
-import {AppConfig} from './core/appConfig';
+import {
+    AppConfig
+} from './core/appConfig';
 
 //引入全局 redux store
 import configureStore from './core/store';
@@ -45,9 +58,12 @@ const history = syncHistoryWithStore(browserHistory, store, {
 const rootRoute = [{
     path: '/login',
     component: App,
-    indexRoute: {component: Login},
+    indexRoute: {
+        component: Login
+    },
     childRoutes: createRoutes(store)
 }];
+
 
 //Root App Element
 const targetEl = document.getElementById('app');

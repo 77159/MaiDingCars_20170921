@@ -1,39 +1,44 @@
 /**
- * Copyright 2014-2017, FengMap, Ltd.
- * All rights reserved.
- *
- * @authors  zxg (zhangxiaoguang@fengmap.com)
- * @date     2017/8/6
- * @describe 设备管理 selectors
+ * @authors  hxb (huangxuebing@fengmap.com)
+ * @date     2017/09/25
+ * @describe 统计信息对话框（Modal） selectors
  */
 'use strict';
-import {createSelector} from 'reselect';
+import {
+    createSelector
+} from 'reselect';
 
-const selectorDeviceFormModal = (state) => state.get('deviceFormModal');
+const selectorStatisticalFormModal = (state) => state.get('StatisticalFormModal');
 
 const deviceEntitySelector = () => createSelector(
-    selectorDeviceFormModal,
-    (deviceModalState) => deviceModalState.get('deviceEntity')
+    selectorStatisticalFormModal,
+    (statisticalModalState) => statisticalModalState.get('deviceEntity')
 );
 
 const modalVisibleSelector = () => createSelector(
-    selectorDeviceFormModal,
-    (deviceModalState) => deviceModalState.get('modalVisible')
+    selectorStatisticalFormModal,
+    (statisticalModalState) => statisticalModalState.get('modalVisible')
 );
 
 const operationSelector = () => createSelector(
-    selectorDeviceFormModal,
-    (deviceModalState) => deviceModalState.get('operation')
+    selectorStatisticalFormModal,
+    (statisticalModalState) => statisticalModalState.get('operation')
 );
 const operationRunningSelector = () => createSelector(
-    selectorDeviceFormModal,
-    (deviceModalState) => deviceModalState.get('operationRunning')
+    selectorStatisticalFormModal,
+    (statisticalModalState) => statisticalModalState.get('operationRunning')
+);
+
+const centerAreaEntitySelector = () => createSelector(
+    selectorStatisticalFormModal,
+    (statisticalModalState) => statisticalModalState.get('centerAreaEntity')
 );
 
 export {
-    selectorDeviceFormModal,
+    selectorStatisticalFormModal,
     deviceEntitySelector,
     modalVisibleSelector,
     operationSelector,
-    operationRunningSelector
+    operationRunningSelector,
+    centerAreaEntitySelector
 };

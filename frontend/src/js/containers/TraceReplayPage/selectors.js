@@ -7,16 +7,15 @@
  * @describe 轨迹回放 selectors
  */
 'use strict';
-import { createSelector } from 'reselect';
+import {createSelector} from 'reselect';
 
-const selectHome = (state) => state.get('home');
+const selectTrace = (state) => state.get('trace');
 
-const makeSelectUsername = () => createSelector(
-  selectHome,
-  (homeState) => homeState.get('username')
+const SelectorTraceDataSource = () => createSelector(
+    selectTrace,
+    (homeState) => homeState.get('traceDataSource')
 );
 
 export {
-  selectHome,
-  makeSelectUsername,
+    SelectorTraceDataSource,
 };

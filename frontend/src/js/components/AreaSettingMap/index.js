@@ -143,7 +143,6 @@ export default class AreaSettingMap extends React.Component {
 
         //点击事件
         this.fmMap.on('mapClickNode', function (event) {
-            console.log('event', event);
         });
     };
 
@@ -155,26 +154,10 @@ export default class AreaSettingMap extends React.Component {
         if (!fmMap) return;
         //TODO 需要替换数据
         const coord = [
-            {x: 13155879.262894774, y: 2813434.3748671124, z: 1},
-            {x: 13155849.552118609, y: 2813444.1627199077, z: 1},
-            {x: 13155910.160209117, y: 2813424.2834379645, z: 1},
-            {x: 13155856.806917202, y: 2813466.9958207505, z: 1},
-            {x: 13155852.881658334, y: 2813455.432382258, z: 1},
-            {x: 13155881.193788545, y: 2813461.3959688926, z: 1},
-            {x: 13155900.462375376, y: 2813454.1607708493, z: 1},
-            {x: 13155904.09549146, y: 2813466.616971347, z: 1},
-            {x: 13155923.325809158, y: 2813479.4329843214, z: 1},
-            {x: 13155929.397945976, y: 2813454.6551750996, z: 1},
-            {x: 13155915.801642923, y: 2813440.025870851, z: 1},
-            {x: 13155910.75592826, y: 2813424.5772141065, z: 1},
-            {x: 13155843.211299567, y: 2813412.5509811016, z: 1},
-            {x: 13155871.786315676, y: 2813397.336743834, z: 1},
-            {x: 13155899.016915446, y: 2813382.6496430608, z: 1},
-            {x: 13155894.795881886, y: 2813373.4280466917, z: 1},
-            {x: 13155888.261727432, y: 2813361.00866185, z: 1},
-            {x: 13155857.971036207, y: 2813376.0443887454, z: 1},
-            {x: 13155830.915004658, y: 2813390.5495471875, z: 1},
-            {x: 13155838.726187173, y: 2813406.081152393, z: 1},
+            {x: 12961698.59373515, y: 4860178.818219011, z: 1},
+            {x: 12961636.02474005, y: 4860229.473547427, z: 1},
+            {x: 12961677.888478693, y: 4860284.574363407, z: 1},
+            {x: 12961744.46568206, y: 4860227.997212034, z: 1},
         ];
 
         let layer;
@@ -257,8 +240,16 @@ export default class AreaSettingMap extends React.Component {
         return (
             <div style={{width: '100%', height: '100%'}}>
                 {/*地图*/}
-                <div id="fengMap" style={{width: '100%', height: '100%'}}>
-                    <div style={{position: 'absolute', width: 48, right: '20px', bottom: '70px', display: 'flex', justifyContent: 'baseline', flexDirection: 'column'}}>
+                <div id="fengMap" style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+                    <div style={{
+                        position: 'absolute',
+                        width: 48,
+                        right: '20px',
+                        bottom: '70px',
+                        display: 'flex',
+                        justifyContent: 'baseline',
+                        flexDirection: 'column'
+                    }}>
                         <span onClick={this.changeVisibleImgMarker} className={styles.mapActionBtn} title="摄像头点位">
                             <img src="./img/fm_controls/video.png"></img>
                         </span>

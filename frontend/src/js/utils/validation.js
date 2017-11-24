@@ -27,14 +27,14 @@ export const appRegExp = {
     /**********车辆**********/
     CARCODE: /^[a-zA-Z0-9]{3,15}$/,								//车辆编号
     CARCODE_ERROR_MSG: '车辆编号规则为3~15英文字母、数字',
-    PERSONNAME: /^[a-zA-Z\u4e00-\u9fa5]{2,4}$/,						//人员姓名
-    PERSONNAME_ERROR_MSG: '人员姓名规则为2~4位中文或英文字母',
-    PERSONSEX: /^[01]$/,												//人员性别
-    PERSONSEX_ERROR_MSG: '人员性别规则为数字0或者1',
-    PERSONAGE: /^[0-9]{0,3}$/,										//人员年龄
-    PERSONAGE_ERROR_MSG: '人员年龄规则为0~3位数字',
+    PERSONNAME: /^[a-zA-Z\u4e00-\u9fa5]{2,4}$/,						//车辆姓名
+    PERSONNAME_ERROR_MSG: '车辆姓名规则为2~4位中文或英文字母',
+    PERSONSEX: /^[01]$/,												//车辆性别
+    PERSONSEX_ERROR_MSG: '车辆性别规则为数字0或者1',
+    PERSONAGE: /^[0-9]{0,3}$/,										//车辆年龄
+    PERSONAGE_ERROR_MSG: '车辆年龄规则为0~3位数字',
     PERSONCONTACT: /^[0-9a-zA-Z\u4e00-\u9fa5_@.]{0,15}$/,			//联系方式
-    PERSONCONTACT_ERROR_MSG: '人员联系方式规则为0~15位中文、数字、英文字母、或者下划线、@符号、英文.',
+    PERSONCONTACT_ERROR_MSG: '车辆联系方式规则为0~15位中文、数字、英文字母、或者下划线、@符号、英文.',
     CARREMARK: /^[\w\u4E00-\u9FA5\:\;\,\-\(\)\u3014-\u3015\uFF08-\uFF09][a-zA-Z0-9\u4E00-\u9FA5_:;,\(\)\s\-\u3014-\u3015\uFF08-\uFF09\：\；\，\.\。]{0,100}$/,	//车辆备注
     CARREMARK_ERROR_MSG: '车辆备注规则为0~100位字母、数字、下划线、中划线、汉字、分号、逗号、小括号、空格等字符',
     PERSONTYPE: /^[0-9a-zA-Z\u4e00-\u9fa5]{3,10}$/,					//职位类别
@@ -46,7 +46,7 @@ export const appRegExp = {
     PERSONAREA: /^[01]$/,											//是否可进入重点区域
     PERSONAREA_ERROR_MSG: '是否可进入重点区域规则为数字0或者1',
 
-    /**********人员类型设置**********/
+    /**********车辆类型设置**********/
     CAR_CATEAGORY_NAME: /^[\u4E00-\u9FA5a-zA-Z0-9\-\_\(\)\'\.\·\s]{1,20}$/,
     CAR_CATEAGORY_NAME_ERROR_MSG: '车辆类别规则为0~10位中文、英文、数字、短横线',
 
@@ -71,7 +71,7 @@ export const appRegExp = {
     PASSWORD: /^[\w]{6,16}$/,										//密码
     PASSWORD_ERROR_MSG: '密码规则为6~16位数字、字母、下划线',
 
-    /**********人员职位**********/
+    /**********车辆职位**********/
     POSTNAME: /^[0-9a-zA-Z\u4e00-\u9fa5_@.]{0,15}$/,					//职位名称
     POSTNAME_ERROR_MSG: '职位名称规则为0~15位中文、数字、英文字母、或者下划线、@符号、英文.',
 

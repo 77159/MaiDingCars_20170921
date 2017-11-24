@@ -479,7 +479,7 @@ export class AreaSettingPage extends React.Component {
                         </Footer>
                     </Layout>
                 </Sider>
-                <Content>
+                <Content className={styles.content}>
                     {/*区域地图*/}
                     <AreaSettingMap
                         getMap={this.getMap}                                //获取地图map对象

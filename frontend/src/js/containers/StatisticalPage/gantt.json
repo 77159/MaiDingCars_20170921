@@ -1,0 +1,17 @@
+[
+  {
+    "carCode": "CL101",
+    "totalMileage": 94006,
+    "workStatus": 41,
+    "ganttData": [
+      {
+        "date": "2017-11-24 00:00:00",
+        "isBusy": 1
+      },
+      {
+        "date": "2017-11-24 23:59:59",
+        "isBusy": 0
+      }
+    ]
+  }
+]

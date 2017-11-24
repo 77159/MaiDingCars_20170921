@@ -45,8 +45,13 @@ export function* createCarSaga(action) {
         //发起异步网络请求，并获取返回结果
         const response = yield call(createCarAPI, action.payload);
         //是否发生了错误，或者请求失败
+        console.log(response);
         if (!response || response.success == false) {
-            yield put(showErrorMessage(response.error_message));        //提示错误信息
+            if(response.error_code === 10008) {
+                yield put(showErrorMessage(requestError.CREATE_CAR_NUM_ERROR));
+            } else {
+                yield put(showErrorMessage(requestError.CREATE_CAR_ERROR));
+            }
         } else {
             yield put(showSuccessMessage(requestError.CREATE_CAR_SUCCESS));   //提示成功信息
             //关闭窗口

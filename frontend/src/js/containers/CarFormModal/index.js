@@ -149,7 +149,6 @@ class CarFormModal extends React.Component {
                 carType = carTypeObj[0];
                 values['carType'] = carType;
             }
-            console.log('收集到的添加车辆信息', values);
             this.props.createCar(values);
             //form.resetFields();
             this.props.getImgUrl('');
@@ -174,7 +173,6 @@ class CarFormModal extends React.Component {
                 values['carType'] = carType;
             }
 
-            console.log('收集到的修改车辆信息', values);
             this.props.modifyCar(values);
             //form.resetFields();
         });
