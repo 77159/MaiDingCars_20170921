@@ -98,8 +98,9 @@ export class MonitoringPage extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (_.eq(this.props.carList, nextProps.carList) == false) {
+            const carList = nextProps.carList
             this.setState({
-                carList: nextProps.carList
+                carList: carList
             });
         }
 
@@ -179,28 +180,12 @@ export class MonitoringPage extends React.Component {
         }
     };
 
-    getCarImage = () => {
-        const {carCategory} = this.props;
-    };
-
-
     /**
      * 获取左侧菜单
      */
     getMenu = () => {
         const carList = this.state.carList;
         this.onLineCount = 0;   //在线人数
-
-        //检查在线人数
-        // carList.map((car) => {
-        //     if (!this.onLineDevice) return;
-        //     this.onLineDevice.map((device) => {
-        //         if (device.deviceCode === car.deviceCode) {
-        //             car.onLine = true;
-        //             this.onLineCount++;
-        //         }
-        //     });
-        // });
 
         //根据在线排序
         carList.sort((a, b) => {
@@ -232,28 +217,20 @@ export class MonitoringPage extends React.Component {
             //当前车辆在地图上显示(true)/隐藏(false)状态
             const carImageVisible = this.getVisibleCarImageMarkerStatus(carCode);
 
-            // if (onLineDevice) {
-            //     for (let i = 0; i < onLineDevice.length; i++) {
-            //         if (onLineDevice[i].carCode === carCode) {
-            //             car.onLine = false;
-            //             break;
-            //         }
-            //     }
-            // }
-
             if (carImageVisible === true && car.onLine === false) {
                 //TODO 等待测试
                 console.log('车辆下线，删除车辆');
-            }
-
-            if (car.onLine) {
-                this.onLineCount++;
             }
 
             if (this.state.carStatus === 'online' && !car.onLine) {
                 continue;
             } else if (this.state.carStatus === 'offline' && car.onLine) {
                 continue;
+            }
+
+            //在线车辆数
+            if (carImageVisible) {
+                this.onLineCount++;
             }
 
             menuList.push(

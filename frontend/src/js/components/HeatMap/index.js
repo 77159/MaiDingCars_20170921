@@ -92,7 +92,7 @@ export default class HeatMap extends React.Component {
             mapServerURL: 'assets/map', //地图数据位置
             mapThemeURL: 'assets/theme',  //主题数据位置
             defaultThemeName: '3006',       //设置主题 2001, 2002, 3006, 746199
-            defaultMapScaleLevel: 20, // 默认比例尺级别设置为20级
+            defaultMapScaleLevel: 21, // 默认比例尺级别设置为20级
             key: 'b559bedc3f8f10662fe7ffdee1e360ab', //开发者申请应用下web服务的key
             appName: '麦钉艾特',   //开发者申请应用名称
             compassOffset: [278, 20], //初始指北针的偏移量

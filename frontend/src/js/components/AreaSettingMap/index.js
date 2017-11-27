@@ -76,7 +76,7 @@ export default class AreaSettingMap extends React.Component {
             //设置主题
             defaultThemeName: '3006',
             // 默认比例尺级别设置为20级
-            defaultMapScaleLevel: 20,
+            defaultMapScaleLevel: 21,
             //开发者申请应用下web服务的key
             key: 'b559bedc3f8f10662fe7ffdee1e360ab',
             //开发者申请应用名称

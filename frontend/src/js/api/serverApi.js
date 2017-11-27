@@ -268,13 +268,8 @@ export function queryOneCarMsgAPI(carCode) {
 }
 
 /**
- * 轨迹回放
- * @returns {Promise.<TResult>|*}
+ * 三个ECharts统计图
  */
-export function traceReplayAPI(traceReplayMsg) {
-    return invokeServerAPI(`cars/history?carCode=${traceReplayMsg[0]}&beginTime=${traceReplayMsg[1]}&endTime=${traceReplayMsg[2]}`, 'GET');
-}
-
 export function queryDensityStatics(startdate, enddate) {
     return invokeServerAPI(`area/areadensestatistics?beginTime=${startdate}&endTime=${enddate}`, 'GET');
 }
@@ -286,3 +281,13 @@ export function querySpeedStatics(startdate, enddate) {
 export function queryAbnormalStatics(startdate, enddate) {
     return invokeServerAPI(`cars/carsException?beginTime=${startdate}&endTime=${enddate}`, 'GET');
 }
+
+
+/**
+ * 轨迹回放
+ * @returns {Promise.<TResult>|*}
+ */
+export function traceReplayAPI(traceReplayMsg) {
+    return invokeServerAPI(`cars/history?carCode=${traceReplayMsg[0]}&beginTime=${traceReplayMsg[1]}&endTime=${traceReplayMsg[2]}`, 'GET');
+}
+

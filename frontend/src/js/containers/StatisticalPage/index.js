@@ -132,7 +132,7 @@ export class StatisticalPage extends React.Component {
                     },
                     data: densityData_.legendData
                 },
-                color: ['#F44336', '#1D9FF2', '#00897B', '#F9A825'],
+                // color: ['#F44336', '#1D9FF2', '#00897B', '#F9A825'],
                 series: [{
                     name: '区域密度',
                     type: 'pie',
