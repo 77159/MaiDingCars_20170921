@@ -186,6 +186,39 @@ class AreaFormPanel extends React.Component {
                                     <Option value="#000000" title="黑色">
                                         <span className={styles.areaStyleBlack}></span>
                                     </Option>
+
+                                    <Option value="#00ffff" title="青色">
+                                        <span className={styles.color1}></span>
+                                    </Option>
+
+                                    <Option value="#5c3317" title="巧克力色">
+                                        <span className={styles.color2}></span>
+                                    </Option>
+
+                                    <Option value="#a67d3d" title="棕色">
+                                        <span className={styles.color3}></span>
+                                    </Option>
+
+                                    <Option value="#c0c0c0" title="灰色">
+                                        <span className={styles.color4}></span>
+                                    </Option>
+
+                                    <Option value="#23238e" title="海军蓝">
+                                        <span className={styles.color5}></span>
+                                    </Option>
+
+                                    <Option value="#eaadea" title="李子色">
+                                        <span className={styles.color6}></span>
+                                    </Option>
+
+                                    <Option value="#7fff00" title="中春绿色">
+                                        <span className={styles.color7}></span>
+                                    </Option>
+
+                                    <Option value="#8f8fbd" title="浅钢蓝色">
+                                        <span className={styles.color8}></span>
+                                    </Option>
+
                                 </Select>
                             )
                         }

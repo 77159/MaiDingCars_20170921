@@ -1,6 +1,7 @@
 .avatar {
   width: 149px;
-  height: 149px;
+  height: 198px;
+  z-index: 1;
 }
 
 .avatarUploader {
@@ -16,8 +17,18 @@
 }
 
 .avatarUploaderTrigger {
-  font-size: 14px;
   display: block;
-  margin-top: 125%;
-  color: #999;
+  z-index: 9;
+  font-size: 14px;
+  width: 149px;
+  height: 198px;
+  background: #fff;
+  opacity: 0.1;
+  color: #000;
+}
+
+.avatarUploaderTrigger span {
+  display: inline-block;
+  margin-top: 108%;
+  color: #000;
 }

@@ -102,6 +102,7 @@
   padding: 0px 6px;
   background: #2E4A86;
   border-radius: 2px;
+  cursor: pointer;
 }
 
 .palySlider {
@@ -135,13 +136,18 @@
 
 .ctlButtons {
   :global .ant-btn-background-ghost {
-    border-color: #ffc600;
+    border: none;
+    //border-color: #ffc600;
     color: #ffc600;
-    border-radius: 50%;
+    //border-radius: 50%;
     height: 42px;
     width: 42px;
     font-size: 18px;
     margin: 0 10px;
     padding: 0px;
+
+    i {
+      font-size: 36px;
+    }
   }
 }

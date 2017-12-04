@@ -26,6 +26,7 @@ const requestError = {
     PUT_CARCATEGORY_ERROR: '修改车辆类型失败',
     PUT_CARCATEGORY_SUCCESS: '修改车辆类型成功',
     DELETE_SUCCESS: '删除成功',
+    DELETE_CAR_SUCCESS: '删除车辆成功',
     //添加车辆
     CREATE_CAR_ERROR: '添加车辆时出现错误',
     CREATE_CAR_NUM_ERROR: '车辆编号重复，请重新输入',
@@ -37,9 +38,9 @@ const requestError = {
     DROP_OUT_ERROR: '退出失败',
     DROP_OUT_SUCCESS: '退出成功',
     //车辆登陆
-    LOGIN_ERROR: '登陆失败',
+    LOGIN_ERROR: '登录失败',
     LOGIN_USER_ERROR: '用户名或密码错误',
-    LOGIN_SUCCESS: '登陆成功',
+    LOGIN_SUCCESS: '登录成功',
     //修改密码
     MODIFY_PASSWORD_ERROR: '密码修改失败',
     MODIFY_PASSWORD_SUCCESS: '密码修改成功',

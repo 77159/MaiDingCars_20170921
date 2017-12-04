@@ -251,11 +251,16 @@ export class CarMgrPage extends React.Component {
 
     delCar = (carCode) => {
         this.props.deleteCar(carCode);
+        this.setState({
+            curSelectedRowKeys: [],
+        });
     };
+
+
 
     render() {
         const {carDataSource, tableDataLoading, carCategory} = this.props;
-        const {curSelectedRowKeys} = this.state;
+
         const rowSelection = {
             curSelectedRowKeys,
             onChange: this.onSelectChange,
@@ -268,6 +273,10 @@ export class CarMgrPage extends React.Component {
                 )
             })
         }
+
+        const {curSelectedRowKeys} = this.state;
+        const isDisabled = curSelectedRowKeys.length > 0;//禁止批量删除按钮
+
         
         const columns = [{
             title: '车辆编号',
@@ -306,9 +315,9 @@ export class CarMgrPage extends React.Component {
             key: 'carStatus',
             render: (text) => {
                 if (text === 1) {
-                    return (<span>启用<i className={styles.greenCircle}/></span>);
+                    return (<span>在线<i className={styles.greenCircle}/></span>);
                 } else {
-                    return (<span>禁用<i className={styles.redCircle}/></span>);
+                    return (<span>离线<i className={styles.redCircle}/></span>);
                 }
             }
         }, {
@@ -396,7 +405,7 @@ export class CarMgrPage extends React.Component {
                                 onChange={(value) => this.setState({filter_carCode: value})}
                                 value={this.state.filter_carCode}
                                 allowClear={true}
-                                placeholder="安保编号"
+                                placeholder="车辆编号"
                                 size="large"
                             >
                                 <Input maxLength="30"/>
@@ -415,13 +424,13 @@ export class CarMgrPage extends React.Component {
                                     onClick={this.onFilterCar}>查询</Button>
                             <Button icon="sync" size="large" className={styles.searchBtn} onClick={this.onResetSearch}>重置</Button>
                         </Col>
-                        <Col span={6} className={styles.textRight}>
-                            <Button type="primary" icon="user-add" size="large" onClick={this.showAddCarModal}
+                        <Col span={8} className={styles.textRight}>
+                            <Button type="primary" icon="car" size="large" onClick={this.showAddCarModal}
                                     className={styles.addBtn}>新建车辆</Button>
                             <Popconfirm title="确认要批量删除所选车辆吗？"
                                         onConfirm={() => this.delCar(this.state.curSelectedRowKeys)}>
                                 <Button type="primary" icon="delete" size="large"
-                                        className={styles.addBtn}>批量删除</Button>
+                                        className={styles.addBtn} disabled={!isDisabled}>批量删除</Button>
                             </Popconfirm>
                             <Button type="primary" icon="bars" size="large" className={styles.addBtn}
                                     onClick={this.showPostSettingModal}>类别设置</Button>

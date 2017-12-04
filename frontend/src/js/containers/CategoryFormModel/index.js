@@ -154,7 +154,7 @@ class CategoryFormModel extends React.Component {
 
         return (
             <Modal
-                title={<span><Icon type="user-add"/>类别设置</span>}
+                title={<span><i className="iconfont">&#xe6be;</i>类别设置</span>}
                 visible={postVisible}
                 onCancel={this.props.closePostSettingModal}
                 footer={null}
@@ -272,6 +272,7 @@ class CategoryForm extends React.Component {
                     initialValue: this.props.area
                 })(
                     <Select>
+                        <Option key={null} value={null}>不选择任何区域</Option>
                         {areaList}
                     </Select>
                 )}

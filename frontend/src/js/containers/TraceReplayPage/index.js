@@ -193,6 +193,9 @@ export class TraceReplayPage extends React.Component {
                         <Button onClick={(e) => {
                             e.stopPropagation();
                             this.visibleCarImageMarkerByCarCode(carCode);
+                            this.setState({
+                                positionCode: ''
+                            })
                         }}
                                 type="primary"
                                 icon={carImageVisible.length > 0 && carImageVisible.indexOf(carCode) >= 0 ? 'eye-o' : 'eye'}
@@ -202,6 +205,7 @@ export class TraceReplayPage extends React.Component {
                             e.stopPropagation();
                             //this.getCarInfoByCarCode(carCode);
                             this.positionCarMarker(carCode);
+                            this.showVisibleCarImageMarkerByCarCode(carCode, true);
                         }}
                                 type="primary"
                                 icon={carImagePosition ? 'environment-o' : 'environment'}
@@ -228,7 +232,19 @@ export class TraceReplayPage extends React.Component {
         this.map.positionCarCode = positionCode;
         this.setState({
             positionMarker: positionCode
-        })
+        });
+    };
+
+    showVisibleCarImageMarkerByCarCode = (carCode, visible) => {
+        const {visibleNaviLineMarkers, carMarkers} = this.map;
+        if (!carMarkers) return;
+        const marker = carMarkers[carCode];
+        if (!marker) return;
+        if (!marker.visible) {
+            visibleNaviLineMarkers(carCode, visible);
+            marker.visible = visible;
+            this.updateCarImageVisible(visible, carCode);
+        }
     };
 
     /**
@@ -465,13 +481,18 @@ export class TraceReplayPage extends React.Component {
     getCarListBykeyword = (keyword) => {
         const carDtasSource = this.props.carDtasSource;
         const {isPlay, checkedKeys} = this.state;
+        const keys = checkedKeys.map((key) => {
+            return key.toLocaleLowerCase()
+        });
         let list = [];
         if (keyword) {
+            keyword = keyword.toLocaleLowerCase();
             list = carDtasSource.filter((item) => {
+                const carCode = item.carCode.toLocaleLowerCase();
                 if (isPlay) {
-                    return item.carCode.indexOf(keyword) >= 0 && checkedKeys.indexOf(item.carCode) >= 0;
+                    return carCode.indexOf(keyword) >= 0 && keys.indexOf(carCode) >= 0;
                 } else {
-                    return item.carCode.indexOf(keyword) >= 0;
+                    return carCode.indexOf(keyword) >= 0;
                 }
             });
         } else {
@@ -572,7 +593,8 @@ export class TraceReplayPage extends React.Component {
                                             value={startValue}
                                             onChange={this.onStartChange}
                                             onOpenChange={this.handleStartOpenChange}
-                                            onKeyDown={()=>{}}
+                                            onKeyDown={() => {
+                                            }}
                                         />
                                     </div>
                                     <div className={styles.dtPickerItem}>结束

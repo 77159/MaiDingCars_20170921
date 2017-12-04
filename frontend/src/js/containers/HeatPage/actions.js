@@ -23,6 +23,8 @@
 import {
     CHANGE_USERNAME,
     UPDATE_LOADING,
+    GET_HEATMAP_DATA,
+    REQUEST_HEATMAP
 } from './constants';
 
 /**
@@ -45,3 +47,28 @@ export function updateLoading(loading) {
         loading
     }
 }
+
+/**
+ * 请求热力图数据
+ * @param parameter 请求热力图的条件参数
+ * @returns {{type, parameter: *}}
+ */
+export function requestHeatMapData(param) {
+    return {
+        type: REQUEST_HEATMAP,
+        param
+    }
+}
+
+/**
+ * 获取热力图数据
+ * @param data 热力图数据
+ * @returns {{type, data: *}}
+ */
+export function getHeatmapData(data) {
+    return {
+        type: GET_HEATMAP_DATA,
+        data,
+    }
+}
+

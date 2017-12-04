@@ -46,6 +46,17 @@ const abnormalEntitySelector = () => createSelector(
     (deviceModalState) => deviceModalState.get('abnormalEntity')
 );
 
+
+const ganttSelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('ganttEntity')
+);
+
+const isShowSelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('isShow')
+);
+
 export {
     statisticalEntitySelector,
     selectorStatistical,
@@ -54,5 +65,7 @@ export {
     carMsgListSelector,
     densityEntitySelector,
     speedEntitySelector,
-    abnormalEntitySelector
+    abnormalEntitySelector,
+    ganttSelector,
+    isShowSelector
 };

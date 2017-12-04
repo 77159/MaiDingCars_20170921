@@ -23,18 +23,16 @@ import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
 
 
-import {selectPlaying} from '../HeatPage/selectors'
-import {updateLoading} from '../HeatPage/actions';
+import {selectPlaying, selectDatas} from './selectors'
+import {updateLoading, requestHeatMapData} from './actions';
 //car action
-import {queryAllCarBegin} from '../CarMgrPage/actions';
+import {queryAllCarBegin,} from '../CarMgrPage/actions';
 //car reselect
 import {carDataSourceSelector} from '../CarMgrPage/selectors';
-//carCategory cation
-import {carFormModalOpBegin} from '../CategoryFormModel/actions';
-//caCategory reselect
-import {carCategory} from '../CategoryFormModel/selectors'
+
 //工具类
 import _ from 'lodash';
+import moment from 'moment';
 
 //sytles
 import styles from './index.less';
@@ -43,7 +41,6 @@ import styles from './index.less';
 import HeatMap from '../../components/HeatMap';
 import {
     showErrorMessage,
-    showSuccessMessage
 } from "../App/actions";
 
 const {Sider, Content, Footer} = Layout;
@@ -62,6 +59,7 @@ export class HeatPage extends React.Component {
             endValue: null,
             endOpen: false,
             isPlay: false,
+            isCPlay: false,
             carDtasSource: props.carDtasSource
         };
     };
@@ -113,7 +111,7 @@ export class HeatPage extends React.Component {
         const {carDtasSource} = this.state;
         if (!carDtasSource) return null;
 
-        if (this.state.isPlay) {
+        if (this.state.isPlay || this.state.isCPlay) {
             return this.getCarListMenu();
         }
 
@@ -166,23 +164,23 @@ export class HeatPage extends React.Component {
                         <div>0 km/h</div>
                     </div>
                     <div className={styles.btnContent}>
-                        <Button onClick={(e) => {
-                            // e.stopPropagation();
-                            // this.visibleCarImageMarkerByCarCode(carCode);
-                        }}
-                                type="primary"
-                            // icon={carImageVisible ? 'eye-o' : 'eye'}
-                                icon={'eye-o'}
-                                title="隐藏/可见"/>
-                        <Button style={{color: '#5B5B5B'}} onClick={(e) => {
-                            // e.stopPropagation();
-                            // this.getCarInfoByCarCode(carCode);
-                            // this.positionCarMarker(carCode);
-                        }}
-                                type="primary"
-                            // icon={carImagePosition ? 'environment-o' : 'environment'}
-                                icon={'environment-o'}
-                                title="定位"/>
+                        {/*<Button onClick={(e) => {*/}
+                        {/*// e.stopPropagation();*/}
+                        {/*// this.visibleCarImageMarkerByCarCode(carCode);*/}
+                        {/*}}*/}
+                        {/*type="primary"*/}
+                        {/*// icon={carImageVisible ? 'eye-o' : 'eye'}*/}
+                        {/*icon={'eye-o'}*/}
+                        {/*title="隐藏/可见"/>*/}
+                        {/*<Button style={{color: '#5B5B5B'}} onClick={(e) => {*/}
+                        {/*// e.stopPropagation();*/}
+                        {/*// this.getCarInfoByCarCode(carCode);*/}
+                        {/*// this.positionCarMarker(carCode);*/}
+                        {/*}}*/}
+                        {/*type="primary"*/}
+                        {/*// icon={carImagePosition ? 'environment-o' : 'environment'}*/}
+                        {/*icon={'environment-o'}*/}
+                        {/*title="定位"/>*/}
                     </div>
                 </Menu.Item>
             );
@@ -329,6 +327,13 @@ export class HeatPage extends React.Component {
             return;
         }
 
+        // 请求热力图数据
+        this.props.requestHeatMapData({
+            checkedKeys: checkedKeys.join(','),
+            startValue: this.state.startValue.format('YYYY-MM-DD HH:00:00'),
+            endValue: this.state.endValue.format('YYYY-MM-DD HH:00:00')
+        });
+
         //打开loading
         this.props.updateLoading(true);
 
@@ -344,18 +349,25 @@ export class HeatPage extends React.Component {
      * 停止轨迹回放
      */
     stopReplay = () => {
-        this.setState({
-            isPlay: false,
-            checkedKeys: [],
-            startValue: null,
-            endValue: null
-        });
+        if (this.state.isPlay) {
+            this.setState({
+                isPlay: false,
+                checkedKeys: [],
+                startValue: null,
+                endValue: null
+            });
 
-        this.map.totalTime = null;
-        this.map.secondsSum = 0;
+            this.map.totalTime = null;
+            this.map.secondsSum = 0;
 
-        //this.props.emptyTraceData();
-        this.map.emptyPlay();
+            //this.props.emptyTraceData();
+            this.map.emptyPlay();
+        } else {
+            this.setState({
+                isCPlay: false,
+                checkedKeys: [],
+            })
+        }
     };
 
     /**
@@ -389,13 +401,18 @@ export class HeatPage extends React.Component {
     getCarListBykeyword = (keyword) => {
         const carDtasSource = this.props.carDtasSource;
         const {isPlay, checkedKeys} = this.state;
+        const keys = checkedKeys.map((key) => {
+            return key.toLocaleLowerCase()
+        });
         let list = [];
         if (keyword) {
+            keyword = keyword.toLocaleLowerCase();
             list = carDtasSource.filter((item) => {
+                const carCode = item.carCode.toLocaleLowerCase();
                 if (isPlay) {
-                    return item.carCode.indexOf(keyword) >= 0 && checkedKeys.indexOf(item.carCode) >= 0;
+                    return carCode.indexOf(keyword) >= 0 && keys.indexOf(carCode) >= 0;
                 } else {
-                    return item.carCode.indexOf(keyword) >= 0;
+                    return carCode.indexOf(keyword) >= 0;
                 }
             });
         } else {
@@ -413,6 +430,23 @@ export class HeatPage extends React.Component {
         this.setState({
             carDtasSource: this.props.carDtasSource,
         })
+    };
+
+    /**
+     * 获取当前热力图
+     */
+    getCurrentHeatMap = () => {
+        const {checkedKeys} = this.state;
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        //是否选择车辆
+        if (checkedKeys.length <= 0) {
+            this.props.showErrorMessage('请选择车辆');
+            return;
+        }
+        this.setState({
+            isCPlay: !this.state.isCPlay,
+        });
+        this.props.requestHeatMapData({endValue: dateTime, startValue: dateTime, checkedKeys: checkedKeys.join(',')});
     };
 
     render() {
@@ -466,8 +500,8 @@ export class HeatPage extends React.Component {
                             </Menu>
                         </Content>
                         <Footer className={styles.footer}>
-                            {/*开始轨迹回放*/}
-                            {this.state.isPlay ?
+                            {/*开始热力图回放*/}
+                            {this.state.isPlay || this.state.isCPlay ?
                                 <div className={styles.stopPlayback}>
                                     <Button
                                         type="danger"
@@ -510,10 +544,10 @@ export class HeatPage extends React.Component {
                                             </Button>
                                         </div>
                                     </div>
-                                    <div className={styles.buttonPanel}>
+                                    <div className={styles.stopPlayback}>
                                         <Button type="danger" className={styles.startReplay}
                                                 onClick={() => {
-
+                                                    this.getCurrentHeatMap();
                                                 }}>
                                             <Icon type="caret-right"/>当前查询
                                         </Button>
@@ -540,6 +574,7 @@ export class HeatPage extends React.Component {
                         startValue={this.state.startValue}
                         endValue={this.state.endValue}
                         closeLoading={this.closeLoading}
+                        datas={this.props.datas}
                         getMap={this.getMap}/>
                     {/* <div id="fengMap" className="fengMap" style={this.state.containerStyle}></div>*/}
 
@@ -553,13 +588,15 @@ export function mapDispatchToProps(dispatch) {
     return {
         queryAllCarBegin: () => dispatch(queryAllCarBegin()),
         showErrorMessage: (msg) => dispatch(showErrorMessage(msg)),
-        updateLoading: (palying) => dispatch(updateLoading(palying))
+        updateLoading: (palying) => dispatch(updateLoading(palying)),
+        requestHeatMapData: (param) => dispatch(requestHeatMapData(param))
     };
 }
 
 const mapStateToProps = createStructuredSelector({
     carDtasSource: carDataSourceSelector(),
     playing: selectPlaying(),
+    datas: selectDatas(),
 });
 
 // Wrap the component to inject dispatch and state into it

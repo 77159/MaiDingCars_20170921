@@ -52,7 +52,7 @@
   width: ~'calc(40% - 50px)';
   font-size: 14px;
   padding: 0 10px;
-  /*@media(min-width: 1280px){
+  @media(min-width: 1280px){
     width: 90px;
     padding: 0;
   }
@@ -64,7 +64,7 @@
   }
   @media (min-width: 1520px) {
     width: 110px;
-  }*/
+  }
 }
 
 .addBtn:not(:last-child) {
@@ -121,6 +121,18 @@
     font-size: 15px;
     border: none;
     padding: 4px 10px;
+    @media(min-width: 1280px){
+      font-size: 12px;
+    }
+    @media (min-width: 1366px) {
+      font-size: 12px;
+    }
+    @media (min-width: 1400px) {
+      font-size: 12px;
+    }
+    @media (min-width: 1520px) {
+      font-size: 15px;
+    }
   }
   :global .ant-table-tbody > tr:nth-of-type(2n) {
     background: #F9F9F9;

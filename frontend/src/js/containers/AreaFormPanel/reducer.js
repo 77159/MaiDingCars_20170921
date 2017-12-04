@@ -23,7 +23,7 @@ const initialState = fromJS({
         "id": "",
         "areaName": "",
         "areaType": 0,
-        "areaStyle": '{"backgroundColor":"","opacity":0.5}',
+        "areaStyle": '{"backgroundColor":"","opacity":0.75}',
         "polygon": null,
     },
     lock: true,
@@ -54,7 +54,7 @@ export default (state = initialState, action) => {
             "id": "",
             "areaName": "",
             "areaType": 0,
-            "areaStyle": '{"backgroundColor":"","opacity":0.5}',
+            "areaStyle": '{"backgroundColor":"","opacity":0.75}',
             "polygon": null,
         }));
     }

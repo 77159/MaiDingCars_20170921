@@ -158,7 +158,9 @@ export const getFMCenter = (vertices) => {
     var geoResult = jsonParser.read(extentJson); //先记录第一个
     let centerPnt = geoResult.getCentroid();
     return centerPnt.getCoordinates();
+
 };
+
 export const getHours = (seconds) => {
     const m = Math.floor(seconds / 60);  //分钟
     const mm = m % 60;                //秒 取余
@@ -166,6 +168,7 @@ export const getHours = (seconds) => {
     const h = Math.floor(m / 60);        //小时
     return formatNum(h) + ':' + formatNum(mm) + ':' + formatNum(s);
 };
+
 
 const formatNum = (num) => {
     return num.toString().length <= 1 ? '0' + num : num;

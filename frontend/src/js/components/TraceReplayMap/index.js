@@ -587,7 +587,8 @@ export default class TraceReplayMap extends React.Component {
                                 <span>{this.getBeginTime()}</span>
                                 <span> / {totalTime}</span>
                             </div>
-                            <span className={styles.speedTag}>{`快进×${this.state.level}`}</span>
+                            <span onClick={this.doublePlay}
+                                  className={styles.speedTag}>{`快进×${this.state.level}`}</span>
                         </div>
                         <Slider
                             tipFormatter={() => {
@@ -600,21 +601,22 @@ export default class TraceReplayMap extends React.Component {
                             step={1}/>
                         <div className={styles.replayItemRow}>
                             <div>
-                                <span>{startValue.format('YYYY-MM-DD')}<br/>{startValue.format('hh:mm:ss')}</span>
+                                <span>{startValue.format('YYYY-MM-DD')}<br/>{startValue.format('HH:mm:ss')}</span>
                             </div>
                             <div className={styles.ctlButtons}>
-                                <Button ghost size="large" onClick={this.tracePlay}>
-                                    <Icon type={this.state.begin ? 'play-circle' : 'pause-circle'}/>
+                                <Button ghost size="large" title={'开始/暂停'} onClick={this.tracePlay}>
+                                    {!this.state.begin ? <i className="iconfont">&#xe6cb;</i> :
+                                        <i className="iconfont">&#xe6b7;</i>}
                                 </Button>
-                                <Button ghost size="large" onClick={this.doublePlay}>
-                                    <Icon type="forward"/>
+                                <Button ghost size="large" title={'快进'} onClick={this.doublePlay}>
+                                    <i className="iconfont">&#xe6bb;</i>
                                 </Button>
-                                <Button ghost size="large" onClick={this.emptyPlay}>
-                                    <Icon type="minus-square"/>
+                                <Button ghost size="large" title={'清空'} onClick={this.emptyPlay}>
+                                    <i className="iconfont">&#xe6bd;</i>
                                 </Button>
                             </div>
                             <div>
-                                <span>{endValue.format('YYYY-MM-DD')}<br/>{endValue.format('hh:mm:ss')}</span>
+                                <span>{endValue.format('YYYY-MM-DD')}<br/>{endValue.format('HH:mm:ss')}</span>
                             </div>
                         </div>
                     </div> : null

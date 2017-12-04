@@ -76,7 +76,6 @@ export class LoginPage extends React.Component {
                 });
                 return;
             }
-            console.log('收集到的人员登陆信息', loginMsg);
             loginMsg['password'] = md5(loginMsg.password);
             this.props.changeUsername(loginMsg);
             this.setState({
@@ -176,6 +175,7 @@ export class LoginPage extends React.Component {
                             </FormItem>
                         </Form>
                     </div>
+                    <div className={styles.bottomInfo}><p>Beta V1.2.0</p></div>
                 </div>
                 <div className={styles.support}>
                     <a href="http://www.madintech.com/">技术支持：北京麦钉艾特科技有限公司&蜂鸟云</a>

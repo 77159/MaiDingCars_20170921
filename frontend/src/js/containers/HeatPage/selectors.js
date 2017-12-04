@@ -20,8 +20,14 @@ const selectPlaying = () => createSelector(
     (homeState) => homeState.get('playing')
 );
 
+const selectDatas = () => createSelector(
+    selectHome,
+    (homeState) => homeState.get('datas')
+);
+
 export {
     selectHome,
     makeSelectUsername,
-    selectPlaying
+    selectPlaying,
+    selectDatas
 };

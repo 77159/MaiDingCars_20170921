@@ -60,10 +60,12 @@ export class MainContainer extends React.Component {
 
     //开启Web Worker
     componentDidMount() {
-        //创建web worker
-        createWebWorker(this.onWebWorkerMessage);
-        //开启web socket
-        openWS();
+        if (window.token) {
+            //创建web worker
+            createWebWorker(this.onWebWorkerMessage);
+            //开启web socket
+            openWS();
+        }
     };
 
     componentWillMount = () => {
@@ -112,6 +114,7 @@ export class MainContainer extends React.Component {
                 //console.log('data', data);
                 //当前报警信息
                 const alertInfo = data.alertInfo;
+                //console.log('alertInfo', alertInfo);
                 //console.log('alertInfo', alertInfo);
                 // if (alertInfo) {
                 //     alertInfo['carCode'] = carCode;

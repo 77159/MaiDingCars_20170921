@@ -18,12 +18,17 @@ const RECEIVED_MESSAGE = 'RECEIVED_MESSAGE';                                    
 const ERROR_SOCKET_CONNECTION = 'ERROR_SOCKET_CONNECTION';                      //与服务器的连接发生错误
 const UNKNOWN_COMMAND = 'UNKNOWN_COMMAND';                                      //未识别的命令
 
+var token = '';
+var wsUrl = '';
+
 //处理由主线程发送过来的数据
 self.onmessage = function (event) {
     const {
         type,
         payload
     } = event.data;
+
+    token = payload;
 
     if (type === OPEN_SOCKET_CONNECTION_BEGIN) {
         wrapPostMessage(OPEN_SOCKET_CONNECTION_BEGIN, '正在连接 web socket 服务器...');
@@ -41,7 +46,7 @@ self.onmessage = function (event) {
     return;
 }
 
-var wsUrl = "ws://192.168.1.92:8080/websocket.ws";
+//var wsUrl = "ws://192.168.1.92:8080/websocket.ws";
 
 var ws = null;
 
@@ -72,6 +77,8 @@ function newWebSocket(url, onopen, onmessage, onclose, onerror) {
 }
 
 function openWS() {
+    //wsUrl = "ws://192.168.1.92:8080/websocket.ws?token=" + token;
+    wsUrl = "ws://123.56.157.161:8080/maiding-car-locate/websocket.ws?token=" + token;
     ws = newWebSocket(wsUrl, onOpen, onReceivedMessage, onClose, onError);
 }
 

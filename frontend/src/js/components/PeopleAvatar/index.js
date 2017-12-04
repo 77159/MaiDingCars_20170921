@@ -36,7 +36,7 @@ export class PeopleAvatar extends React.Component {
     };
 
     beforeUpload = (file) => {
-        const isJPG = file.type === 'image/jpeg';
+        const isJPG = file.type === 'image/jpeg' || 'png' || 'jpg';
         if (!isJPG) {
             message.error('只能上传JPEG格式的图片');
         }
@@ -69,7 +69,7 @@ export class PeopleAvatar extends React.Component {
                 {
                     imageUrl ?
                         <img src={imageUrl} alt="" className={styles.avatar}/> :
-                        <span style={this.props.modifyImg2} className={styles.avatarUploaderTrigger}>点击或拖拽上传照片</span>
+                        <span style={this.props.modifyImg2} className={styles.avatarUploaderTrigger}><span>点击或拖拽上传照片</span></span>
                 }
             </Upload>
         );

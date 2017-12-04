@@ -73,11 +73,22 @@ export default class HeatMap extends React.Component {
             this.setState({
                 seconds: 0,
             });
-            //创建热力图
-            const ts = this.createHeatMap();
-            // 设置Texture
-            this.hma.setTextures(ts);
+
             this.props.closeLoading();
+        }
+
+        if (_.eq(this.props.datas, nextProps.datas) === false) {
+            if (nextProps.datas.size > 1 || nextProps.datas.length > 1) {
+                //创建热力图
+                const ts = this.createHeatMap(nextProps.datas);
+                // 设置Texture
+                this.hma.setTextures(ts);
+            } else {
+                const res = this.generalPoints(nextProps.datas);
+                const ts = this.hma.createTextures([res, res]);
+                this.hma.setTextures(ts);
+                this.hma.indexTo(1);
+            }
         }
     };
 
@@ -129,26 +140,41 @@ export default class HeatMap extends React.Component {
 
         // 点击地图事件
         fmMap.on('mapClickNode', function (event) {
-            //console.log('event', event);
+            console.log('event', event);
         });
 
         this.map.fmMap = fmMap;
     };
 
-    generalPoints = () => {
+    /**
+     * 获取数据
+     * @param data
+     * @returns {Array}
+     */
+    generalPoints = (data) => {
         let res = [];
+        if (data.length <= 0) return res;
 
-        const width = map.maxX - map.minX;
-        const height = map.maxY - map.minY;
-
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < data.length; i++) {
+            if (!data[i].x) continue;
             res.push({
-                x: width * Math.random() + map.minX,
-                y: height * Math.random() + map.minY,
-                value: Math.round(Math.random() * 100)
-                //value: 1
+                x: data[i].x,
+                y: data[i].y,
+                value: 50
             })
         }
+
+        // const width = map.maxX - map.minX;
+        // const height = map.maxY - map.minY;
+        //
+        // for (let i = 0; i < 200; i++) {
+        //     res.push({
+        //         x: width * Math.random() + map.minX,
+        //         y: height * Math.random() + map.minY,
+        //         value: Math.round(Math.random() * 100)
+        //         //value: 1
+        //     })
+        // }
 
         return res;
     };
@@ -229,7 +255,7 @@ export default class HeatMap extends React.Component {
     /**
      * 常见热力图
      */
-    createHeatMap = () => {
+    createHeatMap = (datas) => {
         const {currentPage, pageSize} = this.map;
         let ps = [];
         // const datas = [
@@ -247,6 +273,13 @@ export default class HeatMap extends React.Component {
         //     [{carCode: 'CL101', x: '', y: ''}, {carCode: 'CL103', x: '', y: ''}],
         // ];
 
+        let result = [];
+        if (datas) {
+            result = datas;
+        } else {
+            result = this.props.datas;
+        }
+
         //console.log('this.map.secondsSum', this.map.secondsSum);
 
         /*for (let i = 0; i < this.map.mapCount; i++) {
@@ -255,14 +288,16 @@ export default class HeatMap extends React.Component {
        }*/
 
         let i = currentPage * pageSize;
-
+        let length = 0;
         //判断是或已经超出数组范围
         if (i + pageSize > this.map.mapCount) {
-            i = this.map.mapCount;
+            length = result.length;
+        } else {
+            length = i + pageSize;
         }
 
-        for (let j = i; j < i + pageSize; j++) {
-            const points = this.generalPoints();
+        for (let j = i; j < length; j++) {
+            const points = this.generalPoints(result[j]);
             ps.push(points);
         }
 
@@ -316,8 +351,9 @@ export default class HeatMap extends React.Component {
             }
 
             //是否是当前最后一张热力图，如果是，则新一轮播放
-            if (this.state.index === this.map.pageSize - 1) {
+            if (this.state.index === this.map.pageSize) {
                 this.state.index = 0;
+                this.hma.setTextures(this.map.ts);
             }
 
             //当前还剩余几张开始创建新的热力图 this.map.createIndex = 5,当前还有5张的时候创建新的地图
@@ -432,7 +468,8 @@ export default class HeatMap extends React.Component {
                                 <span>{this.getBeginTime()}</span>
                                 <span> / {totalTime}</span>
                             </div>
-                            <span className={styles.speedTag}>{`快进×${this.state.level}`}</span>
+                            <span onClick={this.doublePlay}
+                                  className={styles.speedTag}>{`快进×${this.state.level}`}</span>
                         </div>
                         <Slider
                             tipFormatter={() => {
@@ -445,21 +482,22 @@ export default class HeatMap extends React.Component {
                             step={1}/>
                         <div className={styles.replayItemRow}>
                             <div>
-                                <span>{startValue.format('YYYY-MM-DD')}<br/>{startValue.format('hh:mm:ss')}</span>
+                                <span>{startValue.format('YYYY-MM-DD')}<br/>{startValue.format('HH:mm:ss')}</span>
                             </div>
                             <div className={styles.ctlButtons}>
                                 <Button ghost size="large" onClick={this.tracePlay}>
-                                    <Icon type={this.state.begin ? 'play-circle' : 'pause-circle'}/>
+                                    {!this.state.begin ? <i className="iconfont">&#xe6cb;</i> :
+                                        <i className="iconfont">&#xe6b7;</i>}
                                 </Button>
                                 <Button ghost size="large" onClick={this.doublePlay}>
-                                    <Icon type="forward"/>
+                                    <i className="iconfont">&#xe6bb;</i>
                                 </Button>
                                 <Button ghost size="large" onClick={this.emptyPlay}>
-                                    <Icon type="minus-square"/>
+                                    <i className="iconfont">&#xe6bd;</i>
                                 </Button>
                             </div>
                             <div>
-                                <span>{endValue.format('YYYY-MM-DD')}<br/>{endValue.format('hh:mm:ss')}</span>
+                                <span>{endValue.format('YYYY-MM-DD')}<br/>{endValue.format('HH:mm:ss')}</span>
                             </div>
                         </div>
                     </div> : null

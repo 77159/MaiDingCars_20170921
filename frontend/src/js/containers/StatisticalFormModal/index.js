@@ -74,12 +74,12 @@ class StatisticalFormModal extends React.Component {
                 legend: {
                     orient: 'vertical',
                     x2: 'right',
-                    top: '50',
+                    top: '30',
                     right: '30',
-                    textStyle: {
-                        fontSize: 14,
-                        padding: [3, 4, 5, 6],
-                    },
+                    // textStyle: {
+                    //     fontSize: 14,
+                    //     padding: [3, 4, 5, 6],
+                    // },
                     data: data_.legendData
                 },
                 // color: ['#F44336', '#1D9FF2', '', '#00897B #F9A825'],
@@ -135,6 +135,7 @@ class StatisticalFormModal extends React.Component {
                     <span style={{position: 'relative', left: '50px'}}>工作总时长：{centerAreaEntity.totalTime} h</span>
                     <div id="main4" style={{height: 320}}></div>
                 </div>
+
             </Modal>
         );
     }

@@ -41,11 +41,11 @@
       border-right: 5px solid #52C646;
     }
 
-    :global .ant-menu-item-selected {
-      color: #5b5b5b;
-      background-color: #FFF8F8;;
-      border-right: 5px solid #FF0000;
-    }
+    //:global .ant-menu-item-selected {
+    //  color: #5b5b5b;
+    //  background-color: #FFF8F8;;
+    //  border-right: 5px solid #FF0000;
+    //}
     :global .ant-menu-item-disabled {
       color: #8f8992 !important;
       border-right: 5px solid #999999 !important;
@@ -108,8 +108,8 @@
 
 :global .ant-notification-topRight {
   width: auto;
-  margin-right: 65px;
-  margin-top: 31px;
+  margin-right: 75px;
+  margin-top: 51px;
 
   :global .ant-notification-notice-icon {
     font-size: 18px;
@@ -267,7 +267,7 @@
     :global .ant-btn:not(.ant-btn-circle):not(.ant-btn-circle-outline).ant-btn-icon-only {
       padding-left: 4px;
       padding-right: 4px;
-      color:#5b5b5b;
+      color: #5b5b5b;
     }
 
     :global .anticon {
@@ -578,5 +578,19 @@
 .normal {
   font-weight: normal;
 }
+
+.isAlarm {
+  border-right: 5px solid #FF0000 !important;
+}
+
+:global .ant-avatar.disabledImage > img {
+  -webkit-filter: grayscale(1);
+  filter: grayscale(1);
+}
+
+:global .ant-avatar.disabledImage + div {
+  color: #8f8992;
+}
+
 
 

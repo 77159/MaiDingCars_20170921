@@ -49,7 +49,6 @@ export default class MonitoringMap extends React.Component {
 
         //判断当前是否有定位的车辆
         if (this.props.positionCarCode !== nextProps.positionCarCode && nextProps.positionCarCode) {
-            debugger;
             const fmMap = this.fmMap;
             const carCode = nextProps.positionCarCode;
             //放大地图效果

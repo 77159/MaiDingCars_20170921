@@ -17,12 +17,10 @@
 'use strict';
 import {take, call, put, select, cancel, takeLatest} from 'redux-saga/effects';
 import {LOCATION_CHANGE} from 'react-router-redux';
-import {LOAD_REPOS} from '../App/constants';
 import {getTraceData} from './actions';
-import {TRACE_REPLAY, GET_TRACE_DATA} from './constants';
+import {TRACE_REPLAY} from './constants';
 import {traceReplayAPI} from '../../api/serverApi';
-import {showMessage, showSuccessMessage, showErrorMessage} from '../App/actions';
-import {makeTraceReplay} from './selectors';
+import {showErrorMessage} from '../App/actions';
 
 export function* changeTraceReplaySaga(action) {
     try {

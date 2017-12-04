@@ -17,3 +17,6 @@
 'use strict';
 export const CHANGE_USERNAME = 'boilerplate/Home/CHANGE_USERNAME';
 export const UPDATE_LOADING = 'boilerplate/Home/UPDATE_LOADING';
+export const REQUEST_HEATMAP = 'boilerplate/REQUEST_HEATMAP';      //请求热力图数据
+export const GET_HEATMAP_DATA = 'boilerplate/GET_HEATMAP_DATA';    //获取热力图数据
+

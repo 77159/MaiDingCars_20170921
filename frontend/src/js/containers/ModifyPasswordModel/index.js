@@ -74,7 +74,6 @@ class ModifyPasswordModel extends React.Component {
             passwordMsg['oripwd'] = md5(passwordMsg.oripwd);
             passwordMsg['newpwd'] = md5(passwordMsg.newpwd);
             passwordMsg['confirm'] = md5(passwordMsg.confirm);
-            console.log('收集到的修改密码的信息', passwordMsg);
             this.props.modifyPassword(passwordMsg);
             this.setState({modifyLoading: false});
             this.props.form.resetFields();

@@ -16,7 +16,10 @@ import {
     CAR_MSG_LIST_FINISH,
     GET_DENSITY_DATA_DONE,
     GET_SPEED_DATA_DONE,
-    GET_ABNORMAL_DATA_DONE
+    GET_ABNORMAL_DATA_DONE,
+    GET_GANTT_FINISH,
+    OPERATING_BEGIN,
+    OPERATING_FINISH
 } from './constants';
 import _ from 'lodash';
 
@@ -28,7 +31,10 @@ const initialState = fromJS({
     carMsgList: null,
     densityEntity: {},
     speedEntity: {},
-    abnormalEntity: {}
+    abnormalEntity: {},
+
+    isShow: ['block']
+
 });
 
 //获取密度统计数据
@@ -37,59 +43,126 @@ function getdensityEntity(origindata, totalCarNum) {
         totalNum = 0;
     tmpEntity_.data = [];
     tmpEntity_.legendData = [];
+    let totalTimeArr = [];
+    let mijichengdu;
     tmpEntity_.data = origindata.map((item) => {
-        let percent = item.totalTime == 0 ? 0 : parseFloat((item.warnNum / item.totalTime) * 100),
+        totalTimeArr.push(item.totalTime);
+        mijichengdu = eval(totalTimeArr.join('+'));
+    });
+    
+    tmpEntity_.data = origindata.map((item) => {
+        let percent = item.totalTime == 0 ? 0 : parseFloat((item.totalTime / mijichengdu) * 100),
             name = item.areaName + '\n密集程度：' + percent.toFixed(2) + '% 报警次数：' + item.warnNum;
         tmpEntity_.legendData.push(name);
         totalNum += parseInt(item.warnNum);
         return {
-            value: item.warnNum,
+            value: item.totalTime,
             name: name
         };
     });
 
     if (totalNum == 0 && tmpEntity_.data) {
-        let allname = '其他区域\n密集程度：' + (totalCarNum > 0 ? 100 : 0.00) + '% 报警次数：0';
+        let allname = '其他区域\n密集程度：' + (totalCarNum > 0 ? 100 : 0.00) + '% \n报警次数：0';
         tmpEntity_.legendData.push(allname);
         tmpEntity_.data.push({
             value: totalCarNum,
             name: allname
         });
     }
+
     return tmpEntity_;
 }
 
+//获取车辆速度统计数据
 function getSpeedEntity(origindata) {
     let tmpEntity_ = {};
-    tmpEntity_.xdata = [];
+    tmpEntity_.carNum = [];
     //tmpEntity_.ydata = [];
-    tmpEntity_.ymax = parseFloat(origindata.totalMaxSpeed).toFixed(2);
+    // tmpEntity_.ymax = parseFloat(origindata.totalMaxSpeed).toFixed(2);
     //let averageSpeed_ = origindata.carsNum == 0 ? 0 : parseFloat(origindata.totalMaxSpeed / origindata.carsNum).toFixed(2);;
     // tmpEntity_.ydata.push(averageSpeed_);
     // tmpEntity_.ydata.push(parseFloat(origindata.totalMaxSpeed).toFixed(2));
 
-    if (origindata.carsNum <= 5) {
-        for (var i = 0; i < origindata.carsNum; i++) {
-            tmpEntity_.xdata.push(i + 1);
-        }
-    } else {
-        let xAverage_ = parseFloat(origindata.carsNum / 5).toFixed(1);
-        for (var i = 0; i < 5; i++) {
-            if (i == 5) {
-                tmpEntity_.xdata.push(origindata.carsNum);
-            } else
-                tmpEntity_.xdata.push(i * xAverage_);
-        }
-    }
+    // if (origindata.carsNum <= 5) {
+    //     for (var i = 0; i < origindata.carsNum; i++) {
+    //         tmpEntity_.carNum.push(i + 1);
+    //     }
+    // } else {
+    //     let xAverage_ = parseFloat(origindata.carsNum / 5).toFixed(1);
+    //     for (var i = 0; i < 5; i++) {
+    //         if (i == 5) {
+    //             tmpEntity_.carNum.push(origindata.carsNum);
+    //         } else
+    //             tmpEntity_.carNum.push(i * xAverage_);
+    //     }
+    // }
 
-    tmpEntity_.data = tmpEntity_.xdata.map((item, index) => {
+    tmpEntity_.speedData = tmpEntity_.carNum.map((item, index) => {
         return 0.0;
     });
 
+    let avgMax = [];
+    let avgSpeed = [];
+    let avgMin = [];
+    let speed = [];
+    let avgMin_ = [];
+    let avgSpeed_ = [];
+    let avgMax_ = [];
+    let carNum = [];
+
     if(origindata.result) {
         origindata.result.map((item, index) => {
-            tmpEntity_.data[index] = parseFloat(item.maxSpeed).toFixed(2);
+            //最小速度
+            avgMin.push(parseFloat(item.minSpeed).toFixed(2));
+            avgMin_ = parseFloat((avgMin.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+            //平均速度
+            avgSpeed.push(parseFloat(item.avgSpeed).toFixed(2));
+            avgSpeed_ = parseFloat((avgSpeed.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+            //最大速度
+            avgMax.push(parseFloat(item.maxSpeed).toFixed(2));
+            avgMax_ = parseFloat((avgMax.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
         });
+
+        speed.push(avgMin_);
+        speed.push(avgSpeed_);
+        speed.push(avgMax_);
+
+        let num1 = 0;
+        let arrNum1 = [];
+        let num2 = 0;
+        let arrNum2 = [];
+        let num3 = 0;
+        let arrNum3 = [];
+        origindata.result.map((item, index) => {
+            if((parseFloat(item.avgSpeed).toFixed(2)) > 0 && ((parseFloat(item.avgSpeed).toFixed(2)) < (avgSpeed_ - 1))){
+                num1++;
+                arrNum1.push(num1);
+            }else {
+                arrNum1.push(num1);
+            }
+        });
+        carNum.push(arrNum1[arrNum1.length-1]);
+        origindata.result.map((item, index) => {
+            if(((avgSpeed_ - 1) < (parseFloat(item.avgSpeed).toFixed(2))) && ((avgSpeed_*1 + 1) > (parseFloat(item.avgSpeed).toFixed(2)))){
+                num2++;
+                arrNum2.push(num2);
+            }else {
+                arrNum2.push(num2);
+            }
+        });
+        carNum.push(arrNum2[arrNum2.length-1]);
+        origindata.result.map((item, index) => {
+            if(((avgSpeed_*1 + 1) < (parseFloat(item.avgSpeed).toFixed(2))) && ((parseFloat(item.avgSpeed).toFixed(2)) < avgMax_)){
+                num3++;
+                arrNum3.push(num3);
+            }else {
+                arrNum3.push(num3);
+            }
+        });
+        carNum.push(arrNum3[arrNum3.length-1]);
+        
+        tmpEntity_.speedData = speed;
+        tmpEntity_.carNum = carNum;
     }
     return tmpEntity_;
 }
@@ -178,6 +251,25 @@ export default (state = initialState, action = {}) => {
         let tmpEntity_ = getAbnormalEntity(payload);
         return state
             .set('abnormalEntity', tmpEntity_);
+    }
+
+
+    //查询甘特图数据-结束
+    if (type === GET_GANTT_FINISH) {
+        return state
+            .set('ganttEntity', payload);
+    }
+
+    //查询统计数据（CURD）开始
+    if (type === OPERATING_BEGIN) {
+        return state
+            .set('isShow', ['block']);
+    }
+
+    //查询统计数据（CURD）结束
+    if (type === OPERATING_FINISH) {
+        return state
+            .set('isShow', ['none']);
     }
 
     return state;

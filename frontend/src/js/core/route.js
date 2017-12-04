@@ -129,7 +129,7 @@ export default function createRoutes(store) {
             name: 'area',
             getComponent(nextState, cb) {
                 const importModules = Promise.all([
-                    import ('../containers/AreaSettingPage/reducer'),
+                    //import ('../containers/AreaSettingPage/reducer'),
                     import ('../containers/AreaFormPanel/sagas'),
                     import ('../containers/AreaFormPanel/reducer'),
                     import ('../containers/AreaSettingPage'),
@@ -137,8 +137,8 @@ export default function createRoutes(store) {
 
                 const renderRoute = loadModule(cb);
 
-                importModules.then(([reducer, sagas2, reducer2, component]) => {
-                    injectReducer('area', reducer.default);
+                importModules.then(([sagas2, reducer2, component]) => {
+                    // injectReducer('area', reducer.default);
                     injectSagas(sagas2.default);
                     injectReducer('areaForm', reducer2.default);
                     renderRoute(component);

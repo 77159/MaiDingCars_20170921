@@ -35,7 +35,7 @@ export function createWebWorker(onMessage) {
 
 export function openWS() {
     //向worker内部发送信息
-    worker.postMessage({type: OPEN_SOCKET_CONNECTION_BEGIN});
+    worker.postMessage({type: OPEN_SOCKET_CONNECTION_BEGIN, payload: window.token});
 }
 
 export function closeWS() {

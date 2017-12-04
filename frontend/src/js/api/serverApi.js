@@ -268,8 +268,13 @@ export function queryOneCarMsgAPI(carCode) {
 }
 
 /**
- * 三个ECharts统计图
+ * 轨迹回放
+ * @returns {Promise.<TResult>|*}
  */
+export function traceReplayAPI(traceReplayMsg) {
+    return invokeServerAPI(`cars/history?carCode=${traceReplayMsg[0]}&beginTime=${traceReplayMsg[1]}&endTime=${traceReplayMsg[2]}`, 'GET');
+}
+
 export function queryDensityStatics(startdate, enddate) {
     return invokeServerAPI(`area/areadensestatistics?beginTime=${startdate}&endTime=${enddate}`, 'GET');
 }
@@ -282,12 +287,20 @@ export function queryAbnormalStatics(startdate, enddate) {
     return invokeServerAPI(`cars/carsException?beginTime=${startdate}&endTime=${enddate}`, 'GET');
 }
 
-
 /**
- * 轨迹回放
+ * 查询甘特图
  * @returns {Promise.<TResult>|*}
  */
-export function traceReplayAPI(traceReplayMsg) {
-    return invokeServerAPI(`cars/history?carCode=${traceReplayMsg[0]}&beginTime=${traceReplayMsg[1]}&endTime=${traceReplayMsg[2]}`, 'GET');
+export function queryGanttAPI(startdate, enddate) {
+    return invokeServerAPI(`ganttChart?beginTime=${startdate}&endTime=${enddate}`, 'GET');
 }
 
+
+/**
+ * 请求热力图数据信息
+ * @param param
+ * @returns {Promise.<TResult>|*}
+ */
+export function requestHeatMapDatas(param) {
+    return invokeServerAPI(`thermogram?beginTime=${param.startValue}&endTime=${param.endValue}&carCode=${param.checkedKeys}`, 'GET');
+}

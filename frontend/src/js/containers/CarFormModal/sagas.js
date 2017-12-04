@@ -32,6 +32,7 @@ import {createCarAPI, queryAllCarAPI, modifyCarAPI} from '../../api/serverApi';
 import {LOCATION_CHANGE} from 'react-router-redux';
 import requestError from "../../utils/requestError";
 import {queryAllCarBegin} from "../CarMgrPage/actions";
+import {queryAllNotDeviceBegin} from "../DeviceMgrPage/actions";
 import {CREATE_CAR} from "../CarMgrPage/constants";
 
 
@@ -58,6 +59,7 @@ export function* createCarSaga(action) {
             yield put(carFormModalHide());
             //车辆管理页面的数据重新加载
             yield put(queryAllCarBegin());
+            yield put(queryAllNotDeviceBegin());
         }
     } catch (error) {
         console.log(error);
@@ -88,6 +90,7 @@ export function* modifyCarSaga(action) {
             yield put(carFormModalHide());
             //车辆管理页面的数据重新加载
             yield put(queryAllCarBegin());
+            yield put(queryAllNotDeviceBegin());
         }
     } catch (error) {
         console.log(error);

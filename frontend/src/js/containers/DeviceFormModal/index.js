@@ -161,7 +161,7 @@ class DeviceFormModal extends React.Component {
                         )}
                     </FormItem>
 
-                    <FormItem label="设备标识" {...formItemLayout} hasFeedback={true} colon={false}>
+                    <FormItem label="设备标识" {...formItemLayout} colon={false}>
                         {getFieldDecorator('deviceMark', {
                             rules: [{
                                 required: true,

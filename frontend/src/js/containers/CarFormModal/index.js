@@ -95,14 +95,12 @@ class CarFormModal extends React.Component {
         if (_.eq(this.props.carCategory, nextProps.carCategory) == false) {
             this.deepCloneCarCategory(nextProps.carCategory)
         }
-
         //判断上一次的数据和此时的数据是否一致
         if (!this.props.carEntity && !nextProps.carEntity) {
             this.props.form.resetFields();
         } else if (((!this.props.carEntity) && nextProps.carEntity) || this.props.carEntity !== nextProps.carEntity) {
             this.props.form.resetFields();
         }
-
     };
 
 
@@ -165,14 +163,15 @@ class CarFormModal extends React.Component {
                 this.setState({visible: false, confirmLoading: false});
                 return;
             }
-
             if (_.isArray(values.carType)) {
                 let carType;
                 const carTypeObj = values.carType;
                 carType = carTypeObj[0];
                 values['carType'] = carType;
             }
-
+            
+            console.log(values);
+            
             this.props.modifyCar(values);
             //form.resetFields();
         });
@@ -196,6 +195,7 @@ class CarFormModal extends React.Component {
                 )
             });
         }
+
         //未使用的设备状态
         if (notDeviceDataSource) {
             notDevice = notDeviceDataSource.map((item, index) => {
@@ -216,7 +216,7 @@ class CarFormModal extends React.Component {
 
         return (
             <Modal
-                title={<span><Icon type="user-add"/>{opText}</span>}
+                title={<span><Icon type="car"/>{opText}</span>}
                 visible={modalVisible}
                 onOk={this.onAdd}
                 onCancel={this.onCancel}
@@ -260,6 +260,7 @@ class CarFormModal extends React.Component {
                                     initialValue: carEntity.area
                                 })(
                                     <Select>
+                                        <Option key={null} value={null}>不选择任何区域</Option>
                                         {areaNameList}
                                     </Select>
                                 )}
@@ -287,7 +288,7 @@ class CarFormModal extends React.Component {
                                     initialValue: carEntity.deviceCode
                                 })(
                                     <Select>
-                                        <Option key={'\n'}>不选择任何设备</Option>
+                                        <Option key={null} value={null}>不选择任何设备</Option>
                                         {notDevice}
                                     </Select>
                                 )}

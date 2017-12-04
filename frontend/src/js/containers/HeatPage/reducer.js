@@ -19,13 +19,15 @@ import {fromJS} from 'immutable';
 
 import {
     CHANGE_USERNAME,
-    UPDATE_LOADING
+    UPDATE_LOADING,
+    GET_HEATMAP_DATA
 } from './constants';
 
 // The initial state of the App
 const initialState = fromJS({
     username: '',
     playing: false,
+    datas: []
 });
 
 export default (state = initialState, action = {}) => {
@@ -37,6 +39,8 @@ export default (state = initialState, action = {}) => {
         case UPDATE_LOADING:
             return state
                 .set('playing', action.loading);
+        case GET_HEATMAP_DATA:
+            return state.set('datas', action.data);
         default:
             return state;
     }

@@ -61,7 +61,6 @@ const {Sider, Content, Footer} = Layout;
 const TabPane = Tabs.TabPane;
 const {RangePicker} = DatePicker;
 
-
 export class MonitoringPage extends React.Component {
     constructor(props) {
         super(props);
@@ -89,7 +88,7 @@ export class MonitoringPage extends React.Component {
         //查询车辆类型
         this.props.getCarCategory();
         //查询区域列表
-        this.props.queryAreaListBegin();
+        //this.props.queryAreaListBegin();
     };
 
     componentDidUpdate() {
@@ -97,29 +96,69 @@ export class MonitoringPage extends React.Component {
     };
 
     componentWillReceiveProps(nextProps) {
+
+        //车辆列表更新
         if (_.eq(this.props.carList, nextProps.carList) == false) {
-            const carList = nextProps.carList
+            const carList = this.getCarList(nextProps.carList, nextProps.onLineDevice);
             this.setState({
                 carList: carList
             });
         }
 
-        if (_.eq(this.onLineDevice, nextProps.onLineDevice) == false) {
-            this.onLineDevice = nextProps.onLineDevice;
-            this.state.carList.map((car) => {
-                if (!this.onLineDevice) return;
-                car.onLine = false;
-                this.onLineDevice.map((device) => {
-                    if (device.deviceCode === car.deviceCode) {
-                        car.onLine = true;
-                    }
-                });
+        //车辆列表在线更新
+        // if (_.eq(this.props.onLineDevice, nextProps.onLineDevice) == false) {
+        //     if (!nextProps.carList) {
+        //         this.setState({
+        //             onLineDevice: []
+        //         })
+        //     }
+        //     const carList = this.getCarList(nextProps.carList, nextProps.onLineDevice);
+        //     this.setState({
+        //         carList: carList
+        //     });
+        // }
+
+        //实时更新车辆信息
+        if (_.eq(this.props.realTimeLocations, nextProps.realTimeLocations) == false) {
+            const carList = this.getCarList(nextProps.carList, nextProps.onLineDevice);
+            this.setState({
+                carList: carList,
             });
+            const realTimeLocations = nextProps.realTimeLocations;
+            let carInfo = this.state.carInfo;
+            if (!carInfo) return;
+            if (realTimeLocations.carCode === carInfo.carCode) {
+                carInfo.dumpPower = realTimeLocations.dumpPower;
+                carInfo.areaName = realTimeLocations.area ? realTimeLocations.area.areaName : '';
+                carInfo.alertInfo = realTimeLocations.alertInfo.length > 0 ? '报警' : '正常';
+            }
 
             this.setState({
-                carList: nextProps.carList
+                carInfo: carInfo,
             });
         }
+    }
+
+    /**
+     * 根据在线车辆列表更新车辆列表在线/下线属性
+     * @param carList
+     * @param onLineDevice
+     * @returns {*}
+     */
+    getCarList = (carList, onLineDevice) => {
+        if (onLineDevice.size <= 0) return carList;
+        return carList.map((car) => {
+            if (!onLineDevice) return car;
+            car.onLine = false;
+            onLineDevice.map((device) => {
+                if (device.deviceCode === car.deviceCode) {
+                    car.onLine = true;
+                    car.dumpPower = device.dumpPower;
+
+                }
+            });
+            return car;
+        });
     };
 
     /**
@@ -180,12 +219,34 @@ export class MonitoringPage extends React.Component {
         }
     };
 
+    getUpdateMenu = () => {
+        const alarmDatas = this.props.alarmDatas;
+        let carList = this.state.carList;
+        if (!alarmDatas) return carList;
+
+        carList.map((car) => {
+            car.isAlarm = false;
+            alarmDatas.map((alarm) => {
+                if (alarm.carCode === car.carCode) {
+                    car.isAlarm = true;
+                }
+            })
+        });
+
+        return carList;
+    };
+
     /**
      * 获取左侧菜单
      */
     getMenu = () => {
-        const carList = this.state.carList;
+        let carList = this.getUpdateMenu();
         this.onLineCount = 0;   //在线人数
+        //筛选条件
+        const userName = this.state.userName;
+        if (userName) {
+            carList = this.getCarListBykeyword(userName);
+        }
 
         //根据在线排序
         carList.sort((a, b) => {
@@ -234,8 +295,9 @@ export class MonitoringPage extends React.Component {
             }
 
             menuList.push(
-                <Menu.Item key={carCode} disabled={!carImageVisible}>
-                    <Avatar size="large" src={window.serviceUrl + car.imgurl}/>
+                <Menu.Item className={car.isAlarm ? styles.isAlarm : ''} key={carCode}>
+                    <Avatar className={!car.onLine ? 'disabledImage' : ''} size="large"
+                            src={car.imgurl ? window.serviceUrl + car.imgurl : ''}/>
                     <div className={styles.content}>
                         <div className={styles.code}>{car.carCode}</div>
                         <div>{car.speed ? Math.ceil(car.speed) : 0} km/h</div>
@@ -243,7 +305,13 @@ export class MonitoringPage extends React.Component {
                     <div className={styles.btnContent}>
                         <Button disabled={!car.onLine} onClick={(e) => {
                             e.stopPropagation();
-                            this.visibleCarImageMarkerByCarCode(carCode);
+                            //如果当前是定位的状态，则先清空定位状态
+                            if (carImagePosition) {
+                                this.setState({
+                                    positionCarCode: ''
+                                })
+                            }
+                            this.toggleVisibleCarImageMarkerByCarCode(carCode);
                         }}
                                 type="primary"
                                 icon={carImageVisible ? 'eye-o' : 'eye'}
@@ -251,6 +319,10 @@ export class MonitoringPage extends React.Component {
                         <Button disabled={!car.onLine} onClick={(e) => {
                             e.stopPropagation();
                             this.getCarInfoByCarCode(carCode);
+                            //如果当前隐藏状态，则先显示车辆再定位
+                            if (!carImageVisible) {
+                                this.visibleCarImageMarkerByCarCode(carCode, true);
+                            }
                             this.positionCarMarker(carCode);
                         }}
                                 type="primary"
@@ -294,6 +366,14 @@ export class MonitoringPage extends React.Component {
      * @fmMap fengmap对象
      */
     getMap = (fmMap) => {
+        fmMap.on('mapClickNode', (event) => {
+            if (event.alias === 'imageMarker') {
+                const carCode = event.name;
+                if (carCode) {
+                    this.getCarInfoByCarCode(carCode);
+                }
+            }
+        });
         this.fmMap = fmMap;
     };
 
@@ -311,13 +391,16 @@ export class MonitoringPage extends React.Component {
                 item.visible = visible;
             }
         });
+        this.setState({
+            positionCarCode: ''
+        });
     };
 
     /**
      * 根据车辆编号显示/隐藏车辆在地图上的显示
      * @carCode 车辆编号
      */
-    visibleCarImageMarkerByCarCode = (carCode) => {
+    toggleVisibleCarImageMarkerByCarCode = (carCode) => {
         if (!carCode) return;
         if (!this.fmMap) return;
         const {carImageMarkers} = this.fmMap;
@@ -325,6 +408,20 @@ export class MonitoringPage extends React.Component {
         const carImageMarker = carImageMarkers[carCode];
         if (!carImageMarker) return;
         carImageMarker.visible = !carImageMarker.visible;
+    };
+
+    /**
+     * 根据车辆编号显示/隐藏车辆在地图上的显示
+     * @carCode 车辆编号
+     */
+    visibleCarImageMarkerByCarCode = (carCode, visible) => {
+        if (!carCode) return;
+        if (!this.fmMap) return;
+        const {carImageMarkers} = this.fmMap;
+        if (!carImageMarkers) return;
+        const carImageMarker = carImageMarkers[carCode];
+        if (!carImageMarker) return;
+        carImageMarker.visible = visible;
     };
 
     /**
@@ -522,14 +619,17 @@ export class MonitoringPage extends React.Component {
     getCarListBykeyword = (keyword) => {
         const carList = this.props.carList;
         let list = [];
+
         if (keyword) {
+            keyword = keyword.toLocaleLowerCase();
             list = carList.filter((item) => {
+                const carCode = item.carCode.toLocaleLowerCase();
                 if (this.state.carStatus === 'all') {
-                    return item.carCode.indexOf(keyword) >= 0;
+                    return carCode.indexOf(keyword) >= 0;
                 } else if (this.state.carStatus === 'online' && !item.onLine) {
-                    return item.carCode.indexOf(keyword) >= 0;
+                    return carCode.indexOf(keyword) >= 0;
                 } else if (this.state.carStatus === 'online' && item.onLine) {
-                    return item.carCode.indexOf(keyword) >= 0;
+                    return carCode.indexOf(keyword) >= 0;
                 }
             });
         } else {
@@ -545,7 +645,7 @@ export class MonitoringPage extends React.Component {
         this.userNameInput.focus();
         this.userNameInput.refs.input.value = '';
         this.setState({
-            carDtasSource: this.props.carDtasSource,
+            carList: this.props.carList,
         })
     };
 
@@ -557,15 +657,14 @@ export class MonitoringPage extends React.Component {
         //车辆菜单
         const menu = this.getMenu();
 
-        //获取当前车辆详细信息
-        const {carCode, mileage, electric, status, area, carType} = this.getCarInfoByCard();
-
         const {alertMessageData, carList} = this.props;
 
         //获取未读信息集合
         const unReadMessage = alertMessageData.filter((item) => {
             return item.isRead === true;
         });
+
+        const {carInfo} = this.state;
 
         return (
             <Layout className={styles.layout}>
@@ -647,18 +746,18 @@ export class MonitoringPage extends React.Component {
                     {/*车辆信息*/}
                     <Card style={{visibility: this.state.cardVisible}} noHovering={true} bordered={false}
                           className={this.state.carInfoWinClassName} title={
-                        <span><Icon type="solution"/>车辆编号： {carCode}</span>}
+                        <span>车辆编号： {carInfo ? carInfo.carCode : ''}</span>}
                           extra={<span className={styles.carClose} title="关闭"
                                        onClick={() => {
-                                           this.getCarInfoByCarCode(carCode);
+                                           this.getCarInfoByCarCode(carInfo.carCode);
                                        }}><Icon type="close"/></span>}>
                         <div className={styles.rightCarContent}>
-                            <span>车辆类型：{carType}</span>
-                            <span>设备编号：{carCode}</span>
-                            <span>行驶里程：{mileage}</span>
-                            <span>设备电量：{electric}</span>
-                            <span>车辆状态：{status}</span>
-                            <span>当前位置：{area}</span>
+                            <span>车辆类型：{carInfo ? this.getCarTypeById(carInfo.carType) : ''}</span>
+                            <span>设备编号：{carInfo ? carInfo.carCode : ''}</span>
+                            <span>行驶里程：{''}</span>
+                            <span>设备电量：{carInfo ? (carInfo.dumpPower ? carInfo.dumpPower + '%' : '') : ''}</span>
+                            <span>车辆状态：{carInfo && carInfo.onLine ? '在线' : '离线'}</span>
+                            <span>当前位置：{carInfo ? carInfo.areaName : ''}</span>
                         </div>
                     </Card>
                     {/*报警信息列表*/}

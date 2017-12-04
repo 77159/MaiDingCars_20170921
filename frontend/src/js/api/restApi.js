@@ -77,5 +77,11 @@ export function makeRequest(url, method, options = null) {
  * @returns {Promise.<TResult>|*}
  */
 export function invokeServerAPI(url, method, options) {
-    return makeRequest(window.serviceUrl + url, method, options);
+    let http = window.serviceUrl + url;
+    if (http.indexOf('?') < 0) {
+        http = http + '?token=' + window.token;
+    } else {
+        http = http + '&token=' + window.token;
+    }
+    return makeRequest(http, method, options);
 }

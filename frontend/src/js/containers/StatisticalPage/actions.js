@@ -16,7 +16,11 @@ import {
     GET_SPEED_DATA,
     GET_SPEED_DATA_DONE,
     GET_ABNORMAL_DATA,
-    GET_ABNORMAL_DATA_DONE
+    GET_ABNORMAL_DATA_DONE,
+    GET_GANTT_BEGIN,
+    GET_GANTT_FINISH,
+    OPERATING_BEGIN,
+    OPERATING_FINISH
 } from './constants';
 
 /**
@@ -131,4 +135,42 @@ export const getAbnormalData = (startdate, enddate) => ({
 export const getAbnormalDataDone = (response) => ({
     type: GET_ABNORMAL_DATA_DONE,
     payload: response
+});
+
+
+/**
+ * [查询甘特图统计数据]
+ * @param  {[type]} startdate [起点日期]
+ * @param  {[type]} enddate   [终点日期]
+ * @return {[type]}           [发送后台请求]
+ */
+export const getGantt = (startdate, enddate) => ({
+    type: GET_GANTT_BEGIN,
+    payload: {
+        startdate,
+        enddate
+    }
+});
+
+/**
+ * [查询甘特图统计数据-请求完成回调]
+ **/
+export const getGanttDone = (response) => ({
+    type: GET_GANTT_FINISH,
+    payload: response
+});
+
+
+/**
+ * 查询统计数据（CURD）开始
+ */
+export const operatingBegin = () => ({
+    type: OPERATING_BEGIN
+});
+
+/**
+ * 查询统计数据（CURD）结束
+ */
+export const operatingFinish = () => ({
+    type: OPERATING_FINISH
 });

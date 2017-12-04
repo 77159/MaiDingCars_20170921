@@ -13,7 +13,7 @@ import {Button} from 'antd';
 import {Input} from 'antd';
 import {Select} from 'antd';
 import {AutoComplete} from 'antd';
-
+import moment from 'moment';
 const Option = Select.Option;
 import {Row, Col} from 'antd';
 import {Table} from 'antd';
@@ -126,6 +126,7 @@ export class DeviceMgrPage extends React.Component {
     //删除设备
     onDeleteDevice = (deviceCode) => {
         this.props.deleteDevice(deviceCode);
+
     }
 
     onSelectChange = (keys) => {
@@ -240,7 +241,7 @@ export class DeviceMgrPage extends React.Component {
             key: 'createTime',
             render: (text) => {
                 if (_.isNumber(text)) {
-                    return new Date(text).format("yyyy-M-d hh:mm");
+                    return new Date(text).format("YYYY-MM-DD HH:mm:ss");
                 } else {
                     return text;
                 }
@@ -314,8 +315,8 @@ export class DeviceMgrPage extends React.Component {
                                 <Option value="0">禁用</Option>
                             </Select>
                         </Col>
-                        <Col span={3} className={styles.item} style={{display: 'flex', justifyContent: 'center'}}>
-                            <span style={{fontSize: '12px'}}>未绑定车<br/>辆的设备</span>
+                        <Col span={3} className={styles.item}>
+                            <span>绑定状态</span>
                             <Select defaultValue="all" value={this.state.filter_carCode} size="large"
                                     onChange={(value) => this.setState({filter_carCode: value})}>
                                 <Option value="all">全部</Option>
@@ -333,7 +334,7 @@ export class DeviceMgrPage extends React.Component {
                             <Popconfirm title="确认要批量删除所选设备吗？"
                                         onConfirm={() => this.onDeleteDevice(this.state.curSelectedRowKeys)}>
                                 <Button type="primary" icon="delete" size="large"
-                                        className={styles.addBtn}>批量删除</Button>
+                                        className={styles.addBtn} disabled={(this.state.curSelectedRowKeys.length) ? false : true}>批量删除</Button>
                             </Popconfirm>
                         </Col>
                     </Row>

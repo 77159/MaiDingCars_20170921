@@ -64,7 +64,7 @@ export function* delCarSaga(action) {
         if (!response || response.success == false) {
             yield put(showErrorMessage(requestError.GET_DATA_ERROR));   //提示错误信息
         } else {
-            yield put(showSuccessMessage(requestError.DELETE_SUCCESS));   //提示成功信息
+            yield put(showSuccessMessage(requestError.DELETE_CAR_SUCCESS));   //提示成功信息
         }
     } catch (err) {
         console.log(err);

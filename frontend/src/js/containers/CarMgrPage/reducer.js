@@ -68,11 +68,18 @@ export default (state = initialState, action = {}) => {
             carCode,
             speed
         } = payload;
-        carDataSource.map((item) => {
-            if (item.carCode === carCode) {
-                item.speed = speed;
-            }
-        })
+
+        if (!carDataSource) {
+            return state;
+        }
+
+        if (carDataSource) {
+            carDataSource.map((item) => {
+                if (item.carCode === carCode) {
+                    item.speed = speed;
+                }
+            })
+        }
     }
 
     return state;

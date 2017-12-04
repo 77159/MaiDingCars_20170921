@@ -458,8 +458,13 @@ export default class AreaSettingMap extends React.Component {
                 },
             }];
 
-        return (
-            <Modal
+        //如果当前没有选择报警信息，则批量删除按钮禁用
+        const {areaSelectedRowKeys, speedSelectedRowKeys, densitySelectedRowKeys} = this.state;
+        const areaAllDisabled = areaSelectedRowKeys.length > 0;  //区域密度批量删除按钮是否禁用
+        const speedaAllDisabled = speedSelectedRowKeys.length > 0;//超速报警批量删除按钮是否禁用
+        const densityAllDisabled = densitySelectedRowKeys.length > 0;//闲置报警批量删除按钮是否禁用
+
+        return (<Modal
                 title={<span><Icon type="hdd"/>异常报警</span>}
                 width={1280}
                 className={styles.redModal}
@@ -504,13 +509,15 @@ export default class AreaSettingMap extends React.Component {
                                     <Button type="primary" icon="search" className={styles.searchBtn} onClick={() => {
                                         this.setAreaFilter();
                                     }}>查询</Button>
-                                    <Button type="primary" icon="hdd" className={styles.addBtn} onClick={() => {
+                                    <Button disabled={!areaAllDisabled} type="primary" icon="hdd"
+                                            className={styles.addBtn} onClick={() => {
                                         updateUnReadMessage(this.state.areaSelectedRowKeys);
                                     }}>标记已读</Button>
                                     <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
                                         deleteAlarmMessageByKeys(this.state.areaSelectedRowKeys);
                                     }}>
-                                        <Button type="primary" icon="delete" className={styles.addBtn}>批量删除</Button>
+                                        <Button disabled={!areaAllDisabled} type="primary" icon="delete"
+                                                className={styles.addBtn}>批量删除</Button>
                                     </Popconfirm>
                                 </Col>
                             </Row>
@@ -557,13 +564,15 @@ export default class AreaSettingMap extends React.Component {
                                 <Col span={7}>
                                     <Button type="primary" icon="search" className={styles.searchBtn}
                                             onClick={this.setDensityFilter}>查询</Button>
-                                    <Button type="primary" icon="hdd" className={styles.addBtn} onClick={() => {
+                                    <Button disabled={!densityAllDisabled} type="primary" icon="hdd"
+                                            className={styles.addBtn} onClick={() => {
                                         updateUnReadMessage(this.state.densitySelectedRowKeys);
                                     }}>标记已读</Button>
                                     <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
                                         deleteAlarmMessageByKeys(this.state.densitySelectedRowKeys);
                                     }}>
-                                        <Button type="primary" icon="delete" className={styles.addBtn}>批量删除</Button>
+                                        <Button disabled={!densityAllDisabled} type="primary" icon="delete"
+                                                className={styles.addBtn}>批量删除</Button>
                                     </Popconfirm>
                                 </Col>
                             </Row>
@@ -609,7 +618,8 @@ export default class AreaSettingMap extends React.Component {
                                 <Col span={7}>
                                     <Button type="primary" icon="search" className={styles.searchBtn}
                                             onClick={this.setSpeedFilter}>查询</Button>
-                                    <Button type="primary" icon="hdd" className={styles.addBtn} onClick={() => {
+                                    <Button disabled={!speedaAllDisabled} type="primary" icon="hdd"
+                                            className={styles.addBtn} onClick={() => {
                                         updateUnReadMessage(this.state.speedSelectedRowKeys);
                                     }}>标记已读</Button>
                                     <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
@@ -618,7 +628,8 @@ export default class AreaSettingMap extends React.Component {
                                             speedSelectedRowKeys: []
                                         });
                                     }}>
-                                        <Button type="primary" icon="delete" className={styles.addBtn}>批量删除</Button>
+                                        <Button disabled={!speedaAllDisabled} type="primary" icon="delete"
+                                                className={styles.addBtn}>批量删除</Button>
                                     </Popconfirm>
                                 </Col>
                             </Row>

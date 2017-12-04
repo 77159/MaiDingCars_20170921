@@ -18,3 +18,10 @@ export const GET_SPEED_DATA = 'StatisticalMgr/GET_SPEED_DATA'; //车辆速度统
 export const GET_SPEED_DATA_DONE = 'StatisticalMgr/GET_SPEED_DATA_DONE'; //车辆速度统计
 export const GET_ABNORMAL_DATA = 'StatisticalMgr/GET_ABNORMAL_DATA'; //车辆异常统计
 export const GET_ABNORMAL_DATA_DONE = 'StatisticalMgr/GET_ABNORMAL_DATA_DONE'; //车辆异常统计
+
+export const GET_GANTT_BEGIN = 'StatisticalMgr/GET_GANTT_BEGIN'; //查询甘特图开始
+export const GET_GANTT_FINISH = 'StatisticalMgr/GET_GANTT_FINISH'; //查询甘特图结束
+
+
+export const OPERATING_BEGIN = 'StatisticalMgr/OPERATING_BEGIN';    //查询统计数据（CURD）开始   operating
+export const OPERATING_FINISH = 'StatisticalMgr/OPERATING_FINISH';  //查询统计数据（CURD）结束
