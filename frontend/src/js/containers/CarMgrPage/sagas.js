@@ -9,10 +9,7 @@ import {take, call, put, select, cancel, takeLatest} from 'redux-saga/effects';
 import {
     CREATE_CAR,
     MODIFY_CAR,
-    CAR_OP_BEGIN,
-    CAR_OP_FINISH,
     QUERY_ALL_CAR_BEGIN,
-    QUERY_ALL_CAR_FINISH,
     DELETE_CAR
 } from './constants';
 

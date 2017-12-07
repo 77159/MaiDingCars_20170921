@@ -9,45 +9,25 @@ import React from 'react';
 import {
     Layout,
     Menu,
-    Icon
+    Icon,
+    Modal,
+    Form,
+    Spin
 } from 'antd';
-import {
-    Button
-} from 'antd';
-import {
-    Modal
-} from 'antd';
-
-const {
-    Content
-} = Layout;
-
-
+const {Content} = Layout;
+const FormItem = Form.Item;
 import styles from './index.less';
-
-import {
-    createStructuredSelector
-} from 'reselect';
-import {
-    connect
-} from 'react-redux';
+import {createStructuredSelector} from 'reselect';
+import {connect} from 'react-redux';
 import {
     deviceEntitySelector,
     modalVisibleSelector,
     operationRunningSelector,
     operationSelector,
-    centerAreaEntitySelector
+    centerAreaEntitySelector,
+    isShowSelector
 } from './selectors';
-import {
-    Form
-} from 'antd';
-import {
-    statisticalFormModalHide,
-    queryOneCarMsg,
-} from "./actions";
-
-const FormItem = Form.Item;
-
+import {statisticalFormModalHide} from "./actions";
 import echarts from 'echarts';
 import _ from 'lodash';
 
@@ -69,9 +49,10 @@ class StatisticalFormModal extends React.Component {
             myChart.setOption({
                 tooltip: {
                     trigger: 'item',
-                    formatter: "{a} <br/>{b}, {c} ({d}%)"
+                    formatter: "{a} <br/>{b}"
                 },
                 legend: {
+                    type: 'scroll',
                     orient: 'vertical',
                     x2: 'right',
                     top: '30',
@@ -82,13 +63,11 @@ class StatisticalFormModal extends React.Component {
                     // },
                     data: data_.legendData
                 },
-                // color: ['#F44336', '#1D9FF2', '', '#00897B #F9A825'],
                 series: [{
                     name: '区域密度',
                     type: 'pie',
                     center: ['30%', '50%'],
                     radius: ['50%', '70%'],
-                    //center: ['30%', '50%'],
                     avoidLabelOverlap: false,
                     label: {
                         normal: {
@@ -118,9 +97,10 @@ class StatisticalFormModal extends React.Component {
             modalVisible,
             deviceEntity,
             operationRunning,
-            centerAreaEntity
+            centerAreaEntity,
+            isShow
         } = this.props;
-
+        
         return (
             <Modal
                 title={<span><i className="iconfont icon-shebeiguanli"/>{deviceEntity} - 集中区域分析</span>}
@@ -131,9 +111,13 @@ class StatisticalFormModal extends React.Component {
                 className={styles.redModal}
                 loading={operationRunning}
             >
-                <div className={styles.carsDensity}>
+                <div>
                     <span style={{position: 'relative', left: '50px'}}>工作总时长：{centerAreaEntity.totalTime} h</span>
                     <div id="main4" style={{height: 320}}></div>
+
+                </div>
+                <div className={styles.cover} style={{display: `${isShow[0]}`}}>
+                    <Spin size="large" className={styles.spin}/>
                 </div>
 
             </Modal>
@@ -152,7 +136,8 @@ const selectorStateToProps = createStructuredSelector({
     operation: operationSelector(),
     operationRunning: operationRunningSelector(),
     deviceEntity: deviceEntitySelector(),
-    centerAreaEntity: centerAreaEntitySelector()
+    centerAreaEntity: centerAreaEntitySelector(),
+    isShow: isShowSelector()
 });
 
 export default connect(selectorStateToProps, actionsDispatchToProps)(Form.create()(StatisticalFormModal));

@@ -26,6 +26,7 @@ const config = {
     entry: [
         //'webpack-hot-middleware/client?reload=true',
         'webpack-dev-server/client?http://0.0.0.0:9999',  // WebpackDevServer host and port
+        // 'webpack-dev-server/client?http://localhost:8080',
         'webpack/hot/only-dev-server',
         path.join(process.cwd(), '/src/js/app.js'),         //设置入口文件的相对路径
     ],
@@ -42,7 +43,9 @@ const config = {
         hot: true,                                  //启用webpack的热模块更换功能
         inline: true,                               //启用内联模式
         port: 9999,                                 //服务器端口
-        host: '0.0.0.0',                          //服务器地址
+        // port: 8080,                               //服务器端口
+        // host: '0.0.0.0',                          //服务器地址
+        host: 'localhost',
         historyApiFallback: true                    //启用HTML5的历史记录？
     },
     module: {

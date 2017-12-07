@@ -125,6 +125,7 @@ export class HeatPage extends React.Component {
                     </div>
                     <div className={styles.btnContent}>
                         <Checkbox className={styles.peopleChk}
+                                  checked={this.getCarChecked(item.carCode)}
                                   onChange={(e) => {
                                       this.onChangeChecked(e, item.carCode);
                                   }}></Checkbox>
@@ -196,10 +197,10 @@ export class HeatPage extends React.Component {
         e.stopPropagation();
         let keys = this.state.checkedKeys;
         if (e.target.checked) {
-            if (keys.length >= 10) {
-                this.props.showErrorMessage('最多只能选择10辆车辆');
-                return;
-            }
+            // if (keys.length >= 10) {
+            //     this.props.showErrorMessage('最多只能选择10辆车辆');
+            //     return;
+            // }
             keys.push(key);
         } else {
             keys = keys.filter((code) => {
@@ -209,6 +210,41 @@ export class HeatPage extends React.Component {
         this.setState({
             checkedKeys: keys
         });
+    };
+
+    /**
+     * 全部选择
+     * allSelect
+     */
+    allSelect = () => {
+        let keys = [];
+        if(this.state.carDtasSource) {
+            this.state.carDtasSource.map((item) => {
+                keys.push(item.carCode);
+            });
+        }
+        this.setState({
+            checkedKeys: keys
+        });
+    };
+
+    /**
+     * 全部取消
+     * allCancel
+     */
+    allCancel = () => {
+        this.setState({
+            checkedKeys: []
+        });
+    };
+
+    /**
+     * 车辆是否勾选状态
+     * @param carCode
+     * @returns {boolean}
+     */
+    getCarChecked = (carCode) => {
+        return this.state.checkedKeys.indexOf(carCode) >= 0;
     };
 
     /**
@@ -343,6 +379,9 @@ export class HeatPage extends React.Component {
                 isPlay: true
             })
         }, 500);
+
+        this.refs.isAllCheck.style.display = 'none';
+
     };
 
     /**
@@ -368,6 +407,7 @@ export class HeatPage extends React.Component {
                 checkedKeys: [],
             })
         }
+        this.refs.isAllCheck.style.display = 'block';
     };
 
     /**
@@ -447,6 +487,7 @@ export class HeatPage extends React.Component {
             isCPlay: !this.state.isCPlay,
         });
         this.props.requestHeatMapData({endValue: dateTime, startValue: dateTime, checkedKeys: checkedKeys.join(',')});
+        this.refs.isAllCheck.style.display = 'none';
     };
 
     render() {
@@ -506,7 +547,7 @@ export class HeatPage extends React.Component {
                                     <Button
                                         type="danger"
                                         className={styles.startReplay}
-                                        onClick={this.stopReplay}>停止回放</Button>
+                                        onClick={this.stopReplay}>停止播放</Button>
                                 </div>
                                 :
                                 <div>
@@ -560,11 +601,11 @@ export class HeatPage extends React.Component {
                             </div>
                             停止回访
 
-                            选择回访
-                            <div className={styles.allChkPanel}>
-                                <Button ghost size="small">全部选择</Button>
-                                <Button ghost size="small">全部取消</Button>
-                            </div>*/}
+                            选择回访*/}
+                            <div ref='isAllCheck' className={styles.allChkPanel}>
+                                <Button ghost size="small" onClick={this.allSelect}>全部选择</Button>
+                                <Button ghost size="small" onClick={this.allCancel}>全部取消</Button>
+                            </div>
                         </Footer>
                     </Layout>
                 </Sider>

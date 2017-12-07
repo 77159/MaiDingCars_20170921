@@ -9,7 +9,8 @@ import {fromJS} from 'immutable';
 import {
     DEVICE_FORM_MODAL_SHOW,
     DEVICE_FORM_MODAL_OP_BEGIN,
-    DEVICE_FORM_MODAL_OP_FINISH, DEVICE_FORM_MODAL_HIDE, DEVICE_FORM_MODAL_CREATE_DEVICE
+    DEVICE_FORM_MODAL_OP_FINISH,
+    DEVICE_FORM_MODAL_HIDE,
 } from './constants';
 import _ from 'lodash';
 

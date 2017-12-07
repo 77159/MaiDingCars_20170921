@@ -6,28 +6,30 @@
 
 'use strict';
 import React from 'react';
-import {Layout} from 'antd';
+import {
+    Layout,
+    Button,
+    Input,
+    Select,
+    AutoComplete,
+    Row,
+    Col,
+    Table,
+    Popconfirm,
+} from 'antd';
 
 const {Content} = Layout;
-import {Button} from 'antd';
-import {Input} from 'antd';
-import {Select} from 'antd';
-import {AutoComplete} from 'antd';
 import moment from 'moment';
 const Option = Select.Option;
-import {Row, Col} from 'antd';
-import {Table} from 'antd';
-import {Popconfirm} from 'antd';
 import styles from './index.less';
+
 import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
 import {showErrorMessage} from '../App/actions';
 import _ from 'lodash';
 import {
     queryAllDeviceBegin,
-    createDevice,
     modifyDevice,
-    getDevice,
     deleteDevice,
     queryAllNotDeviceBegin
 } from './actions';
@@ -51,7 +53,7 @@ export class DeviceMgrPage extends React.Component {
             filter_workingStatus: 'all',          //工作状态-筛选条件 [all] 全部（默认）[0] 离线 [1] 工作
             filter_deviceStatus: 'all',        //设备状态-筛选条件 [all] 全部（默认）[0] 禁用 [1] 启用
             dataFilter: null,                  //数据过滤器数组，只有一条记录，将筛选条件用&&连接。格式：['设备编号'&&'安保编号'&&'工作状态'&&'设备状态']
-            curSelectedRowKeys: '',
+            curSelectedRowKeys: [],
             autoComplete_deviceCode: [],       //设备编号自动完成提示数组
             autoComplete_personCode: [],       //安保编号自动完成提示数组
             filter_carCode: 'all',
@@ -73,8 +75,8 @@ export class DeviceMgrPage extends React.Component {
         }
         //筛选数据
         return record != null &&
-            (_.isEmpty(filters[0]) || (_.isNull(record.deviceCode) == false && record.deviceCode.includes(filters[0]))) &&
-            (_.isEmpty(filters[1]) || (_.isNull(record.carCode) == false && record.carCode.includes(filters[1]))) &&
+            (_.isEmpty(filters[0]) || (_.isNull(record.deviceCode) == false && record.deviceCode.includes(filters[0].toUpperCase()))) &&
+            (_.isEmpty(filters[1]) || (_.isNull(record.carCode) == false && record.carCode.includes(filters[1].toUpperCase()))) &&
             (record.workingStatus == filters[2] || filters[2] == 'all') &&
             (record.deviceStatus == filters[3] || filters[3] == 'all') &&
             (record.carCode == filters[4] || filters[4] == 'all' || record.carCode == null)
@@ -103,7 +105,7 @@ export class DeviceMgrPage extends React.Component {
         });
         //刷新数据
         this.props.queryAllDevice();
-    }
+    };
 
     //添加设备
     showCreateDeviceModal = () => {
@@ -121,17 +123,19 @@ export class DeviceMgrPage extends React.Component {
     onChangeDeviceStatus = (record) => {
         record.deviceStatus = record.deviceStatus ? 0 : 1;
         this.props.modifyDevice(record);
-    }
+    };
 
     //删除设备
     onDeleteDevice = (deviceCode) => {
         this.props.deleteDevice(deviceCode);
-
-    }
+        this.setState({
+            curSelectedRowKeys: [],
+        });
+    };
 
     onSelectChange = (keys) => {
         this.setState({curSelectedRowKeys: keys});
-    }
+    };
 
     //设备编号自动完成填充
     onDeviceCodeAutoCompleteSearch = (value) => {
@@ -149,13 +153,13 @@ export class DeviceMgrPage extends React.Component {
         this.setState({
             autoComplete_deviceCode: data,
         });
-    }
+    };
 
     //车辆编号自动完成填充
     onPersonCodeAutoCompleteSearch = (value) => {
         let deviceDataSource = this.props.deviceDataSource;
         let data = [];
-        //非空，且自动提示最少需要输入3个字符        && (_.isEmpty(value) === null)
+        //非空，且自动提示最少需要输入3个字符
         if (_.isEmpty(value) == false && value.trim().length > 2) {
             //遍历设备数据集合，将安保编号中包含输入字符的完整编号数据写入自动完成提示数据集合中。
             deviceDataSource.forEach(deviceEntity => {
@@ -169,7 +173,13 @@ export class DeviceMgrPage extends React.Component {
         this.setState({
             autoComplete_personCode: data,
         });
-    }
+    };
+
+    //排序函数
+    sortFunction = (a,b) => {
+        if (/^\d/.test(a) ^ /^\D/.test(b)) return a>b?1:(a==b?0:-1);
+        return a>b?-1:(a==b?0:1);
+    };
 
     render() {
         const {curSelectedRowKeys} = this.state;
@@ -184,6 +194,7 @@ export class DeviceMgrPage extends React.Component {
             title: '设备编号',
             dataIndex: 'deviceCode',
             key: 'deviceCode',
+            sorter: (a, b) => this.sortFunction(a.deviceCode, b.deviceCode),
             filteredValue: this.state.dataFilter,      //设置过滤条件
             onFilter: (value, record) => this.deviceDataFilter(value, record),   //每条数据都通过指定的函数进行过滤
         }, {
@@ -233,19 +244,14 @@ export class DeviceMgrPage extends React.Component {
             title: '车辆编号',
             dataIndex: 'carCode',
             key: 'carCode',
+            sorter: (a, b) => this.sortFunction(a.carCode, b.carCode),
             filteredValue: this.state.dataFilter,      //设置过滤条件
             onFilter: (value, record) => this.deviceDataFilter(value, record),   //每条数据都通过指定的函数进行过滤
         }, {
             title: '修改日期',
-            dataIndex: 'createTime',
-            key: 'createTime',
-            render: (text) => {
-                if (_.isNumber(text)) {
-                    return new Date(text).format("YYYY-MM-DD HH:mm:ss");
-                } else {
-                    return text;
-                }
-            },
+            dataIndex: 'updateTime',
+            key: 'updateTime',
+            sorter: (a, b) => new Date(a.updateTime).getTime() - new Date(b.updateTime).getTime(),
         }, {
             title: '操作',
             key: 'operation',
@@ -329,8 +335,8 @@ export class DeviceMgrPage extends React.Component {
                             <Button icon="sync" size="large" className={styles.searchBtn} onClick={this.onResetSearch}>重置</Button>
                         </Col>
                         <Col span={4} className={styles.textRight}>
-                            <Button type="primary" icon="hdd" size="large" className={styles.addBtn}
-                                    onClick={this.showCreateDeviceModal}>新建设备</Button>
+                            <Button type="primary" size="large" className={styles.addBtn}
+                                    onClick={this.showCreateDeviceModal}><i className="iconfont icon-shebeiguanli"/> 新建设备</Button>
                             <Popconfirm title="确认要批量删除所选设备吗？"
                                         onConfirm={() => this.onDeleteDevice(this.state.curSelectedRowKeys)}>
                                 <Button type="primary" icon="delete" size="large"

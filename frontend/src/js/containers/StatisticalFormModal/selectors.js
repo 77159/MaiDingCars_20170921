@@ -34,11 +34,17 @@ const centerAreaEntitySelector = () => createSelector(
     (statisticalModalState) => statisticalModalState.get('centerAreaEntity')
 );
 
+const isShowSelector = () => createSelector(
+    selectorStatisticalFormModal,
+    (statisticalModalState) => statisticalModalState.get('isShow')
+);
+
 export {
     selectorStatisticalFormModal,
     deviceEntitySelector,
     modalVisibleSelector,
     operationSelector,
     operationRunningSelector,
-    centerAreaEntitySelector
+    centerAreaEntitySelector,
+    isShowSelector
 };

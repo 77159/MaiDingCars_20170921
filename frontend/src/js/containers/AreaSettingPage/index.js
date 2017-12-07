@@ -217,7 +217,6 @@ export class AreaSettingPage extends React.Component {
      */
     getExtentVertices = (groupID = 1) => {
         const group = this.map.listGroups[groupID - 1];
-        //console.log('group.a_.geo_extentlayers[0].extents', group.a_.geo_extentlayers[0].extents);
         const extents = group.a_.geo_extentlayers[0].extents;
         return extents.map((item) => {
             return item.vertices;

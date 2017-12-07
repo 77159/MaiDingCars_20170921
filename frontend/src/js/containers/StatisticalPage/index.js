@@ -57,7 +57,9 @@ import {
     speedEntitySelector,
     abnormalEntitySelector,
     ganttSelector,
-    isShowSelector
+    densityIsShowSelector,
+    speedIsShowSelector,
+    abnormalIsShowSelector
 } from './selectors';
 import {carCategorySourceSelector} from '../CategoryFormModel/selectors';
 import {getCarCategory} from '../CategoryFormModel/actions';
@@ -67,8 +69,6 @@ import {
     statisticalFormModalShow,
     getCenterAreaStaticData
 } from "../StatisticalFormModal/actions";
-
-const hoursArr = [];
 
 export class StatisticalPage extends React.Component {
 
@@ -85,7 +85,6 @@ export class StatisticalPage extends React.Component {
             curSelectedRowKeys: [],
             autoComplete_deviceCode: [], //设备编号自动完成提示数组
             autoComplete_carCode: [], //车辆编号自动完成提示数组
-
             filter_ganttCarCode: [],
 
             filter_carType: 'all',
@@ -116,21 +115,16 @@ export class StatisticalPage extends React.Component {
             myChart.setOption({
                 tooltip: {
                     trigger: 'item',
-                    formatter: "{a} <br/>{b}, {c} ({d}%)"
+                    formatter: "{a} <br/>{b}"
                 },
                 legend: {
                     type: 'scroll',
                     orient: 'vertical',
                     x2: 'right',
-                    top: '50',
+                    top: '58',
                     right: '60',
-                    // textStyle: {
-                    //     fontSize: 12,
-                    //     padding: [3, 4, 5, 6],
-                    // },
                     data: densityData_.legendData
                 },
-                // color: ['#F44336', '#1D9FF2', '#00897B', '#F9A825'],
                 series: [{
                     name: '区域密度',
                     type: 'pie',
@@ -144,15 +138,6 @@ export class StatisticalPage extends React.Component {
                         }
                     },
                     data: densityData_.data,
-                    // itemStyle: {
-                    //     normal: {
-                    //         //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
-                    //         color: function(params) {
-                    //             console.log('color', params, arguments);
-                    //             if (params.value == 0) return 'yellow';
-                    //         }
-                    //     }
-                    // }
                 }]
             });
         }
@@ -173,25 +158,26 @@ export class StatisticalPage extends React.Component {
             let myChart2 = echarts.init(speedDom_);
             myChart2.setOption({
                 baseOption: {
+                    tooltip : {
+                        formatter: '{b}<br />车辆数: {c}',
+                        trigger: 'axis',
+                        axisPointer : {
+                            type : 'shadow'
+                        }
+                    },
                     xAxis: {
                         name: '速度 km/h',
-                        // data: speedData_.xdata,
-                        // splitNumber: 2,
                         data: arr,
                     },
                     yAxis: {
                         name: '数量（辆）',
-                        // max: speedData_.ymax,
-                        // data: speedData_.xdata,
                         splitNumber: 1,
-                        // interval: 5,
                     },
                     series: [{
                         color: ['#95CFFA'],
                         type: 'bar',
                         data: speedData_.carNum,
                         barWidth: '99%',
-                        // barGap: '0',
                         barCategoryGap: '0',
                         itemStyle: {
                             normal:{
@@ -211,7 +197,7 @@ export class StatisticalPage extends React.Component {
         if (abnormalData_ && abnormalData_.xdata) {
             let abnormalDom_ = document.getElementById('main3');
             if (!abnormalDom_) return;
-
+            
             let myChart3 = echarts.init(abnormalDom_);
             myChart3.setOption({
                 baseOption: {
@@ -223,8 +209,12 @@ export class StatisticalPage extends React.Component {
                         data: abnormalData_.xdata,
                     },
                     yAxis: {
-                        name: '数量（辆）',
+                        name: '报警条数（条）',
                         splitNumber: abnormalData_.yAxis,
+                    },
+                    tooltip:{
+                        show:true,
+                        formatter: '超速车辆报警条数: {c}'
                     },
                     series: [{
                         name: '超过五小时无位置信息',
@@ -237,11 +227,16 @@ export class StatisticalPage extends React.Component {
                         color: ['#FE1C69'],
                         type: 'line',
                         data: abnormalData_.series[99],
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: '最大值'},
+                                {type: 'min', name: '最小值'}
+                            ]
+                        },
                     }]
                 },
             });
         }
-        /*if (this.state.carsBeginDate != nextStates.carsBeginDate || this.state.carsBeginTime != nextStates.carsBeginTime || this.state.carsEndDate != nextStates.carsEndDate || this.state.carsEndTime != nextStates.carsEndTime) {}*/
     };
 
     componentWillMount() {
@@ -294,8 +289,8 @@ export class StatisticalPage extends React.Component {
         }
         //筛选数据
         return record != null &&
-            (_.isEmpty(filters[0]) || (_.isNull(record.deviceCode) == false && record.deviceCode.includes(filters[0]))) &&
-            (_.isEmpty(filters[1]) || (_.isNull(record.carCode) == false && record.carCode.includes(filters[1]))) &&
+            (_.isEmpty(filters[0]) || (_.isNull(record.deviceCode) == false && record.deviceCode.includes(filters[0].toUpperCase()))) &&
+            (_.isEmpty(filters[1]) || (_.isNull(record.carCode) == false && record.carCode.includes(filters[1].toUpperCase()))) &&
             (record.carType == filters[2] || filters[2] == 'all')
     };
 
@@ -431,7 +426,12 @@ export class StatisticalPage extends React.Component {
             this.props.getSpeedStatic(`${beiginDate} ${beiginTime}:00:00`, `${endDate} ${endTime}:59:59`);
             this.props.getAbnormalStatic(`${beiginDate} ${beiginTime}:00:00`, `${endDate} ${endTime}:59:59`);
         });
-        console.log(beiginDate, beiginTime, endDate, endTime);
+    };
+
+    //排序函数
+    sortFunction = (a,b) => {
+        if (/^\d/.test(a) ^ /^\D/.test(b)) return a>b?1:(a==b?0:-1);
+        return a>b?-1:(a==b?0:1);
     };
 
     ///////////////////////////////////////////////繁忙统计///////////////////////////////////////////////////
@@ -453,32 +453,32 @@ export class StatisticalPage extends React.Component {
     };
 
     //繁忙统计页面车辆编号自动完成填充
-    onBusyCarCodeAutoCompleteSearch = (value) => {
-        let ganttData;
-        if(this.props.ganttEntity) {
-            ganttData = this.props.ganttEntity.resultMap;
-            let data = [];
-            //非空，且自动提示最少需要输入3个字符
-            if (_.isEmpty(value) == false && value.trim().length > 2) {
-                //遍历设备数据集合，将车辆编号中包含输入字符的完整编号数据写入自动完成提示数据集合中。
-                ganttData.forEach(carMsgList => {
-                    if (carMsgList.carCode.includes(value)) {
-                        data.push(carMsgList.carCode);
-                    }
-                });
-            }
-            this.setState({
-                autoComplete_carCode: data,
-            });
-        }
-    };
+    // onBusyCarCodeAutoCompleteSearch = (value) => {
+    //     let ganttData;
+    //     if(this.props.ganttEntity) {
+    //         ganttData = this.props.ganttEntity.resultMap;
+    //         let data = [];
+    //         //非空，且自动提示最少需要输入3个字符
+    //         if (_.isEmpty(value) == false && value.trim().length > 2) {
+    //             //遍历设备数据集合，将车辆编号中包含输入字符的完整编号数据写入自动完成提示数据集合中。
+    //             ganttData.forEach(carMsgList => {
+    //                 if (carMsgList.carCode.includes(value)) {
+    //                     data.push(carMsgList.carCode);
+    //                 }
+    //             });
+    //         }
+    //         this.setState({
+    //             autoComplete_carCode: data,
+    //         });
+    //     }
+    // };
 
     //根据用户选择的时间轴动态显示table的横向滑动距离
     scrollBar = () => {
         let dataNum;
         let len = this.state.hoursArr.length;
         if (len) {
-            dataNum = len * 108 + 330;
+            dataNum = len * 108 + 340;
             return dataNum;
         }
     };
@@ -677,7 +677,9 @@ export class StatisticalPage extends React.Component {
             carMsgList,
             carCategory,
             ganttEntity,
-            isShow
+            densityIsShow,
+            speedIsShow,
+            abnormalIsShow,
         } = this.props;
 
         //车辆信息显示
@@ -726,6 +728,7 @@ export class StatisticalPage extends React.Component {
             title: '车辆编号',
             dataIndex: 'carCode',
             key: 'carCode',
+            sorter: (a, b) => this.sortFunction(a.carCode, b.carCode),
             filteredValue: this.state.dataFilter, //设置过滤条件
             onFilter: (value, record) => this.deviceDataFilter(value, record), //每条数据都通过指定的函数进行过滤
         }, {
@@ -749,6 +752,7 @@ export class StatisticalPage extends React.Component {
             title: '设备编号',
             dataIndex: 'deviceCode',
             key: 'deviceCode',
+            sorter: (a, b) => this.sortFunction(a.deviceCode, b.deviceCode),
         }, {
             title: '工作时间',
             dataIndex: 'count',
@@ -761,34 +765,40 @@ export class StatisticalPage extends React.Component {
             dataIndex: 'totalMileage',
             key: 'totalMileage',
             render: (text) => {
-                return Math.floor(text / 1000 * 100) / 100 + ' km';
+                if(text == 0) {
+                    return text + '.00' + ' km';
+                }else {
+                    return Math.floor(text / 1000 * 100) / 100 + ' km';
+                }
             },
         }, {
             title: '最快速度',
             dataIndex: 'maxSpeed',
             key: 'maxSpeed',
             render: (text) => {
-                return Math.floor(text / 1000 * 100) / 100 + ' km/h';
+                if(text == 0) {
+                    return text + '.00' + ' km/h';
+                }else {
+                    return Math.floor(text * 100) / 100 + ' km/h';
+                }
             },
         }, {
             title: '平均速度',
             dataIndex: 'avgSpeed',
             key: 'avgSpeed',
             render: (text) => {
-                return Math.floor(text * 100) / 100 + ' km/h';
+                if(text == 0) {
+                    return text + '.00' + ' km/h';
+                }else {
+                    return Math.floor(text * 100) / 100 + ' km/h';
+                }
             },
         }, {
             title: '使用日期',
             dataIndex: 'createTime',
             key: 'createTime',
+            sorter: (a, b) => new Date(a.createTime).getTime() - new Date(b.createTime).getTime(),
             width: 220,
-            render: (text) => {
-                if (_.isNumber(text)) {
-                    return new Date(text).format("yyyy-M-d hh:mm");
-                } else {
-                    return text;
-                }
-            },
         }, {
             title: '集中区域分析',
             key: 'operation',
@@ -808,7 +818,7 @@ export class StatisticalPage extends React.Component {
             title: `车辆数量：${carMsg ? carMsg.onLineCarNum : ''}/${carMsg ? carMsg.carsTotal : ''}`,
             dataIndex: 'carCode',
             key: 'carCode',
-            width: 130,
+            width: 140,
             fixed: 'left',
             filteredValue: this.state.busyDataFilter, //设置过滤条件
             onFilter: (value, record, index) => this.carDataFilter(value, record, index), //每条数据都通过指定的函数进行过滤
@@ -820,7 +830,12 @@ export class StatisticalPage extends React.Component {
             fixed: 'left',
             sorter: (a, b) => a.totalMileage - b.totalMileage, //排序
             render: (text) => {
-                return Math.floor(text / 1000 * 100) / 100 + ' km';
+                // return Math.floor(text / 1000 * 100) / 100 + ' km';
+                if(text == 0) {
+                    return text + '.00' + ' km';
+                }else {
+                    return Math.floor(text / 1000 * 100) / 100 + ' km';
+                }
             },
         }, {
             title: '时间',
@@ -830,7 +845,12 @@ export class StatisticalPage extends React.Component {
             fixed: 'left',
             sorter: (a, b) => a.totalManhour - b.totalManhour,
             render: (text) => {
-                return Math.floor(text / 3600000 * 10) / 10 + ' h';
+                // return Math.floor(text / 3600000 * 10) / 10 + ' h';
+                if(text == 0) {
+                    return text + '.0' + ' h';
+                }else {
+                    return Math.floor(text / 3600000 * 10) / 10 + ' h';
+                }
             },
         }];
         let timecols = this.getHoursColumns(columnsBusy);   //拼接
@@ -889,7 +909,7 @@ export class StatisticalPage extends React.Component {
                                     <Col span={12} className={styles.item}>
                                         <p>区域密度统计</p>
                                         <div id="main" style={{height: 235, overflowX: 'auto'}}></div>
-                                        <Spin size="large" style={{display: `${isShow[0]}`, marginTop: '-140px'}}/>
+                                        <Spin size="large" style={{display: `${densityIsShow[0]}`, marginTop: '-140px'}}/>
                                     </Col>
                                 </Row>
 
@@ -897,13 +917,13 @@ export class StatisticalPage extends React.Component {
                                     <Col span={12} className={styles.item}>
                                         <p>车辆速度统计</p>
                                         <div id="main2" style={{height: '100%'}}></div>
-                                        <Spin size="large" style={{display: `${isShow[0]}`, marginTop: '-220px'}}/>
+                                        <Spin size="large" style={{display: `${speedIsShow[0]}`, marginTop: '-220px'}}/>
                                     </Col>
 
                                     <Col span={12} className={styles.item}>
                                         <p>车辆异常统计</p>
                                         <div id="main3" style={{height: '100%'}}></div>
-                                        <Spin size="large" style={{display: `${isShow[0]}`, marginTop: '-220px'}}/>
+                                        <Spin size="large" style={{display: `${abnormalIsShow[0]}`, marginTop: '-220px'}}/>
                                     </Col>
                                 </Row>
 
@@ -981,6 +1001,7 @@ export class StatisticalPage extends React.Component {
                                     <Col span={4} className={styles.itemTabs}>
                                         <span>车辆编号</span>
                                         <Select
+                                            style={{height: '28px'}}
                                             mode="tags"
                                             placeholder="车辆编号" size="large"
                                             onChange={(value) => this.setState({filter_ganttCarCode: value})}
@@ -1067,7 +1088,9 @@ const selectorStateToProps = createStructuredSelector({
     speedEntity: speedEntitySelector(),
     abnormalEntity: abnormalEntitySelector(),
     ganttEntity: ganttSelector(),
-    isShow: isShowSelector()
+    densityIsShow: densityIsShowSelector(),
+    speedIsShow: speedIsShowSelector(),
+    abnormalIsShow: abnormalIsShowSelector(),
 });
 
 export default connect(selectorStateToProps, actionsDispatchToProps)(StatisticalPage);

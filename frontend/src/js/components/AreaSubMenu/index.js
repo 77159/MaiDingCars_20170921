@@ -87,7 +87,7 @@ export class AreaSubMenu extends React.Component {
                                         const areaName = item.areaName;
                                         return (
                                             <Menu.Item key={id}>
-                                                <span className={styles.areaName}>{areaName}</span>
+                                                <span className={styles.areaName} onClick={(e) => {e.stopPropagation();this.props.updatePolygonLineStyle(id);}}>{areaName}</span>
                                                 <span className={styles.areaBtns}>
                                                         <Button shape="circle"
                                                                 ghost

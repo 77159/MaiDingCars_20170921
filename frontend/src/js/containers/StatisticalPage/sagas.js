@@ -27,15 +27,18 @@ import {
 import {
     statisticalOpBegin,
     statisticalOpFinish,
-    queryAllDeviceFinish,
     queryAllCarMsgFinish,
     queryAllCarMsgListFinish,
     getDensityDataDone,
     getSpeedDataDone,
     getAbnormalDataDone,
     getGanttDone,
-    operatingBegin,
-    operatingFinish
+    densityOperatingBegin,
+    densityOperatingFinish,
+    speedOperatingBegin,
+    speedOperatingFinish,
+    abnormalOperatingBegin,
+    abnormalOperatingFinish
 } from './actions';
 
 import {
@@ -43,7 +46,6 @@ import {
 } from "../App/actions";
 
 import {
-    queryAllDeviceAPI,
     queryAllCarMsgAPI,
     queryAllCarMsgListAPI,
     queryDensityStatics,
@@ -112,7 +114,7 @@ export function* queryAllCarMsgListSaga() {
 export function* queryDensitySaga(action) {
     try {
         //操作开始，更新loading的state
-        yield put(operatingBegin());
+        yield put(densityOperatingBegin());
         let data = action.payload;
         //发起异步网络请求，并获取返回结果
         const response = yield call(queryDensityStatics, data.startdate, data.enddate);
@@ -129,14 +131,14 @@ export function* queryDensitySaga(action) {
         yield put(showErrorMessage(requestError.GET_DATA_ERROR));
     }
     //结束请求操作，更新loading的state
-    yield put(operatingFinish());
+    yield put(densityOperatingFinish());
 }
 
 //车辆速度
 export function* querySpeedSaga(action) {
     try {
         //操作开始，更新loading的state
-        yield put(operatingBegin());
+        yield put(speedOperatingBegin());
         let data = action.payload;
         //发起异步网络请求，并获取返回结果
         const response = yield call(querySpeedStatics, data.startdate, data.enddate);
@@ -153,14 +155,14 @@ export function* querySpeedSaga(action) {
         yield put(showErrorMessage(requestError.GET_DATA_ERROR));
     }
     //结束请求操作，更新loading的state
-    yield put(operatingFinish());
+    yield put(speedOperatingFinish());
 }
 
 //车辆异常
 export function* queryAbnormalSaga(action) {
     try {
         //操作开始，更新loading的state
-        yield put(operatingBegin());
+        yield put(abnormalOperatingBegin());
         let data = action.payload;
         //发起异步网络请求，并获取返回结果
         const response = yield call(queryAbnormalStatics, data.startdate, data.enddate);
@@ -177,7 +179,7 @@ export function* queryAbnormalSaga(action) {
         yield put(showErrorMessage(requestError.GET_DATA_ERROR));
     }
     //结束请求操作，更新loading的state
-    yield put(operatingFinish());
+    yield put(abnormalOperatingFinish());
 }
 
 //甘特图
@@ -196,7 +198,7 @@ export function* queryGanttSaga(action) {
         }
     } catch (error) {
         //异常提示
-        yield put(showErrorMessage(requestError.GET_DATA_ERROR));
+        yield put(showErrorMessage(requestError.REQUEST_ERROR));
     }
 }
 

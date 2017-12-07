@@ -20,6 +20,8 @@ import {
 } from './constants';
 
 import {
+    operatingBegin,
+    operatingFinish,
     getCenterAreaStaticDataDone
 } from './actions';
 
@@ -39,9 +41,9 @@ import {
 
 export function* getCenterAreaStaticDataSaga(action) {
     try {
+        //操作开始，更新loading的state
+        yield put(operatingBegin());
         const response = yield call(queryCenterAreaStaticData, action.payload.deviceID);
-        //TODO 获取成功提示
-        console.log("queryCenterAreaStaticData is successful!");
         //错误提示
         if (!response || response.success == false) {
             yield put(showErrorMessage(response.error_message));
@@ -53,8 +55,8 @@ export function* getCenterAreaStaticDataSaga(action) {
         console.log("queryCenterAreaStaticData error:" + (error.message ? error.message : error));
         yield put(showErrorMessage(requestError.GET_DATA_ERROR));
     }
-    //TODO 隐藏加载进度条
-    console.log("queryCenterAreaStaticData finish.");
+    //结束请求操作，更新loading的state
+    yield put(operatingFinish());
 }
 
 /**

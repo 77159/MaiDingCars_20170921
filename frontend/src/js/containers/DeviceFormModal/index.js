@@ -6,38 +6,35 @@
 
 'use strict';
 import React from 'react';
-import {Layout, Menu, Icon} from 'antd';
-import {Button} from 'antd';
-import {Modal} from 'antd';
+import {
+    Layout,
+    Menu,
+    Icon,
+    Button,
+    Modal,
+    Input,
+    Table,
+    Select,
+    Form
+} from 'antd';
 
+const Option = Select.Option;
+const FormItem = Form.Item;
 const {Content} = Layout;
-import {Input} from 'antd';
-import {Table} from 'antd';
-
 const {Column, ColumnGroup} = Table;
-
 import styles from './index.less';
 
 import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
 import {
-    makeSelectRepos, makeSelectLoading, makeSelectError, errorMessageSelector,
-    messageSelector
-} from '../App/selectors';
-import {
-    deviceDataSourceSelector, deviceEntitySelector, modalVisibleSelector, operationRunningSelector, operationSelector,
-    tableDataLoadingSelector
+    deviceEntitySelector,
+    modalVisibleSelector,
+    operationRunningSelector,
+    operationSelector,
 } from './selectors';
-import {Form} from 'antd';
-import {Switch} from 'antd';
-import {deviceFormModalCreateDevice, deviceFormModalHide, deviceFormModalModifyDevice} from "./actions";
+import {deviceFormModalHide,} from "./actions";
 import {appRegExp} from "../../utils/validation";
 import {createDevice, modifyDevice} from "../DeviceMgrPage/actions";
-
-import {Select} from 'antd';
-const Option = Select.Option;
-
-const FormItem = Form.Item;
 
 const formItemLayout = {
     labelCol: {span: 6},
@@ -54,7 +51,6 @@ class DeviceFormModal extends React.Component {
         super(props);
         this.state = {};
     }
-
 
     //状态更新后的变化
     componentWillReceiveProps(nextProps) {
@@ -95,7 +91,6 @@ class DeviceFormModal extends React.Component {
         }
     }
 
-
     //取消
     onCancel = () => {
         this.props.form.resetFields();
@@ -108,7 +103,6 @@ class DeviceFormModal extends React.Component {
         const opText = operation === 'create' ? '添加设备' : '编辑设备信息';
         const determine = (operation === 'create') ? '添加' : '保存';
         const isShow = (operation === 'create') ? false : true;
-        //const deviceStatus = (deviceEntity.deviceStatus === 0) ? '0' : '1';
         const deviceStatus = (operation === 'create') ? '0' : ((deviceEntity.deviceStatus === 1) ? '0' : '1');
 
         return (

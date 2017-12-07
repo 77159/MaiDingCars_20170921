@@ -19,8 +19,12 @@ import {
     GET_ABNORMAL_DATA_DONE,
     GET_GANTT_BEGIN,
     GET_GANTT_FINISH,
-    OPERATING_BEGIN,
-    OPERATING_FINISH
+    DENSITY_OPERATING_BEGIN,
+    DENSITY_OPERATING_FINISH,
+    SPEED_OPERATING_BEGIN,
+    SPEED_OPERATING_FINISH,
+    ABNORMAL_OPERATING_BEGIN,
+    ABNORMAL_OPERATING_FINISH
 } from './constants';
 
 /**
@@ -162,15 +166,43 @@ export const getGanttDone = (response) => ({
 
 
 /**
- * 查询统计数据（CURD）开始
+ * 查询密度统计数据（CURD）开始
  */
-export const operatingBegin = () => ({
-    type: OPERATING_BEGIN
+export const densityOperatingBegin = () => ({
+    type: DENSITY_OPERATING_BEGIN
 });
 
 /**
- * 查询统计数据（CURD）结束
+ * 查询密度统计数据（CURD）结束
  */
-export const operatingFinish = () => ({
-    type: OPERATING_FINISH
+export const densityOperatingFinish = () => ({
+    type: DENSITY_OPERATING_FINISH
+});
+
+/**
+ * 查询车辆速度统计数据（CURD）开始
+ */
+export const speedOperatingBegin = () => ({
+    type: SPEED_OPERATING_BEGIN
+});
+
+/**
+ * 查询车辆速度统计数据（CURD）结束
+ */
+export const speedOperatingFinish = () => ({
+    type: SPEED_OPERATING_FINISH
+});
+
+/**
+ * 查询车辆异常统计数据（CURD）开始
+ */
+export const abnormalOperatingBegin = () => ({
+    type: ABNORMAL_OPERATING_BEGIN
+});
+
+/**
+ * 查询车辆异常统计数据（CURD）结束
+ */
+export const abnormalOperatingFinish = () => ({
+    type: ABNORMAL_OPERATING_FINISH
 });

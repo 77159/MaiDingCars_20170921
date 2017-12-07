@@ -7,15 +7,7 @@
 'use strict';
 import {take, call, put, select, cancel, takeLatest, takeEvery} from 'redux-saga/effects';
 
-import {
-    CAR_FORM_MODAL_SHOW,
-    CAR_FORM_MODAL_HIDE,
-    CAR_FORM_MODAL_OP_BEGIN,
-    CAR_FORM_MODAL_OP_FINISH,
-    CAR_FORM_MODAL_CREATE_CAR,
-    CAR_FORM_MODAL_MODIFY_CAR,
-    CAR_FORM_MODAL_VIEW_CAR,
-} from './constants';
+import {CAR_FORM_MODAL_CREATE_CAR,} from './constants';
 
 import {
     carFormModalHide,
@@ -28,13 +20,11 @@ import {
     showSuccessMessage
 } from "../App/actions";
 
-import {createCarAPI, queryAllCarAPI, modifyCarAPI} from '../../api/serverApi';
+import {createCarAPI, modifyCarAPI} from '../../api/serverApi';
 import {LOCATION_CHANGE} from 'react-router-redux';
 import requestError from "../../utils/requestError";
 import {queryAllCarBegin} from "../CarMgrPage/actions";
 import {queryAllNotDeviceBegin} from "../DeviceMgrPage/actions";
-import {CREATE_CAR} from "../CarMgrPage/constants";
-
 
 /**
  * 添加车辆
@@ -46,7 +36,6 @@ export function* createCarSaga(action) {
         //发起异步网络请求，并获取返回结果
         const response = yield call(createCarAPI, action.payload);
         //是否发生了错误，或者请求失败
-        console.log(response);
         if (!response || response.success == false) {
             if(response.error_code === 10008) {
                 yield put(showErrorMessage(requestError.CREATE_CAR_NUM_ERROR));

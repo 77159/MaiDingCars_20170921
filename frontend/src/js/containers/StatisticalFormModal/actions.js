@@ -11,6 +11,8 @@ import {
     STATISTICAL_FORM_MODAL_OP_FINISH,
     GET_CENTER_AREA_DATA,
     GET_CENTER_AREA_DATA_DONE,
+    OPERATING_BEGIN,
+    OPERATING_FINISH
 } from './constants';
 
 /**
@@ -61,4 +63,19 @@ export const getCenterAreaStaticDataDone = (centerAreaEntity, count) => ({
         centerAreaEntity,
         count
     }
+});
+
+
+/**
+ * 查询统计数据（CURD）开始
+ */
+export const operatingBegin = () => ({
+    type: OPERATING_BEGIN
+});
+
+/**
+ * 查询统计数据（CURD）结束
+ */
+export const operatingFinish = () => ({
+    type: OPERATING_FINISH
 });

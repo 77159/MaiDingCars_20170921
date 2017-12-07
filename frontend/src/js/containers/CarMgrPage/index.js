@@ -9,52 +9,40 @@
 
 'use strict';
 import React from 'react';
-import {Layout, Menu, Icon} from 'antd';
-import {Button} from 'antd';
-import {Popconfirm} from 'antd';
+import {
+    Layout,
+    Menu,
+    Icon,
+    Form,
+    Button,
+    Popconfirm,
+    Input,
+    Select,
+    Row,
+    Col,
+    Table,
+    AutoComplete
+} from 'antd';
 
 const {Content} = Layout;
-import {Input} from 'antd';
-import {Select} from 'antd';
-
 const Option = Select.Option;
-import {Row, Col} from 'antd';
-import {Table} from 'antd';
-import {Avatar} from 'antd';
-import {Cascader} from 'antd';
-import {Checkbox} from 'antd';
-import {InputNumber} from 'antd';
-import {AutoComplete} from 'antd';
-import {Popover} from 'antd';
-import _ from 'lodash';
-
-import {AppConfig} from '../../core/appConfig';
-
-const serviceUrl = AppConfig.serviceUrl;
-
 const SubMenu = Menu.SubMenu;
-import styles from './index.less';
+const FormItem = Form.Item;
 
-import {carDataSourceSelector, tableDataLoadingSelector} from './selectors';
+import _ from 'lodash';
+const serviceUrl = AppConfig.serviceUrl;
+import {AppConfig} from '../../core/appConfig';
 import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
 import {loadRepos} from '../App/actions';
+import styles from './index.less';
 import {queryAllCarBegin, deleteCar} from './actions';
-
-import CategoryFormModel from '../CategoryFormModel';
-
-//region 添加车辆
-import {Form} from 'antd';
-import {Switch} from 'antd';
-import {CommonUtil} from "../../utils/util";
-
-
-
+import {carDataSourceSelector, tableDataLoadingSelector} from './selectors';
 import CarFormModal from '../CarFormModal';
 import {carFormModalShow} from "../CarFormModal/actions";
 import {carCategorySourceSelector} from '../CategoryFormModel/selectors';
-
-const FormItem = Form.Item;
+import {emptyCarCategoryId} from '../CategoryFormModel/actions';
+import CategoryFormModel from '../CategoryFormModel';
 
 export class CarMgrPage extends React.Component {
 
@@ -137,7 +125,7 @@ export class CarMgrPage extends React.Component {
         this.props.queryAllCar();
     };
 
-    //安保编号自动完成填充
+    //车辆编号自动完成填充
     onCarCodeAutoCompleteSearch = (value) => {
         let carDataSource = this.props.carDataSource;
         let data = [];
@@ -184,10 +172,10 @@ export class CarMgrPage extends React.Component {
         }
         //筛选数据
         return record != null &&
-            (_.isEmpty(filters[0]) || (_.isNull(record.deviceCode) == false && record.deviceCode.includes(filters[0]))) &&
-            (_.isEmpty(filters[1]) || (_.isNull(record.carCode) == false && record.carCode.includes(filters[1]))) &&
+            (_.isEmpty(filters[0]) || (_.isNull(record.deviceCode) == false && record.deviceCode.includes(filters[0].toUpperCase()))) &&
+            (_.isEmpty(filters[1]) || (_.isNull(record.carCode) == false && record.carCode.includes(filters[1].toUpperCase()))) &&
             (record.carType == filters[2] || filters[2] == 'all')
-    }
+    };
 
     //查询车辆（筛选）
     onFilterCar = () => {
@@ -195,12 +183,7 @@ export class CarMgrPage extends React.Component {
         let deviceCode = _.isEmpty(this.state.filter_deviceCode) ? '' : this.state.filter_deviceCode.trim();
         let carCode = _.isEmpty(this.state.filter_carCode) ? '' : this.state.filter_carCode.trim();
         let filterStr = `${deviceCode}&&${carCode}&&${this.state.filter_carType}`;
-        this.setState({
-            //TODO zxg:此处注意，尽量使用一个参数，antd 的性能优化有些问题。项目完成后可以提交 issue
-            //将多个筛选条件拼接为一个条件，利于后续在一次循环中集中判断，减少[carDataFilter]循环判断次数
-            dataFilter: [
-                filterStr
-            ]
+        this.setState({dataFilter: [filterStr]
         });
     };
 
@@ -214,11 +197,9 @@ export class CarMgrPage extends React.Component {
         this.props.showCarFormModal('modify', record);
     };
 
-
     onSelectChange = (keys) => {
         this.setState({curSelectedRowKeys: keys});
     };
-
 
     /**
      * 切换车辆类型设置
@@ -234,6 +215,7 @@ export class CarMgrPage extends React.Component {
      * 关闭车辆类型设置面板
      */
     closePostSettingModal = () => {
+        this.props.emptyCarCategoryId();
         this.setState({
             postVisible: false,
             postFormType: 'none'
@@ -246,9 +228,11 @@ export class CarMgrPage extends React.Component {
     showPostSettingModal = () => {
         this.setState({
             postVisible: true,
+            postFormType: 'category'
         });
     };
 
+    //删除
     delCar = (carCode) => {
         this.props.deleteCar(carCode);
         this.setState({
@@ -256,11 +240,14 @@ export class CarMgrPage extends React.Component {
         });
     };
 
-
+    //排序函数
+    sortFunction = (a,b) => {
+        if (/^\d/.test(a) ^ /^\D/.test(b)) return a>b?1:(a==b?0:-1);
+        return a>b?-1:(a==b?0:1);
+    };
 
     render() {
         const {carDataSource, tableDataLoading, carCategory} = this.props;
-
         const rowSelection = {
             curSelectedRowKeys,
             onChange: this.onSelectChange,
@@ -273,15 +260,15 @@ export class CarMgrPage extends React.Component {
                 )
             })
         }
-
+        
         const {curSelectedRowKeys} = this.state;
         const isDisabled = curSelectedRowKeys.length > 0;//禁止批量删除按钮
-
         
         const columns = [{
             title: '车辆编号',
             dataIndex: 'carCode',
             key: 'carCode',
+            sorter: (a, b) => this.sortFunction(a.carCode, b.carCode),
             filteredValue: this.state.dataFilter,   //设置过滤条件
             onFilter: (value, record) => this.carDataFilter(value, record)   //对每条数据都通过指定函数进行过滤
         }, {
@@ -305,6 +292,7 @@ export class CarMgrPage extends React.Component {
             title: '设备编号',
             dataIndex: 'deviceCode',
             key: 'deviceCode',
+            sorter: (a, b) => this.sortFunction(a.deviceCode, b.deviceCode),
         }, {
             title: '所属区域',
             dataIndex: 'area',
@@ -325,28 +313,44 @@ export class CarMgrPage extends React.Component {
             dataIndex: 'maxSpeed',
             key: 'maxSpeed',
             render: (text) => {
-                return Math.floor(text * 100) / 100 + ' km/h';
+                if(text == 0) {
+                    return text + '.00' + ' km/h';
+                }else {
+                    return Math.floor(text * 100) / 100 + ' km/h';
+                }
             },
         }, {
             title: '平均速度',
             dataIndex: 'averageSpeed',
             key: 'averageSpeed',
             render: (text) => {
-                return Math.floor(text * 100) / 100 + ' km/h';
+                if(text == 0) {
+                    return text + '.00' + ' km/h';
+                }else {
+                    return Math.floor(text * 100) / 100 + ' km/h';
+                }
             },
         }, {
             title: '安全速度',
             dataIndex: 'safetySpeed',
             key: 'safetySpeed',
             render: (text) => {
-                return Math.floor(text * 100) / 100 + ' km/h';
+                if(text == 0) {
+                    return text + '.00' + ' km/h';
+                }else {
+                    return Math.floor(text * 100) / 100 + '.00' + ' km/h';
+                }
             },
         }, {
             title: '行驶里程',
             dataIndex: 'mileage',
             key: 'mileage',
             render: (text) => {
-                return Math.floor(text / 1000 * 100) / 100 + ' km';
+                if(text == 0) {
+                    return text + '.00' + ' km';
+                }else {
+                    return Math.floor(text / 1000 * 100) / 100 + ' km';
+                }
             },
         }, {
             title: '报警次数',
@@ -360,6 +364,7 @@ export class CarMgrPage extends React.Component {
             title: '修改日期',
             dataIndex: 'updateTime',
             key: 'updateTime',
+            sorter: (a, b) => new Date(a.updateTime).getTime() - new Date(b.updateTime).getTime(),
         }, {
             title: '操作',
             dataIndex: 'operation',
@@ -472,6 +477,7 @@ export function actionsDispatchToProps(dispatch) {
             dispatch(loadRepos());
         },
         deleteCar: (carCodes) => dispatch(deleteCar(carCodes)),
+        emptyCarCategoryId: () => dispatch(emptyCarCategoryId()),
     }
 }
 

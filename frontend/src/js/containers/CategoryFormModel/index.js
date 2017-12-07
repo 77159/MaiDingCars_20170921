@@ -36,7 +36,6 @@ import {
     putCarCategory,
     postCarCategory,
     deleteCarCategory,
-    getImgUrlComponent,
     getImgUrl,
     queryArea,
     updateArea
@@ -45,11 +44,9 @@ import {
 //store
 import {
     carCategorySourceSelector,
-    operationRunningSelector,
     typeNameSelector,
     idSelector,
     areaSelector,
-    imgUrlSelector,
     imgUrlComponentSelector,
     areaNameSourceSelector
 } from './selectors';
@@ -60,7 +57,6 @@ import {PeopleAvatar} from '../../components/PeopleAvatar'
 
 //正则验证
 import {appRegExp} from "../../utils/validation";
-
 
 const {Content} = Layout;
 const FormItem = Form.Item;
@@ -93,6 +89,9 @@ class CategoryFormModel extends React.Component {
     componentDidMount() {
         this.props.getCarCategory();
         this.props.queryArea();
+
+        this.props.emptyCarCategoryId();
+        this.props.changePostFormType('category');
     };
 
     //创建添加类别
@@ -100,7 +99,6 @@ class CategoryFormModel extends React.Component {
         this.props.emptyCarCategoryId();     //清空输入框的值
         this.props.changePostFormType('category');
         //this.props.updateCarLevelName('');
-
     };
 
     //修改
@@ -113,7 +111,6 @@ class CategoryFormModel extends React.Component {
         }
     };
 
-
     //删除
     deleteCarCategory = (id, type) => {
         if (id) {
@@ -124,7 +121,6 @@ class CategoryFormModel extends React.Component {
             this.props.deleteCarCategory(id);
         }
     };
-
 
     /**
      * 创建车辆类型
@@ -154,7 +150,7 @@ class CategoryFormModel extends React.Component {
 
         return (
             <Modal
-                title={<span><i className="iconfont">&#xe6be;</i>类别设置</span>}
+                title={<span><Icon type="bars" />类别设置</span>}
                 visible={postVisible}
                 onCancel={this.props.closePostSettingModal}
                 footer={null}
@@ -214,10 +210,9 @@ class CategoryForm extends React.Component {
             values['imgUrl'] = imgUrl;
             this.props.handlePostCarCategory(values);
             form.resetFields();
-            //this.props.getImgUrl('');
+            // this.props.getImgUrl('');
         });
     };
-
 
     /**
      * 获取表单面板
@@ -272,7 +267,7 @@ class CategoryForm extends React.Component {
                     initialValue: this.props.area
                 })(
                     <Select>
-                        <Option key={null} value={null}>不选择任何区域</Option>
+                        <Option key={null} value={null} style={{height: '30px', background: '#fff'}}> </Option>
                         {areaList}
                     </Select>
                 )}
@@ -309,7 +304,6 @@ class CategoryForm extends React.Component {
         return buttonPanel;
 
     };
-
 
     render() {
         const {postFormType} = this.props;
@@ -357,7 +351,6 @@ const selectorStateToProps = createStructuredSelector({
     id: idSelector(),
     area: areaSelector(),
     imgUrl: imgUrlComponentSelector(),
-    // imgUrlComponent: imgUrlComponentSelector()
     areaName: areaNameSourceSelector(),
 });
 

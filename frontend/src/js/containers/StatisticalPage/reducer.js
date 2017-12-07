@@ -18,8 +18,12 @@ import {
     GET_SPEED_DATA_DONE,
     GET_ABNORMAL_DATA_DONE,
     GET_GANTT_FINISH,
-    OPERATING_BEGIN,
-    OPERATING_FINISH
+    DENSITY_OPERATING_BEGIN,
+    DENSITY_OPERATING_FINISH,
+    SPEED_OPERATING_BEGIN,
+    SPEED_OPERATING_FINISH,
+    ABNORMAL_OPERATING_BEGIN,
+    ABNORMAL_OPERATING_FINISH
 } from './constants';
 import _ from 'lodash';
 
@@ -32,13 +36,14 @@ const initialState = fromJS({
     densityEntity: {},
     speedEntity: {},
     abnormalEntity: {},
-
-    isShow: ['block']
-
+    densityIsShow: ['block'],
+    speedIsShow: ['block'],
+    abnormalIsShow: ['block']
 });
 
 //获取密度统计数据
 function getdensityEntity(origindata, totalCarNum) {
+
     let tmpEntity_ = {},
         totalNum = 0;
     tmpEntity_.data = [];
@@ -62,7 +67,7 @@ function getdensityEntity(origindata, totalCarNum) {
     });
 
     if (totalNum == 0 && tmpEntity_.data) {
-        let allname = '其他区域\n密集程度：' + (totalCarNum > 0 ? 100 : 0.00) + '% \n报警次数：0';
+        let allname = '其他区域\n密集程度：' + (totalCarNum > 0 ? 100 : 0.00) + '% 报警次数：0';
         tmpEntity_.legendData.push(allname);
         tmpEntity_.data.push({
             value: totalCarNum,
@@ -260,16 +265,40 @@ export default (state = initialState, action = {}) => {
             .set('ganttEntity', payload);
     }
 
-    //查询统计数据（CURD）开始
-    if (type === OPERATING_BEGIN) {
+    //查询密度统计数据（CURD）开始
+    if (type === DENSITY_OPERATING_BEGIN) {
         return state
-            .set('isShow', ['block']);
+            .set('densityIsShow', ['block']);
     }
 
-    //查询统计数据（CURD）结束
-    if (type === OPERATING_FINISH) {
+    //查询密度统计数据（CURD）结束
+    if (type === DENSITY_OPERATING_FINISH) {
         return state
-            .set('isShow', ['none']);
+            .set('densityIsShow', ['none']);
+    }
+
+    //查询车辆速度统计数据（CURD）开始
+    if (type === SPEED_OPERATING_BEGIN) {
+        return state
+            .set('speedIsShow', ['block']);
+    }
+
+    //查询车辆速度统计数据（CURD）结束
+    if (type === SPEED_OPERATING_FINISH) {
+        return state
+            .set('speedIsShow', ['none']);
+    }
+
+    //查询车辆异常统计数据（CURD）开始
+    if (type === ABNORMAL_OPERATING_BEGIN) {
+        return state
+            .set('abnormalIsShow', ['block']);
+    }
+
+    //查询车辆异常统计数据（CURD）结束
+    if (type === ABNORMAL_OPERATING_FINISH) {
+        return state
+            .set('abnormalIsShow', ['none']);
     }
 
     return state;

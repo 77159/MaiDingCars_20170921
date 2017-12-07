@@ -570,7 +570,7 @@ export class TraceReplayPage extends React.Component {
                                         <Button
                                             type="danger"
                                             className={styles.startReplay}
-                                            onClick={this.stopReplay}>停止回放</Button>
+                                            onClick={this.stopReplay}>停止播放</Button>
                                     </div>
                                     <div className={styles.allChkPanel}>
                                         <Button ghost size="small" onClick={() => {

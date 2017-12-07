@@ -101,8 +101,8 @@ export default class AreaSettingMap extends React.Component {
      */
     setAreaFilter = () => {
         const {area, areaDateTime} = this.state;
-        const beiginDateTime = areaDateTime && areaDateTime.length > 0 ? areaDateTime[0].second(0).format('YYYY-MM-DD hh:mm:ss') : '';
-        const endDateTime = areaDateTime && areaDateTime.length > 0 ? areaDateTime[1].second(0).format('YYYY-MM-DD hh:mm:ss') : '';
+        const beiginDateTime = areaDateTime && areaDateTime.length > 0 ? areaDateTime[0].second(0).format('YYYY-MM-DD HH:mm:ss') : '';
+        const endDateTime = areaDateTime && areaDateTime.length > 0 ? areaDateTime[1].second(0).format('YYYY-MM-DD HH:mm:ss') : '';
         this.setState({
             areaFilter: `${area ? area : ''}&&${beiginDateTime}&&${endDateTime}`,
         })
@@ -143,8 +143,8 @@ export default class AreaSettingMap extends React.Component {
      */
     setDensityFilter = () => {
         const {densityCarCode, densityDateTime} = this.state;
-        const beiginDateTime = densityDateTime && densityDateTime.length > 0 ? densityDateTime[0].second(0).format('YYYY-MM-DD hh:mm:ss') : '';
-        const endDateTime = densityDateTime && densityDateTime.length > 0 ? densityDateTime[1].second(0).format('YYYY-MM-DD hh:mm:ss') : '';
+        const beiginDateTime = densityDateTime && densityDateTime.length > 0 ? densityDateTime[0].second(0).format('YYYY-MM-DD HH:mm:ss') : '';
+        const endDateTime = densityDateTime && densityDateTime.length > 0 ? densityDateTime[1].second(0).format('YYYY-MM-DD HH:mm:ss') : '';
         this.setState({
             densityFilter: `${densityCarCode ? densityCarCode : ''}&&${beiginDateTime}&&${endDateTime}`,
         });
@@ -180,8 +180,8 @@ export default class AreaSettingMap extends React.Component {
      */
     setSpeedFilter = () => {
         const {speedCarCode, speedDateTime} = this.state;
-        const beiginDateTime = speedDateTime && speedDateTime.length > 0 ? speedDateTime[0].second(0).format('YYYY-MM-DD hh:mm:ss') : '';
-        const endDateTime = speedDateTime && speedDateTime.length > 0 ? speedDateTime[1].second(0).format('YYYY-MM-DD hh:mm:ss') : '';
+        const beiginDateTime = speedDateTime && speedDateTime.length > 0 ? speedDateTime[0].second(0).format('YYYY-MM-DD HH:mm:ss') : '';
+        const endDateTime = speedDateTime && speedDateTime.length > 0 ? speedDateTime[1].second(0).format('YYYY-MM-DD HH:mm:ss') : '';
         this.setState({
             speedFilter: `${speedCarCode ? speedCarCode : ''}&&${beiginDateTime}&&${endDateTime}`,
         });
@@ -236,7 +236,9 @@ export default class AreaSettingMap extends React.Component {
         let areaDatas = []; //区域报警
         let densityDatas = [];//密度报警
         let speedDatas = [];//速度报警
-
+        let sortData;
+        let sortData2;
+        let sortData3;
         let areaUnRead = 0;
         let densityUnRead = 0;
         let speedUnRead = 0;
@@ -254,6 +256,15 @@ export default class AreaSettingMap extends React.Component {
                 }
             }
 
+            //排序
+            sortData = areaDatas;
+            sortData.map((item) => {
+                let date = item.date;
+                sortData.sort(function(a, b){
+                    return Date.parse(b.date) - Date.parse(a.date);//时间正序
+                })
+            });
+
             //闲置报警
             if (type === 97) {
                 densityDatas.push(item);
@@ -262,6 +273,15 @@ export default class AreaSettingMap extends React.Component {
                 }
             }
 
+            //排序
+            sortData2 = densityDatas;
+            sortData2.map((item) => {
+                let date = item.date;
+                sortData2.sort(function(a, b){
+                    return Date.parse(b.date) - Date.parse(a.date);//时间正序
+                })
+            });
+
             //超速报警
             if (type === 99) {
                 speedDatas.push(item);
@@ -269,6 +289,15 @@ export default class AreaSettingMap extends React.Component {
                     speedUnRead++;
                 }
             }
+
+            //排序
+            sortData3 = speedDatas;
+            sortData3.map((item) => {
+                let date = item.date;
+                sortData3.sort(function(a, b){
+                    return Date.parse(b.date) - Date.parse(a.date);
+                })
+            })
         }
 
         //区域集中报警
@@ -277,6 +306,7 @@ export default class AreaSettingMap extends React.Component {
                 title: '报警时间',
                 dataIndex: 'dateTime',
                 key: 'dateTime',
+                sorter: (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
                 filteredValue: [this.state.areaFilter],
                 onFilter: (value, record) => this.areaDataFilter(value, record),
                 render: function (text, record, index) {
@@ -316,7 +346,7 @@ export default class AreaSettingMap extends React.Component {
                     return (
                         <div>
                             <Button type="primary" className={styles.tableBtn} ghost>热力图</Button>
-                            <Popconfirm title="确认要删除此设备吗？" onConfirm={() => {
+                            <Popconfirm title="确认要删除此信息吗？" onConfirm={() => {
                                 deleteAlarmMessageByKeys([record.key]);
                             }}>
                                 <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
@@ -370,8 +400,8 @@ export default class AreaSettingMap extends React.Component {
                 render: (text, record) => {
                     return (
                         <div>
-                            <Button type="primary" className={styles.tableBtn} ghost>定位</Button>
-                            <Popconfirm title="确认要删除此设备吗？" onConfirm={() => {
+                            {/*<Button type="primary" className={styles.tableBtn} ghost>定位</Button>*/}
+                            <Popconfirm title="确认要删除此信息吗？" onConfirm={() => {
                                 deleteAlarmMessageByKeys([record.key]);
                             }}>
                                 <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
@@ -447,8 +477,8 @@ export default class AreaSettingMap extends React.Component {
                 render: (text, record) => {
                     return (
                         <div>
-                            <Button type="primary" className={styles.tableBtn} ghost>定位</Button>
-                            <Popconfirm title="确认要删除此设备吗？" onConfirm={() => {
+                            {/*<Button type="primary" className={styles.tableBtn} ghost>定位</Button>*/}
+                            <Popconfirm title="确认要删除此信息吗？" onConfirm={() => {
                                 deleteAlarmMessageByKeys([record.key]);
                             }}>
                                 <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
@@ -465,7 +495,7 @@ export default class AreaSettingMap extends React.Component {
         const densityAllDisabled = densitySelectedRowKeys.length > 0;//闲置报警批量删除按钮是否禁用
 
         return (<Modal
-                title={<span><Icon type="hdd"/>异常报警</span>}
+                title={<span><i className="iconfont">&#xe6ba;</i>异常报警</span>}
                 width={1280}
                 className={styles.redModal}
                 visible={this.props.visible}
@@ -498,8 +528,8 @@ export default class AreaSettingMap extends React.Component {
                                 <Col span={12} className={styles.item}>
                                     <span>报警时间</span>
                                     <RangePicker
-                                        showTime={{format: 'hh:mm'}}
-                                        format="YYYY-MM-DD hh:mm"
+                                        showTime={{format: 'HH:mm'}}
+                                        format="YYYY-MM-DD HH:mm"
                                         placeholder={['开始时间', '结束时间']}
                                         onChange={this.handleChangeAraeDateTime}
                                         value={areaDateTime}
@@ -532,7 +562,7 @@ export default class AreaSettingMap extends React.Component {
                                        selectedRowKeys: this.state.areaSelectedRowKeys
                                    }}
                                    columns={areaColumns}
-                                   dataSource={areaDatas}>
+                                   dataSource={sortData}>
                             </Table>
                         </TabPane>
                         {/*闲置*/}
@@ -554,8 +584,8 @@ export default class AreaSettingMap extends React.Component {
                                 <Col span={12} className={styles.item}>
                                     <span>报警时间</span>
                                     <RangePicker
-                                        showTime={{format: 'hh:mm'}}
-                                        format="YYYY-MM-DD hh:mm"
+                                        showTime={{format: 'HH:mm'}}
+                                        format="YYYY-MM-DD HH:mm"
                                         placeholder={['开始时间', '结束时间']}
                                         value={densityDateTime}
                                         onChange={this.handleChangeDensityDateTime}
@@ -587,7 +617,7 @@ export default class AreaSettingMap extends React.Component {
                                        selectedRowKeys: this.state.densitySelectedRowKeys
                                    }}
                                    columns={densityColumns}
-                                   dataSource={densityDatas}>
+                                   dataSource={sortData2}>
                             </Table>
                         </TabPane>
                         {/*超速*/}
@@ -608,8 +638,8 @@ export default class AreaSettingMap extends React.Component {
                                 <Col span={12} className={styles.item}>
                                     <span>报警时间</span>
                                     <RangePicker
-                                        showTime={{format: 'hh:mm'}}
-                                        format="YYYY-MM-DD hh:mm"
+                                        showTime={{format: 'HH:mm'}}
+                                        format="YYYY-MM-DD HH:mm"
                                         placeholder={['开始时间', '结束时间']}
                                         value={speedDateTime}
                                         onChange={this.handleChangeSpeedDateTime}
@@ -645,7 +675,7 @@ export default class AreaSettingMap extends React.Component {
                                     selectedRowKeys: this.state.speedSelectedRowKeys
                                 }}
                                 columns={speedColumns}
-                                dataSource={speedDatas}>
+                                dataSource={sortData3}>
                             </Table>
                         </TabPane>
                     </Tabs>

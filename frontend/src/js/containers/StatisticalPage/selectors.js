@@ -52,10 +52,21 @@ const ganttSelector = () => createSelector(
     (deviceModalState) => deviceModalState.get('ganttEntity')
 );
 
-const isShowSelector = () => createSelector(
+const densityIsShowSelector = () => createSelector(
     selectorStatistical,
-    (deviceModalState) => deviceModalState.get('isShow')
+    (deviceModalState) => deviceModalState.get('densityIsShow')
 );
+
+const speedIsShowSelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('speedIsShow')
+);
+
+const abnormalIsShowSelector = () => createSelector(
+    selectorStatistical,
+    (deviceModalState) => deviceModalState.get('abnormalIsShow')
+);
+
 
 export {
     statisticalEntitySelector,
@@ -67,5 +78,7 @@ export {
     speedEntitySelector,
     abnormalEntitySelector,
     ganttSelector,
-    isShowSelector
+    densityIsShowSelector,
+    speedIsShowSelector,
+    abnormalIsShowSelector
 };

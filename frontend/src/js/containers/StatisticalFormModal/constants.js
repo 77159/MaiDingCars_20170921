@@ -12,3 +12,7 @@ export const STATISTICAL_FORM_MODAL_OP_FINISH = 'StatisticalFormModal/DEVICE_FOR
 
 export const GET_CENTER_AREA_DATA = 'StatisticalFormModal/GET_CENTER_AREA_DATA'; //查询集中区域统计信息开始
 export const GET_CENTER_AREA_DATA_DONE = 'StatisticalFormModal/GET_CENTER_AREA_DATA_DONE'; //查询集中区域统计信息结束
+
+
+export const OPERATING_BEGIN = 'StatisticalFormModal/OPERATING_BEGIN';    //查询统计数据（CURD）开始
+export const OPERATING_FINISH = 'StatisticalFormModal/OPERATING_FINISH';  //查询统计数据（CURD）结束

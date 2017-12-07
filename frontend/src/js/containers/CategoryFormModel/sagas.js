@@ -16,8 +16,6 @@ import {
     GET_CARCATEGORYBYID,
     PUT_CARCATEGORY,
     GET_CAR_CATEGORY_PARENT_BY_ID,
-    QUERY_AREA,
-    QUERY_AREA_FINISH
 } from './constants';
 
 import {
@@ -213,8 +211,6 @@ export function* watchFetchData() {
 
     //当发生页面切换动作时，中断未完成的saga动作
     yield take([LOCATION_CHANGE]);
-
-    //console.log('========Cancel device watcher=========');
 
     yield cancel(watchGetCarCategory);
     yield cancel(watchAddCarCategory);

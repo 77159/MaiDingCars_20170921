@@ -23,5 +23,11 @@ export const GET_GANTT_BEGIN = 'StatisticalMgr/GET_GANTT_BEGIN'; //查询甘特�
 export const GET_GANTT_FINISH = 'StatisticalMgr/GET_GANTT_FINISH'; //查询甘特图结束
 
 
-export const OPERATING_BEGIN = 'StatisticalMgr/OPERATING_BEGIN';    //查询统计数据（CURD）开始   operating
-export const OPERATING_FINISH = 'StatisticalMgr/OPERATING_FINISH';  //查询统计数据（CURD）结束
+export const DENSITY_OPERATING_BEGIN = 'StatisticalMgr/DENSITY_OPERATING_BEGIN';    //查询密度统计数据（CURD）开始
+export const DENSITY_OPERATING_FINISH = 'StatisticalMgr/DENSITY_OPERATING_FINISH';  //查询密度统计数据（CURD）结束
+
+export const SPEED_OPERATING_BEGIN = 'StatisticalMgr/SPEED_OPERATING_BEGIN';    //查询车辆速度统计数据（CURD）开始
+export const SPEED_OPERATING_FINISH = 'StatisticalMgr/SPEED_OPERATING_FINISH';  //查询车辆速度统计数据（CURD）结束abnormal
+
+export const ABNORMAL_OPERATING_BEGIN = 'StatisticalMgr/ABNORMAL_OPERATING_BEGIN';    //查询车辆异常统计数据（CURD）开始
+export const ABNORMAL_OPERATING_FINISH = 'StatisticalMgr/ABNORMAL_OPERATING_FINISH';  //查询车辆异常统计数据（CURD）结束 abnormal

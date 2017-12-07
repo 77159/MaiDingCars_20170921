@@ -10,7 +10,6 @@ import {take, call, put, select, cancel, takeLatest, takeEvery} from 'redux-saga
 import {
     CREATE_DEVICE,
     MODIFY_DEVICE,
-    DEVICE_OP_FINISH,
     QUERY_ALL_DEVICE_BEGIN,
     QUERY_ALL_NOT_DEVICE_BEGIN,
     DELETE_DEVICE
@@ -90,7 +89,6 @@ export function* queryAllNotDeviceSaga() {
 export function* deleteDeviceSaga(action) {
     try {
         const response = yield call(deleteDevicesAPI, {deviceCode: action.deviceCode});
-        console.log(response);
         //判断是否发生错误并处理
         if (!response || response.success == false) {
             yield put(showErrorMessage(response.error_message));   //提示错误信息

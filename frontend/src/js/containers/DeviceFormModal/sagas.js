@@ -8,25 +8,17 @@
 import {take, call, put, select, cancel, takeLatest, takeEvery} from 'redux-saga/effects';
 
 import {
-    DEVICE_FORM_MODAL_SHOW,
-    DEVICE_FORM_MODAL_HIDE,
-    DEVICE_FORM_MODAL_OP_BEGIN,
-    DEVICE_FORM_MODAL_OP_FINISH,
-    DEVICE_FORM_MODAL_CREATE_DEVICE,
-    DEVICE_FORM_MODAL_MODIFY_DEVICE,
-    DEVICE_FORM_MODAL_VIEW_DEVICE,
-} from './constants';
-
-import {
     deviceFormModalHide,
-    deviceFormModalOpBegin, deviceFormModalOpFinish,
+    deviceFormModalOpBegin,
+    deviceFormModalOpFinish,
 } from './actions';
 
 import {
-    showErrorMessage, showSuccessMessage
+    showErrorMessage,
+    showSuccessMessage
 } from "../App/actions";
 
-import {createDeviceAPI, queryAllDeviceAPI, modifyDeviceAPI} from '../../api/serverApi';
+import {createDeviceAPI, modifyDeviceAPI} from '../../api/serverApi';
 import requestError from "../../utils/requestError";
 import {queryAllDeviceBegin} from "../DeviceMgrPage/actions";
 

@@ -9,46 +9,49 @@
 
 'use strict';
 import React from 'react';
-import {Layout, Menu, Icon} from 'antd';
-import {Button} from 'antd';
-import {Modal} from 'antd';
-import {Input} from 'antd';
-import {InputNumber} from 'antd';
-import {Cascader} from 'antd';
-import {Checkbox} from 'antd';
-import {Select} from 'antd';
-import {Row, Col} from 'antd';
-import {Table} from 'antd';
-import {message} from 'antd';
-import {Form} from 'antd';
+import {
+    Layout,
+    Menu,
+    Icon,
+    Button,
+    Modal,
+    Input,
+    Cascader,
+    Select,
+    Row,
+    Col,
+    Table,
+    Form
+} from 'antd';
+const FormItem = Form.Item;
+const Option = Select.Option;
 const {Column, ColumnGroup} = Table;
+const {Content} = Layout;
+
 import styles from './index.less';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-const {Content} = Layout;
+
 import {createStructuredSelector} from 'reselect';
 import {
-    carDataSourceSelector, carEntitySelector, modalVisibleSelector, operationRunningSelector, operationSelector,
-    tableDataLoadingSelector, imgURLSelector
+    carEntitySelector,
+    modalVisibleSelector,
+    operationRunningSelector,
+    operationSelector,
+    imgURLSelector
 } from './selectors';
 
 import {carCategorySourceSelector, areaNameSourceSelector} from '../CategoryFormModel/selectors';
-
 import {notDeviceDataSourceSelector} from '../DeviceMgrPage/selectors';
-
-import {carFormModalCreateCar, carFormModalHide, carFormModalModifyCar, getImgUrl} from "./actions";
+import {carFormModalHide, getImgUrl} from "./actions";
 import {appRegExp} from "../../utils/validation";
-import {PeopleAvatar} from '../../components/PeopleAvatar';
 import {createCar, modifyCar} from "../CarMgrPage/actions";
-
 import {queryAllNotDeviceBegin} from "../DeviceMgrPage/actions";
-
 
 import {AppConfig} from '../../core/appConfig';
 const serviceUrl = AppConfig.serviceUrl;
 
-const FormItem = Form.Item;
-const Option = Select.Option;
+
 
 const formItemLayout = {
     labelCol: {span: 6},
@@ -81,7 +84,8 @@ class CarFormModal extends React.Component {
         this.state = {
             carCategory: [],  //车辆类别、级别集合
             notDeviceDataSource: [],
-            areaName: []    //区域列表集合
+            areaName: [],    //区域列表集合
+            area_: ''
         };
     }
 
@@ -103,7 +107,6 @@ class CarFormModal extends React.Component {
         }
     };
 
-
     //将车辆类别数据进行深拷贝，修改结构后存储到当前组件的state中
     deepCloneCarCategory = (orginCarCategory) => {
         //复制车辆类别数据，改变对象结构
@@ -124,12 +127,8 @@ class CarFormModal extends React.Component {
     //取消
     onCancel = () => {
         this.props.form.resetFields();
-        if (this.props.operation === 'create') {
-            this.props.getImgUrl('');
-        } else {
-            this.props.getImgUrl(this.props.carEntity.avatarImgPath);
-        }
         this.props.hideModal();
+        this.setState({area_: ''});
     };
 
     //添加
@@ -170,10 +169,19 @@ class CarFormModal extends React.Component {
                 values['carType'] = carType;
             }
             
-            console.log(values);
-            
             this.props.modifyCar(values);
             //form.resetFields();
+        });
+    };
+
+    //车辆类型与区域的联动
+    handleChange = (value) => {
+        this.props.carCategory.map((item, index) => {
+            if(item.id === value[0]) {
+                this.setState({
+                    area_: item.area
+                });
+            }
         });
     };
 
@@ -185,16 +193,17 @@ class CarFormModal extends React.Component {
         const determine = (operation === 'create') ? '添加' : '保存';
         const switchBtn = (operation === 'create') ? this.onAdd : this.onSave;
         const isShow = (operation === 'create') ? false : true;
+        const areaData = (operation === 'create') ? this.state.area_ : carEntity.area;
         let carTypeName, notDevice, areaNameList;
 
         //车辆类型的遍历渲染
-        if (carCategory) {
-            carTypeName = carCategory.map((item, index) => {
-                return (
-                    <Option key={index} value={item.typeName}>{item.typeName}</Option>
-                )
-            });
-        }
+        // if (carCategory) {
+        //     carTypeName = carCategory.map((item, index) => {
+        //         return (
+        //             <Option key={index} value={item.typeName}>{item.typeName}</Option>
+        //         )
+        //     });
+        // }
 
         //未使用的设备状态
         if (notDeviceDataSource) {
@@ -248,7 +257,7 @@ class CarFormModal extends React.Component {
                                     rules: [{type: 'array', required: true, message: '请选择车辆类型'}],
                                     initialValue: [carEntity.carType]
                                 })(
-                                    <Cascader placeholder="请选择车辆类别" options={this.state.carCategory}/>
+                                    <Cascader placeholder="请选择车辆类别" options={this.state.carCategory} onChange={this.handleChange}/>
                                 )}
                             </FormItem>
                             <FormItem
@@ -257,10 +266,10 @@ class CarFormModal extends React.Component {
                                 colon={false}
                             >
                                 {getFieldDecorator('area', {
-                                    initialValue: carEntity.area
+                                    initialValue: areaData
                                 })(
                                     <Select>
-                                        <Option key={null} value={null}>不选择任何区域</Option>
+                                        <Option key={null} value={null} style={{height: '30px', background: '#fff'}}> </Option>
                                         {areaNameList}
                                     </Select>
                                 )}
@@ -287,8 +296,8 @@ class CarFormModal extends React.Component {
                                 {getFieldDecorator('deviceCode', {
                                     initialValue: carEntity.deviceCode
                                 })(
-                                    <Select>
-                                        <Option key={null} value={null}>不选择任何设备</Option>
+                                    <Select showSearch>
+                                        <Option key={null} value={null} style={{height: '30px', background: '#fff'}}> </Option>
                                         {notDevice}
                                     </Select>
                                 )}
