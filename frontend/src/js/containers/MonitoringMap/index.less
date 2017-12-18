@@ -1,0 +1,41 @@
+.fengmap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mapActions {
+  position: absolute;
+  width: 48px;
+  right: 20px;
+  bottom: 50px;
+  display: flex;
+  justify-content: baseline;
+  flex-direction: column;
+}
+
+.mapActionBtn {
+  width: 38px;
+  height: 38px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.32);
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  font-size: 22px;
+  line-height: 36px;
+  text-align: center;
+  color: #c12731;
+  display: block;
+  margin: 5px;
+  user-select: none;
+  &:hover {
+    cursor: pointer;
+    color: #d62731;
+    background-color: rgba(239, 239, 239, 0.49);
+  }
+  img {
+    margin-top: 3px;
+    //vertical-align: top;
+  }
+}

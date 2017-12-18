@@ -144,7 +144,7 @@ export class AreaSettingPage extends React.Component {
                 const result = this.getDiffPoints(points);
                 polygonMarker.dispose();
                 if (!result) {
-                    this.props.showErrorMessage('区域完全超出地图边界');
+                    this.props.showErrorMessage('区域绘制范围错误，请重新绘制');
                     return;
                 }
                 this.currentPolygon = [];
@@ -178,37 +178,41 @@ export class AreaSettingPage extends React.Component {
      * @param points
      */
     getDiffPoints = (points, floorid = 1) => {
-        //最新的区域坐标
-        let lastPoly = new geoJson();
-        lastPoly.coordinates.push(getArray(points));
-        //地图polygon坐标
-        const vertices = this.getExtentVertices();
-        let extentJson = new geoJson();
-        let result = null;
-        for (let i = 0; i < vertices.length; i++) {
-            extentJson.coordinates.push(getFMArray(vertices[i]));
-            let res = intersectPolygons(lastPoly, [extentJson]);
-            if (res.length === 0) {
-                continue;
+        try{
+            //最新的区域坐标
+            let lastPoly = new geoJson();
+            lastPoly.coordinates.push(getArray(points));
+            //地图polygon坐标
+            const vertices = this.getExtentVertices();
+            let extentJson = new geoJson();
+            let result = null;
+            for (let i = 0; i < vertices.length; i++) {
+                extentJson.coordinates.push(getFMArray(vertices[i]));
+                let res = intersectPolygons(lastPoly, [extentJson]);
+                if (res.length === 0) {
+                    continue;
+                }
+                //在地图上已经存在的区域坐标
+                let desPolys = [];
+                for (const key in this.polygonMarkers) {
+                    const pms = this.polygonMarkers[key];
+                    pms.map((pm) => {
+                        let poly = new geoJson();
+                        let coords = getArray(pm._ps);
+                        poly.coordinates.push(coords);
+                        desPolys.push(poly);
+                    })
+                }
+                const resJSON = new geoJson();
+                res.pop();
+                resJSON.coordinates.push(getArray(res));
+                result = diffPolygons(resJSON, desPolys);
+                if (!result) break;
             }
-            //在地图上已经存在的区域坐标
-            let desPolys = [];
-            for (const key in this.polygonMarkers) {
-                const pms = this.polygonMarkers[key];
-                pms.map((pm) => {
-                    let poly = new geoJson();
-                    let coords = getArray(pm._ps);
-                    poly.coordinates.push(coords);
-                    desPolys.push(poly);
-                })
-            }
-            const resJSON = new geoJson();
-            res.pop();
-            resJSON.coordinates.push(getArray(res));
-            result = diffPolygons(resJSON, desPolys);
-            if (!result) break;
+            return result;
+        }catch (err) {
+
         }
-        return result;
     };
 
     /**
@@ -429,6 +433,12 @@ export class AreaSettingPage extends React.Component {
         const {listGroups, areaList} = this.props;                                                  //数据源
         const {deleteAreaById, queryAreaByIdBegin, lockForm, unLockForm, emptyAreaForm} = this.props;//action
 
+        //区域名称排序
+        let sortData = areaList;
+        sortData.sort((a, b) => {
+           return new Date(a.createTime).getTime() - new Date(b.createTime).getTime()
+        });
+
         return (
             <Layout className={styles.layout}>
                 <Sider width={256} className={styles.sider} collapsible={true}
@@ -456,7 +466,7 @@ export class AreaSettingPage extends React.Component {
                             {/*左侧菜单*/}
                             <AreaSubMenu
                                 listGroups={listGroups}                     //楼层集合
-                                areaList={areaList}                         //楼层区域集合
+                                areaList={sortData}                         //楼层区域集合
                                 deleteAreaById={deleteAreaById}             //根据主键id删除区域
                                 queryAreaByIdBegin={queryAreaByIdBegin}     //根据主键id查询区域
                                 unLockForm={unLockForm}                     //区域表单解锁

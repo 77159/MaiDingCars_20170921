@@ -77,8 +77,8 @@ function newWebSocket(url, onopen, onmessage, onclose, onerror) {
 }
 
 function openWS() {
-    // wsUrl = "ws://192.168.1.92:8080/websocket.ws?token=" + token;
-    wsUrl = "ws://123.56.157.161:8080/maiding-car-locate/websocket.ws?token=" + token;
+    wsUrl = "ws://192.168.1.92:8080/websocket.ws?token=" + token;
+    // wsUrl = "ws://123.56.157.161:8080/maiding-car-locate/websocket.ws?token=" + token;
     // wsUrl = "ws://localhost:8080/websocket.ws?token=" + token;//websocket的测试接口地址
     ws = newWebSocket(wsUrl, onOpen, onReceivedMessage, onClose, onError);
 }

@@ -13,10 +13,11 @@ import * as cookies from '../api/cookies.js';
 export const AppConfig = {
     //后台接口服务地址
     // serviceUrl: 'http://localhost:8080/',
-    // serviceUrl: 'http://192.168.1.92:8080/',
-    serviceUrl: 'http://123.56.157.161:8080/maiding-car-locate/',
+    serviceUrl: 'http://192.168.1.92:8080/',
+    // serviceUrl: 'http://123.56.157.161:8080/maiding-car-locate/',
     fmTokenCookieName: 'fm-factorcar-token',
     get token() {
+        console.log(this.fmTokenCookieName);
         let token = cookies.getItem(this.fmTokenCookieName);
         return token;
         //return '44A16F0A4D45492FA6EC8791CAEC2E2C';

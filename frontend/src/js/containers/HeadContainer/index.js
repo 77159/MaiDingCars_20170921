@@ -10,6 +10,7 @@ import {Modal, Input} from 'antd';
 
 const {Header} = Layout;
 import styles from './index.less';
+import moment from 'moment';
 
 import {createStructuredSelector} from 'reselect';
 import {connect} from 'react-redux';
@@ -48,7 +49,7 @@ export class HeadContainer extends React.Component {
         let curLocation = browserHistory.getCurrentLocation().pathname;  //获取当前页面地址
         if (curLocation != path) {              //防止重复刷新
             browserHistory.push(path);          //跳转页面
-            console.log('切换页面', path);
+            // console.log('切换页面', path);
         }
     }
 

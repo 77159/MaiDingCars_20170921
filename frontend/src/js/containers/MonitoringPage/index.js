@@ -28,7 +28,7 @@ import {DatePicker} from 'antd';
 import {Tabs} from 'antd';
 import moment from 'moment';
 
-import {realTimeLocationsSelector} from "../MainContainer/selectors";
+import {realTimeLocationsSelector} from "../MonitoringMap/selectors";
 //action car
 import {queryAllCarBegin} from '../CarMgrPage/actions';
 //selectors car
@@ -53,8 +53,12 @@ import {alertMessageDataSelector, alarmDatasSelector, SelectorOnLineDevice} from
 import styles from './index.less';
 
 //自定义组件
-import MonitoringMap from '../../components/MonitoringMap';
+// import MonitoringMap from '../../components/MonitoringMap';
+import MonitoringMap from '../MonitoringMap';
+// import MonitoringMenu from '../MonitoringMenu';
+
 import AlarmTable from '../../components/AlarmTable';
+// import AlarmTable from '../MonitoringFormModal';
 
 const Option = Select.Option;
 const {Sider, Content, Footer} = Layout;
@@ -75,11 +79,14 @@ export class MonitoringPage extends React.Component {
             carCardHidden: true,
             alarmModalVisible: false,
             carStatus: 'all',
+
+            isClick: false,
         };
 
         //定义全局map变量
         this.fmMap = null;
         this.notificationKeys = []; //当前提示框
+        this.time = new moment();
     };
 
     componentWillMount() {
@@ -88,12 +95,25 @@ export class MonitoringPage extends React.Component {
         //查询车辆类型
         this.props.getCarCategory();
         //查询区域列表
-        //this.props.queryAreaListBegin();
+        this.props.queryAreaListBegin();
     };
 
     componentDidUpdate() {
         this.showNotification();
     };
+
+
+    shouldComponentUpdate(nextProps){
+        let curTime = new moment(),timeRange = curTime.diff(this.time);
+        if((_.eq(this.props.realTimeLocations, nextProps.realTimeLocations) == false) && (timeRange >= 1000)){
+            this.time = new moment();
+            return true;
+        } else if(nextProps.realTimeLocations == null) {
+            return true;
+        }else {
+            return false;
+        }
+    }
 
     componentWillReceiveProps(nextProps) {
 
@@ -103,40 +123,41 @@ export class MonitoringPage extends React.Component {
             this.setState({
                 carList: carList
             });
+            
         }
 
         //车辆列表在线更新
-        // if (_.eq(this.props.onLineDevice, nextProps.onLineDevice) == false) {
-        //     if (!nextProps.carList) {
-        //         this.setState({
-        //             onLineDevice: []
-        //         })
-        //     }
-        //     const carList = this.getCarList(nextProps.carList, nextProps.onLineDevice);
-        //     this.setState({
-        //         carList: carList
-        //     });
-        // }
-
-        //实时更新车辆信息
-        if (_.eq(this.props.realTimeLocations, nextProps.realTimeLocations) == false) {
+        if (_.eq(this.props.onLineDevice, nextProps.onLineDevice) == false) {
+            if (!nextProps.carList) {
+                this.setState({
+                    onLineDevice: []
+                })
+            }
             const carList = this.getCarList(nextProps.carList, nextProps.onLineDevice);
             this.setState({
-                carList: carList,
-            });
-            const realTimeLocations = nextProps.realTimeLocations;
-            let carInfo = this.state.carInfo;
-            if (!carInfo) return;
-            if (realTimeLocations.carCode === carInfo.carCode) {
-                carInfo.dumpPower = realTimeLocations.dumpPower;
-                carInfo.areaName = realTimeLocations.area ? realTimeLocations.area.areaName : '';
-                carInfo.alertInfo = realTimeLocations.alertInfo.length > 0 ? '报警' : '正常';
-            }
-
-            this.setState({
-                carInfo: carInfo,
+                carList: carList
             });
         }
+
+        //实时更新车辆信息
+        // if (_.eq(this.props.realTimeLocations, nextProps.realTimeLocations) == false) {
+        //     const carList = this.getCarList(nextProps.carList, nextProps.onLineDevice);
+        //     this.setState({
+        //         carList: carList,
+        //     });
+        //     const realTimeLocations = nextProps.realTimeLocations;
+        //     let carInfo = this.state.carInfo;
+        //     if (!carInfo) return;
+        //     if (realTimeLocations.carCode === carInfo.carCode) {
+        //         carInfo.dumpPower = realTimeLocations.dumpPower;
+        //         carInfo.areaName = realTimeLocations.area ? realTimeLocations.area.areaName : '';
+        //         carInfo.alertInfo = realTimeLocations.alertInfo.length > 0 ? '报警' : '正常';
+        //     }
+        //
+        //     this.setState({
+        //         carInfo: carInfo,
+        //     });
+        // }
     }
 
     /**
@@ -205,6 +226,8 @@ export class MonitoringPage extends React.Component {
             this.setState({
                 siderTrigger: null
             });
+
+            console.log(this.fmMap);
             //修改指南针位置
             this.fmMap.options.compassOffset = [276, 20];
             this.fmMap.updateSize();
@@ -248,26 +271,21 @@ export class MonitoringPage extends React.Component {
             carList = this.getCarListBykeyword(userName);
         }
 
-        //根据在线排序
+        // 根据在线、名称排序
         carList.sort((a, b) => {
-            const x = a.onLine ? 1 : 0;
-            const y = b.onLine ? 1 : 0;
-
-            if (x > y) {
-                return -1;
-            }
-            if (x < y) {
-                return 1;
-            }
-            if (x === y) {
-                return 0;
-            }
+            const x = a.onLine ? 0 : 1;
+            const y = b.onLine ? 0 : 1;
+            const m = a.carCode;
+            const n = b.carCode;
+            return (x > y ? 1 : (x === y ? 0 : -1)) || (m < n ? -1 : (m === n ? 0 : 1))
         });
 
         //const {onLineDevice} = this.props;
 
         //菜单列表
         let menuList = [];
+        
+        // console.log(carList);
 
         for (let i = 0; i < carList.length; i++) {
             const car = carList[i];
@@ -550,6 +568,7 @@ export class MonitoringPage extends React.Component {
     onShowAlarmModal = () => {
         this.setState({
             alarmModalVisible: !this.state.alarmModalVisible,
+            isClick: !this.state.isClick
         });
     };
 
@@ -665,9 +684,10 @@ export class MonitoringPage extends React.Component {
         });
 
         const {carInfo} = this.state;
-
+        
         return (
             <Layout className={styles.layout}>
+
                 <Sider width={256} className={styles.sider} collapsible={true}
                        collapsed={this.state.siderCollapsed}
                        onCollapse={this.onCollapse}
@@ -731,10 +751,12 @@ export class MonitoringPage extends React.Component {
                         </Footer>
                     </Layout>
                 </Sider>
+
+
                 <Content className={styles.content}>
                     {/*显示地图*/}
                     <MonitoringMap
-                        realTimeLocations={this.props.realTimeLocations}
+                        // realTimeLocations={this.props.realTimeLocations}
                         getMap={this.getMap}
                         positionCarCode={this.state.positionCarCode}/>
                     {/*报警信息*/}
@@ -763,6 +785,7 @@ export class MonitoringPage extends React.Component {
                     {/*报警信息列表*/}
                     <AlarmTable
                         visible={this.state.alarmModalVisible}
+                        isClick={this.state.isClick}
                         onShowAlarmModal={this.onShowAlarmModal}
                         alertMessageData={alertMessageData}
                         areaList={this.props.areaList}

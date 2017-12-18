@@ -115,7 +115,15 @@ export class HeatPage extends React.Component {
             return this.getCarListMenu();
         }
 
-        return carDtasSource.map((item) => {
+        //列表排序
+        let carData = carDtasSource;
+        carData.sort((a, b) => {
+            const m = a.carCode;
+            const n = b.carCode;
+            return (m < n ? -1 : (m === n ? 0 : 1))
+        });
+
+        return carData.map((item) => {
             return (
                 <Menu.Item key={item.id}>
                     <Avatar size="large" src={window.serviceUrl + item.imgurl}/>

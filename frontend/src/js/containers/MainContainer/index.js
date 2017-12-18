@@ -114,17 +114,18 @@ export class MainContainer extends React.Component {
                 //console.log('data', data);
                 //当前报警信息
                 const alertInfo = data.alertInfo;
-                //console.log('alertInfo', alertInfo);
-                //console.log('alertInfo', alertInfo);
-                // if (alertInfo) {
-                //     alertInfo['carCode'] = carCode;
-                // }
+                // console.log('alertInfo', alertInfo);
+                // console.log('alertInfo', alertInfo);
+                if (alertInfo) {
+                    alertInfo['carCode'] = carCode;
+                }
 
                 //解除已在报警列表中的报警信息
                 this.removeAlarmDatas(carCode, alertInfo);
 
                 //当前有报警信息
                 if (alertInfo && alertInfo.length > 0) {
+
                     alertInfo.map((item) => {
 
                         const carCode = data.carCode;
@@ -154,9 +155,8 @@ export class MainContainer extends React.Component {
                             this.props.putAlarmDatas(item);
                         }
                     });
-                } else {
-
                 }
+
                 return;
             }
 

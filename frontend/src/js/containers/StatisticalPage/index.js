@@ -147,9 +147,9 @@ export class StatisticalPage extends React.Component {
             let speedDom_ = document.getElementById('main2');
             if (!speedDom_) return;
             
-            let s0 = speedData_.speedData[0] + '\n最小速度';
-            let s1 = speedData_.speedData[1] + '\n平均速度';
-            let s2 = speedData_.speedData[2] + '\n最大速度';
+            let s0 = (speedData_.speedData[0]) ? ((speedData_.speedData[0]) + '\n最小速度') : 0 ;
+            let s1 = (speedData_.speedData[1]) ? ((speedData_.speedData[0]) + '\n平均速度') : 0 ;
+            let s2 = (speedData_.speedData[2]) ? ((speedData_.speedData[0]) + '\n最大速度') : 0 ;
             let arr = [];
             arr.push(s0);
             arr.push(s1);
@@ -197,7 +197,7 @@ export class StatisticalPage extends React.Component {
         if (abnormalData_ && abnormalData_.xdata) {
             let abnormalDom_ = document.getElementById('main3');
             if (!abnormalDom_) return;
-            
+
             let myChart3 = echarts.init(abnormalDom_);
             myChart3.setOption({
                 baseOption: {
@@ -210,7 +210,7 @@ export class StatisticalPage extends React.Component {
                     },
                     yAxis: {
                         name: '报警条数（条）',
-                        splitNumber: abnormalData_.yAxis,
+                        splitNumber: 2,
                     },
                     tooltip:{
                         show:true,
@@ -391,6 +391,11 @@ export class StatisticalPage extends React.Component {
         this.setState({
             carsEndTime: value
         });
+    };
+
+    //禁选结束时间
+    disabledDate = (endValue) => {
+        return endValue && endValue.valueOf() >= Date.now();
     };
 
     //根据用户选择的时间段查询车辆统计页面的信息
@@ -868,6 +873,7 @@ export class StatisticalPage extends React.Component {
 
                                         <DatePicker style={{width: '20%'}} defaultValue={carsBeginDate}
                                                     format="YYYY-MM-DD"
+                                                    disabledDate={this.disabledDate}
                                                     onChange={this.handleCarsBeginDate}>
                                         </DatePicker>&nbsp;
                                         <TimePicker style={{width: '20%'}} defaultValue={moment('00', format)}
@@ -878,6 +884,7 @@ export class StatisticalPage extends React.Component {
                                         <Icon style={{color: '#a8a8a8'}} type="minus"/>&nbsp;
                                         <DatePicker style={{width: '20%'}} defaultValue={carsEndDate}
                                                     format="YYYY-MM-DD"
+                                                    disabledDate={this.disabledDate}
                                                     onChange={this.handleCarsEndDate}>
                                         </DatePicker>&nbsp;
                                         <TimePicker style={{width: '20%'}} defaultValue={carsEndTime}
@@ -980,7 +987,7 @@ export class StatisticalPage extends React.Component {
                                     </Row>
                                     <Row className={styles.tableRow}>
                                         <Col span={24}>
-                                            <Table rowSelection={selection} rowKey={record => record.carCode}
+                                            <Table rowKey={record => record.carCode}
                                                    className={styles.table} bordered={true}
                                                    footer={(record) => '共计 ' + record.length + ' 条数据'}
                                                    size="middle"
@@ -1013,6 +1020,7 @@ export class StatisticalPage extends React.Component {
                                         <span style={{marginRight: '20px'}}>时间选择</span>
                                         <DatePicker style={{width: '20%'}} defaultValue={busyCarsBeginDate}
                                                     format="YYYY-MM-DD"
+                                                    disabledDate={this.disabledDate}
                                                     onChange={this.handleBusyCarsBeginDate}>
                                         </DatePicker>&nbsp;
                                         <TimePicker style={{width: '20%'}} defaultValue={busyCarsBeginTime}
@@ -1023,6 +1031,7 @@ export class StatisticalPage extends React.Component {
                                         <Icon style={{color: '#a8a8a8'}} type="minus"/>&nbsp;
                                         <DatePicker style={{width: '20%'}} defaultValue={busyCarsEndDate}
                                                     format="YYYY-MM-DD"
+                                                    disabledDate={this.disabledDate}
                                                     onChange={this.handleBusyCarsEndDate}>
                                         </DatePicker>&nbsp;
                                         <TimePicker style={{width: '20%'}} defaultValue={busyCarsEndTime}

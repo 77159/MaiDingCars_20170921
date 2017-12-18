@@ -44,8 +44,8 @@ const config = {
         inline: true,                               //启用内联模式
         port: 9999,                                 //服务器端口
         // port: 8080,                               //服务器端口
-        // host: '0.0.0.0',                          //服务器地址
-        host: 'localhost',
+        host: '0.0.0.0',                          //服务器地址
+        // host: 'localhost',
         historyApiFallback: true                    //启用HTML5的历史记录？
     },
     module: {

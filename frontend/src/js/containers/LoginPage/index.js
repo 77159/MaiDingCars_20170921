@@ -175,7 +175,7 @@ export class LoginPage extends React.Component {
                             </FormItem>
                         </Form>
                     </div>
-                    <div className={styles.bottomInfo}><p>Beta V1.5.0</p></div>
+                    <div className={styles.bottomInfo}><p>Beta V1.6.0</p></div>
                 </div>
                 <div className={styles.support}>
                     <a href="http://www.madintech.com/">技术支持：北京麦钉艾特科技有限公司&蜂鸟云</a>

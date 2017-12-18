@@ -23,8 +23,10 @@ import {Badge} from 'antd';
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 const {RangePicker} = DatePicker;
+import moment from 'moment';
 
 import styles from './index.less';
+
 
 export default class AreaSettingMap extends React.Component {
     constructor(props) {
@@ -43,7 +45,118 @@ export default class AreaSettingMap extends React.Component {
             speedCarCode: null,
             speedDateTime: null,
             speedFilter: null,
+
+            isUpdateData: false,
+            loading: false,
+
+            speedBatchDeletion: false,      //速度批量删除
+            speedHaveRead: false,           //速度标记已读
+            speedDelete: false,             //速度删除
+            statusBatchDeletion: false,     //状态批量删除
+            statusHaveRead: false,          //状态标记已读
+            statusDelete: false,            //状态删除
+            areaBatchDeletion: false,       //区域批量删除
+            areaHaveRead: false,            //区域标记已读
+            areaDelete: false,              //区域删除
+
+        };
+        this.time = new moment();
+        this.opened = true;
+    }
+
+    shouldComponentUpdate (nextprops, nextstate) {
+        if(this.props.isClick !== nextprops.isClick){
+            return true;
         }
+
+        if(this.opened === this.state.isUpdateData) {
+            this.setState({isUpdateData: false});
+            return true;
+        }
+
+        if(this.opened === this.state.areaBatchDeletion) {
+            this.setState({areaBatchDeletion: false});
+            return true;
+        }
+
+        if(this.opened === this.state.areaHaveRead) {
+            this.setState({areaHaveRead: false});
+            return true;
+        }
+
+        if(this.opened === this.state.areaDelete) {
+            this.setState({areaDelete: false});
+            return true;
+        }
+
+        if(this.opened === this.state.statusBatchDeletion) {
+            this.setState({statusBatchDeletion: false});
+            return true;
+        }
+
+        if(this.opened === this.state.statusHaveRead) {
+            this.setState({statusHaveRead: false});
+            return true;
+        }
+
+        if(this.opened === this.state.statusDelete) {
+            this.setState({statusDelete: false});
+            return true;
+        }
+
+        if(this.opened === this.state.speedBatchDeletion) {
+            this.setState({speedBatchDeletion: false});
+            return true;
+        }
+
+        if(this.opened === this.state.speedHaveRead) {
+            this.setState({speedHaveRead: false});
+            return true;
+        }
+
+        if(this.opened === this.state.speedDelete) {
+            this.setState({speedDelete: false});
+            return true;
+        }
+
+        if(_.eq(this.state.areaSelectedRowKeys, nextstate.areaSelectedRowKeys) == false) {
+            return true;
+        }
+        if(_.eq(this.state.densitySelectedRowKeys, nextstate.densitySelectedRowKeys) == false) {
+            return true;
+        }
+        if(_.eq(this.state.speedSelectedRowKeys, nextstate.speedSelectedRowKeys) == false) {
+            return true;
+        }
+        if(_.eq(this.state.area, nextstate.area) == false) {
+            return true;
+        }
+        if(_.eq(this.state.areaDateTime, nextstate.areaDateTime) == false) {
+            return true;
+        }
+        if(_.eq(this.state.areaFilter, nextstate.areaFilter) == false) {
+            return true;
+        }
+        if(_.eq(this.state.densityCarCode, nextstate.densityCarCode) == false) {
+            return true;
+        }
+        if(_.eq(this.state.densityDateTime, nextstate.densityDateTime) == false) {
+            return true;
+        }
+        if(_.eq(this.state.densityFilter, nextstate.densityFilter) == false) {
+            return true;
+        }
+        if(_.eq(this.state.speedCarCode, nextstate.speedCarCode) == false) {
+            return true;
+        }
+        if(_.eq(this.state.speedDateTime, nextstate.speedDateTime) == false) {
+            return true;
+        }
+        if(_.eq(this.state.speedFilter, nextstate.speedFilter) == false) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -115,13 +228,13 @@ export default class AreaSettingMap extends React.Component {
      */
     areaDataFilter = (value, record) => {
         if (!value) return record;
-        const {id, dateTime} = record;
+        const {areaId, dateTime} = record;
         let filters = value.split('&&');
-        const areaId = filters[0];
+        const areaIds = filters[0];
         const beiginDateTime = filters[1];
         const endDateTime = filters[2];
 
-        if ((areaId === '' || areaId == id) && (beiginDateTime === '' || new Date(beiginDateTime) < new Date(dateTime)) && (endDateTime === '' || new Date(dateTime) < new Date(endDateTime))) {
+        if ((areaIds === '' || areaIds == areaId) && (beiginDateTime === '' || new Date(beiginDateTime) < new Date(dateTime)) && (endDateTime === '' || new Date(dateTime) < new Date(endDateTime))) {
             return record;
         }
     };
@@ -224,14 +337,18 @@ export default class AreaSettingMap extends React.Component {
         });
     };
 
+
+    getLatestData = () => {
+        this.setState({
+            isUpdateData: true,
+        })
+    };
+
     render() {
-        //报警信息，区域列表
-        const {alertMessageData, areaList} = this.props;
-        //已读，删除报警信息
-        const {updateUnReadMessage, deleteAlarmMessageByKeys} = this.props;
-        const {area, areaDateTime} = this.state;
-        const {densityCarCode, densityDateTime} = this.state;
-        const {speedCarCode, speedDateTime} = this.state;
+
+        //报警信息，区域列表 //已读，删除报警信息
+        const {alertMessageData, areaList,updateUnReadMessage, deleteAlarmMessageByKeys} = this.props;
+        const {area, areaDateTime,densityCarCode, densityDateTime,speedCarCode, speedDateTime,areaSelectedRowKeys, speedSelectedRowKeys, densitySelectedRowKeys} = this.state;
 
         let areaDatas = []; //区域报警
         let densityDatas = [];//密度报警
@@ -242,9 +359,10 @@ export default class AreaSettingMap extends React.Component {
         let areaUnRead = 0;
         let densityUnRead = 0;
         let speedUnRead = 0;
-
+        
         for (let i = 0; i < alertMessageData.size; i++) {
             const item = alertMessageData.get(i);
+
             if (!item) return;
             const type = item.type;
 
@@ -306,7 +424,6 @@ export default class AreaSettingMap extends React.Component {
                 title: '报警时间',
                 dataIndex: 'dateTime',
                 key: 'dateTime',
-                sorter: (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
                 filteredValue: [this.state.areaFilter],
                 onFilter: (value, record) => this.areaDataFilter(value, record),
                 render: function (text, record, index) {
@@ -348,6 +465,9 @@ export default class AreaSettingMap extends React.Component {
                             <Button type="primary" className={styles.tableBtn} ghost>热力图</Button>
                             <Popconfirm title="确认要删除此信息吗？" onConfirm={() => {
                                 deleteAlarmMessageByKeys([record.key]);
+                                this.setState({
+                                    areaDelete: true,
+                                });
                             }}>
                                 <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
                             </Popconfirm>
@@ -403,6 +523,9 @@ export default class AreaSettingMap extends React.Component {
                             {/*<Button type="primary" className={styles.tableBtn} ghost>定位</Button>*/}
                             <Popconfirm title="确认要删除此信息吗？" onConfirm={() => {
                                 deleteAlarmMessageByKeys([record.key]);
+                                this.setState({
+                                    statusDelete: true,
+                                });
                             }}>
                                 <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
                             </Popconfirm>
@@ -480,6 +603,9 @@ export default class AreaSettingMap extends React.Component {
                             {/*<Button type="primary" className={styles.tableBtn} ghost>定位</Button>*/}
                             <Popconfirm title="确认要删除此信息吗？" onConfirm={() => {
                                 deleteAlarmMessageByKeys([record.key]);
+                                this.setState({
+                                    speedDelete: true,
+                                });
                             }}>
                                 <Button type="primary" className={styles.tableBtn} ghost>删除</Button>
                             </Popconfirm>
@@ -489,7 +615,6 @@ export default class AreaSettingMap extends React.Component {
             }];
 
         //如果当前没有选择报警信息，则批量删除按钮禁用
-        const {areaSelectedRowKeys, speedSelectedRowKeys, densitySelectedRowKeys} = this.state;
         const areaAllDisabled = areaSelectedRowKeys.length > 0;  //区域密度批量删除按钮是否禁用
         const speedaAllDisabled = speedSelectedRowKeys.length > 0;//超速报警批量删除按钮是否禁用
         const densityAllDisabled = densitySelectedRowKeys.length > 0;//闲置报警批量删除按钮是否禁用
@@ -501,7 +626,8 @@ export default class AreaSettingMap extends React.Component {
                 visible={this.props.visible}
                 onCancel={this.closeModel}
                 footer={[
-                    <Button key="cancel" type="primary" size="large" onClick={this.closeModel}>确定</Button>,
+                    <Button key="realTime" type="primary" size="large" onClick={this.getLatestData} style={{marginRight: '20px'}}>获取实时数据</Button>,
+                    <Button key="cancel" type="primary" size="large" onClick={this.closeModel}>确定</Button>
                 ]}>
                 <div className="card-container">
                     <Tabs type="card">
@@ -542,9 +668,15 @@ export default class AreaSettingMap extends React.Component {
                                     <Button disabled={!areaAllDisabled} type="primary" icon="hdd"
                                             className={styles.addBtn} onClick={() => {
                                         updateUnReadMessage(this.state.areaSelectedRowKeys);
+                                        this.setState({
+                                            areaHaveRead: true,
+                                        });
                                     }}>标记已读</Button>
                                     <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
                                         deleteAlarmMessageByKeys(this.state.areaSelectedRowKeys);
+                                        this.setState({
+                                            areaBatchDeletion: true,
+                                        });
                                     }}>
                                         <Button disabled={!areaAllDisabled} type="primary" icon="delete"
                                                 className={styles.addBtn}>批量删除</Button>
@@ -597,9 +729,15 @@ export default class AreaSettingMap extends React.Component {
                                     <Button disabled={!densityAllDisabled} type="primary" icon="hdd"
                                             className={styles.addBtn} onClick={() => {
                                         updateUnReadMessage(this.state.densitySelectedRowKeys);
+                                        this.setState({
+                                            statusHaveRead: true,
+                                        });
                                     }}>标记已读</Button>
                                     <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
                                         deleteAlarmMessageByKeys(this.state.densitySelectedRowKeys);
+                                        this.setState({
+                                            statusBatchDeletion: true,
+                                        });
                                     }}>
                                         <Button disabled={!densityAllDisabled} type="primary" icon="delete"
                                                 className={styles.addBtn}>批量删除</Button>
@@ -651,11 +789,15 @@ export default class AreaSettingMap extends React.Component {
                                     <Button disabled={!speedaAllDisabled} type="primary" icon="hdd"
                                             className={styles.addBtn} onClick={() => {
                                         updateUnReadMessage(this.state.speedSelectedRowKeys);
+                                        this.setState({
+                                            speedHaveRead: true,
+                                        });
                                     }}>标记已读</Button>
                                     <Popconfirm title="确认要批量删除所选信息吗？" onConfirm={() => {
                                         deleteAlarmMessageByKeys(this.state.speedSelectedRowKeys);
                                         this.setState({
-                                            speedSelectedRowKeys: []
+                                            speedSelectedRowKeys: [],
+                                            speedBatchDeletion: true,
                                         });
                                     }}>
                                         <Button disabled={!speedaAllDisabled} type="primary" icon="delete"
@@ -667,12 +809,12 @@ export default class AreaSettingMap extends React.Component {
                                 className={styles.table}
                                 bordered={true}
                                 footer={(record) => {
-                                    return `共计 ${record.length} 条数据`;
+                                return `共计 ${record.length} 条数据`;
                                 }}
                                 size="middle"
                                 rowSelection={{
-                                    onChange: this.onChangeSpeedSelection,
-                                    selectedRowKeys: this.state.speedSelectedRowKeys
+                                onChange: this.onChangeSpeedSelection,
+                                selectedRowKeys: this.state.speedSelectedRowKeys
                                 }}
                                 columns={speedColumns}
                                 dataSource={sortData3}>

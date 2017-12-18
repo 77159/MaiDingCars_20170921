@@ -17,7 +17,7 @@
 
 'use strict';
 import {fromJS} from 'immutable';
-
+import {closeWS, openWS} from "../../api/locationWebWorker";
 import {
     RECEIVED_CAR_LOCATION,
     GET_ONLINE_CAR,
@@ -73,10 +73,16 @@ export default (state = initialState, action = {}) => {
     if (type === GET_ONLINE_DEVICE) {
         return state.set('onlineDevice', payload);
     }
-
+    
     //接受当前报警信息
     if (type === PUSH_ALARM_MESSAGE) {
         let alertMessageData = state.get('alertMessageData');
+        // if(alertMessageData.size >= 10) {
+        //     return;
+        // }
+        if(alertMessageData.size >= 100) {
+            return state.set('alertMessageData', alertMessageData.push());
+        }
         return state.set('alertMessageData', alertMessageData.push(payload));
     }
 

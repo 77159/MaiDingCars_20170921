@@ -105,7 +105,7 @@ function getSpeedEntity(origindata) {
     tmpEntity_.speedData = tmpEntity_.carNum.map((item, index) => {
         return 0.0;
     });
-
+    
     let avgMax = [];
     let avgSpeed = [];
     let avgMin = [];
@@ -114,20 +114,27 @@ function getSpeedEntity(origindata) {
     let avgSpeed_ = [];
     let avgMax_ = [];
     let carNum = [];
-
+    
     if(origindata.result) {
         origindata.result.map((item, index) => {
             //最小速度
-            avgMin.push(parseFloat(item.minSpeed).toFixed(2));
-            avgMin_ = parseFloat((avgMin.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+            if(item.minSpeed) {
+                avgMin.push(parseFloat(item.minSpeed).toFixed(2));
+            }
             //平均速度
-            avgSpeed.push(parseFloat(item.avgSpeed).toFixed(2));
-            avgSpeed_ = parseFloat((avgSpeed.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+            if(item.avgSpeed) {
+                avgSpeed.push(parseFloat(item.avgSpeed).toFixed(2));
+            }
             //最大速度
-            avgMax.push(parseFloat(item.maxSpeed).toFixed(2));
-            avgMax_ = parseFloat((avgMax.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+            if(item.maxSpeed) {
+                avgMax.push(parseFloat(item.maxSpeed).toFixed(2));
+            }
         });
-
+        
+        avgMin_ = parseFloat((avgMin.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+        avgSpeed_ = parseFloat((avgSpeed.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+        avgMax_ = parseFloat((avgMax.reduce((x ,y)=>{return x*1+y*1;}))/origindata.result.length).toFixed(2);
+        
         speed.push(avgMin_);
         speed.push(avgSpeed_);
         speed.push(avgMax_);
